@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Evolução — Avaliação Física</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap');
+:root{--bg:#080808;--surface:#111111;--surface2:#1a1a1a;--border:#222222;--lime:#c8f000;--lime-dim:rgba(200,240,0,0.12);--lime-glow:rgba(200,240,0,0.25);--white:#ffffff;--gray:#666666;--gray2:#444444;--red:#ff4444;--amber:#ffc107;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--white);font-family:'Montserrat',sans-serif;min-height:100vh;}
+nav{position:fixed;top:0;left:0;right:0;background:rgba(8,8,8,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100;padding:0 14px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.nav-logo{font-size:11px;font-weight:900;letter-spacing:0.1em;color:var(--lime);text-transform:uppercase;white-space:nowrap;}
+.nav-tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.nav-tab{background:none;border:none;cursor:pointer;color:var(--gray);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:8px 9px;border-radius:6px;transition:all 0.2s;white-space:nowrap;flex-shrink:0;}
+.nav-tab.active,.nav-tab:hover{color:var(--white);background:var(--surface2);}
+.nav-tab.active{color:var(--lime);}
+.page{display:none;padding:72px 16px 40px;max-width:900px;margin:0 auto;}
+.page.active{display:block;}
+.section-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.2em;color:var(--lime);text-transform:uppercase;margin-bottom:8px;}
+.section-title{font-size:24px;font-weight:900;line-height:1.1;margin-bottom:6px;}
+.section-sub{font-size:12px;color:var(--gray);margin-bottom:24px;line-height:1.5;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;}
+.card-title{font-size:10px;font-weight:700;letter-spacing:0.15em;color:var(--lime);text-transform:uppercase;margin-bottom:14px;}
+.card-note{font-size:11px;color:var(--gray);margin-bottom:14px;line-height:1.5;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.form-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--gray);text-transform:uppercase;}
+.field input,.field select,.field textarea{background:var(--surface2);border:1px solid var(--border);color:var(--white);font-family:'Montserrat',sans-serif;font-size:13px;padding:11px 13px;border-radius:8px;outline:none;transition:border 0.2s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--lime);}
+.field select option{background:#1a1a1a;}
+.field textarea{resize:vertical;min-height:75px;}
+.slider-field{margin-bottom:18px;}
+.slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.slider-label{font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--gray);text-transform:uppercase;}
+.slider-value{font-size:18px;font-weight:900;color:var(--lime);}
+.slider-desc{font-size:10px;color:var(--gray2);margin-bottom:8px;}
+input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--border);border-radius:2px;outline:none;}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:var(--lime);border-radius:50%;cursor:pointer;box-shadow:0 0 10px var(--lime-glow);}
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
+.photo-slot{aspect-ratio:3/4;border:2px dashed var(--border);border-radius:10px;cursor:pointer;overflow:hidden;position:relative;transition:border-color 0.2s;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface2);}
+.photo-slot:hover{border-color:var(--gray2);}
+.photo-slot.has-photo{border-color:var(--lime);border-style:solid;}
+.photo-slot img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.photo-slot-label{font-size:9px;font-weight:700;letter-spacing:0.05em;color:var(--gray);text-transform:uppercase;text-align:center;margin-top:5px;padding:0 4px;position:relative;z-index:1;}
+.photo-slot-icon{font-size:18px;margin-bottom:2px;opacity:0.4;position:relative;z-index:1;}
+.photo-slot input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;}
+.posture-grid-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity 0.2s;}
+.photo-slot.has-photo .posture-grid-overlay{opacity:0.5;}
+.posture-grid-overlay .h-line{position:absolute;left:0;right:0;height:1px;background:var(--lime);}
+.posture-grid-overlay .v-line{position:absolute;top:0;bottom:0;width:1px;background:var(--lime);}
+.h-shoulders{top:22%}.h-hips{top:52%}.v-center{left:50%}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:13px 20px;border-radius:8px;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s;}
+.btn-primary{background:var(--lime);color:var(--bg);box-shadow:0 0 24px var(--lime-glow);}
+.btn-primary:hover{box-shadow:0 0 40px var(--lime-glow);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--gray);border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--white);border-color:var(--gray2);}
+.btn-gold{background:var(--amber);color:var(--bg);}
+.btn-full{width:100%;}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;}
+.score-ring-container{display:flex;flex-direction:column;align-items:center;padding:20px 0;}
+.score-ring{position:relative;width:130px;height:130px;}
+.score-ring svg{transform:rotate(-90deg);}
+.score-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-number{font-size:34px;font-weight:900;color:var(--lime);line-height:1;}
+.score-label{font-size:9px;font-weight:700;letter-spacing:0.15em;color:var(--gray);text-transform:uppercase;}
+.score-title{font-size:18px;font-weight:900;margin-top:12px;text-align:center;}
+.score-subtitle{font-size:11px;color:var(--gray);margin-top:5px;text-align:center;}
+.composicao-display{display:none;margin:16px 0;padding:16px;background:var(--surface2);border-radius:10px;text-align:center;border:1px solid var(--border);}
+.composicao-display.show{display:block;}
+.composicao-pct{font-size:36px;font-weight:900;color:var(--lime);line-height:1;}
+.composicao-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray);margin-top:4px;}
+.composicao-faixa{display:inline-block;margin-top:8px;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;}
+.faixa-atletica{background:rgba(200,240,0,0.2);border:1px solid var(--lime);color:var(--lime);}
+.faixa-fitness{background:rgba(76,175,80,0.2);border:1px solid #4caf50;color:#4caf50;}
+.faixa-aceitavel{background:rgba(255,193,7,0.2);border:1px solid var(--amber);color:var(--amber);}
+.faixa-aumentada{background:rgba(255,68,68,0.2);border:1px solid var(--red);color:var(--red);}
+.composicao-desc{font-size:11px;color:var(--gray);margin-top:8px;line-height:1.5;}
+.pyramid-container{display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 0;}
+.pyramid-level{height:36px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:11px;font-weight:900;letter-spacing:0.04em;color:var(--bg);transition:all 0.3s;position:relative;text-transform:uppercase;}
+.pyramid-level.dim{opacity:0.22;}
+.pz5{width:40%;background:var(--lime);}
+.pz4{width:55%;background:#8fd400;}
+.pz3{width:70%;background:var(--amber);}
+.pz2{width:85%;background:#ff8c42;}
+.pz1{width:100%;background:var(--red);color:var(--white);}
+.pyramid-current-tag{position:absolute;right:-8px;top:50%;transform:translateY(-50%) translateX(100%);background:var(--white);color:var(--bg);font-size:9px;padding:3px 8px;border-radius:12px;white-space:nowrap;font-weight:700;}
+.ai-output{background:var(--surface2);border:1px solid var(--lime);border-radius:12px;padding:20px;font-size:12px;line-height:1.7;color:var(--white);white-space:pre-wrap;min-height:80px;}
+.ai-thinking{display:flex;align-items:center;gap:10px;color:var(--gray);font-size:12px;}
+.ai-dot{width:6px;height:6px;background:var(--lime);border-radius:50%;animation:pulse 1.2s ease-in-out infinite;}
+.ai-dot:nth-child(2){animation-delay:0.2s;}.ai-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes pulse{0%,100%{opacity:0.3;transform:scale(0.8);}50%{opacity:1;transform:scale(1.2);}}
+.pessoa-grid{display:grid;gap:10px;}
+.pessoa-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;}
+.pessoa-card:hover{border-color:var(--gray2);background:var(--surface2);}
+.pessoa-avatar{width:42px;height:42px;border-radius:50%;background:var(--lime-dim);border:2px solid var(--lime);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:var(--lime);flex-shrink:0;}
+.pessoa-info{flex:1;min-width:0;}
+.pessoa-name{font-size:13px;font-weight:700;margin-bottom:3px;}
+.pessoa-meta{font-size:10px;color:var(--gray);}
+.pessoa-score-badge{background:var(--lime-dim);border:1px solid var(--lime);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--lime);white-space:nowrap;}
+.pessoa-risk{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.risk-green{background:#4caf50;box-shadow:0 0 8px #4caf5080;}
+.risk-yellow{background:var(--amber);box-shadow:0 0 8px #ffc10780;}
+.risk-red{background:var(--red);box-shadow:0 0 8px #ff444480;}
+.pending-tag{background:rgba(255,193,7,0.15);border:1px solid var(--amber);color:var(--amber);font-size:9px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:3px 8px;border-radius:10px;white-space:nowrap;}
+.page-tabs{display:flex;gap:2px;margin-bottom:20px;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+.page-tabs::-webkit-scrollbar{display:none;}
+.page-tab{background:none;border:none;cursor:pointer;color:var(--gray);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:10px 11px;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s;white-space:nowrap;flex-shrink:0;}
+.page-tab.active{color:var(--lime);border-bottom-color:var(--lime);}
+.page-tab:hover:not(.active){color:var(--white);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.divider{height:1px;background:var(--border);margin:22px 0;}
+.alert{padding:12px 15px;border-radius:8px;margin-bottom:12px;font-size:11px;font-weight:600;line-height:1.5;}
+.alert-success{background:rgba(76,175,80,0.15);border:1px solid #4caf50;color:#4caf50;}
+.alert-warning{background:rgba(255,193,7,0.15);border:1px solid var(--amber);color:var(--amber);}
+.alert-lime{background:var(--lime-dim);border:1px solid var(--lime);color:var(--lime);}
+.imc-display{font-size:13px;font-weight:700;color:var(--lime);padding:11px 13px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:480px;}
+.modal-title{font-size:14px;font-weight:900;letter-spacing:0.1em;color:var(--lime);text-transform:uppercase;margin-bottom:20px;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--gray);}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:0.3;}
+.empty-title{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--white);}
+.empty-sub{font-size:11px;}
+.hist-avaliacao-item{padding:12px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.hist-avaliacao-item:last-child{border-bottom:none;}
+@media(max-width:600px){.form-grid,.form-grid-3,.form-grid-4{grid-template-columns:1fr;}.photo-grid{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- SENHA -->
+<div id="password-gate" style="position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;">
+  <div style="width:100%;max-width:360px;text-align:center;padding-top:12vh;">
+    <div style="font-size:28px;margin-bottom:16px">⚡</div>
+    <div style="font-size:14px;font-weight:900;letter-spacing:0.15em;color:var(--lime);text-transform:uppercase;margin-bottom:6px">Protocolo Evolução</div>
+    <div style="font-size:11px;color:var(--gray);margin-bottom:28px">Avaliação Física & Postural</div>
+    <div class="field" style="margin-bottom:14px;text-align:left">
+      <label>Senha de acesso</label>
+      <div style="position:relative;display:flex;align-items:center;">
+        <input type="password" id="senha-input" placeholder="Digite a senha"
+          autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false"
+          style="width:100%;padding-right:44px;"
+          onkeydown="if(event.key==='Enter')verificarSenha()">
+        <button type="button" onclick="toggleSenhaVisivel()" id="btn-toggle-senha"
+          style="position:absolute;right:6px;background:none;border:none;color:var(--gray);cursor:pointer;font-size:16px;padding:6px;">👁️</button>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="verificarSenha()">Entrar</button>
+    <div id="senha-erro" style="display:none;margin-top:12px;font-size:11px;color:var(--red)">Senha incorreta. Verifique maiúsculas/minúsculas e espaços.</div>
+  </div>
+</div>
+
+<!-- MODAL CADASTRO -->
+<div class="modal-overlay" id="modal-cadastro">
+  <div class="modal">
+    <div class="modal-title">Novo Avaliado</div>
+    <div class="form-grid" style="margin-bottom:14px">
+      <div class="field"><label>Nome completo</label><input type="text" id="cad-nome" placeholder="ex: Maria Silva"></div>
+      <div class="field"><label>Telefone / WhatsApp</label><input type="text" id="cad-tel" placeholder="ex: 85 99999-9999"></div>
+    </div>
+    <div class="form-grid-3" style="margin-bottom:14px">
+      <div class="field"><label>Idade</label><input type="number" id="cad-idade" placeholder="38"></div>
+      <div class="field"><label>Sexo</label><select id="cad-sexo"><option value="F">Feminino</option><option value="M">Masculino</option></select></div>
+      <div class="field"><label>Tipo</label><select id="cad-tipo"><option value="presencial">Presencial</option><option value="consultoria">Consultoria</option></select></div>
+    </div>
+    <div class="field" style="margin-bottom:20px">
+      <label>Objetivo principal</label>
+      <input type="text" id="cad-objetivo" placeholder="ex: Perder 10kg, definir, melhorar postura...">
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1" onclick="salvarPessoa()">Salvar</button>
+      <button class="btn btn-ghost" onclick="fecharModal('modal-cadastro')">Cancelar</button>
+    </div>
+    <div id="cad-erro" style="display:none;margin-top:10px" class="alert alert-warning"></div>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-logo">⚡ Protocolo Evolução</div>
+  <div class="nav-tabs" id="nav-tabs">
+    <button class="nav-tab active" data-page="painel">Painel</button>
+    <button class="nav-tab" data-page="avaliacao">Avaliar</button>
+    <button class="nav-tab" data-page="historico">Evolução</button>
+    <button class="nav-tab" data-page="avaliados">Avaliados</button>
+  </div>
+</nav>
+
+<!-- PAINEL -->
+<div id="page-painel" class="page active">
+  <div class="section-eyebrow">Visão geral</div>
+  <div class="section-title">Painel</div>
+  <div class="section-sub">Avaliação física, postural e de composição corporal por IA.</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+    <div class="card" style="padding:16px;text-align:center;margin-bottom:0"><div style="font-size:26px;font-weight:900;color:var(--lime)" id="stat-ativos">—</div><div style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--gray);text-transform:uppercase;margin-top:3px">Avaliados</div></div>
+    <div class="card" style="padding:16px;text-align:center;margin-bottom:0"><div style="font-size:26px;font-weight:900;color:var(--amber)" id="stat-pendentes">—</div><div style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--gray);text-transform:uppercase;margin-top:3px">Aguard. liberação</div></div>
+    <div class="card" style="padding:16px;text-align:center;margin-bottom:0"><div style="font-size:26px;font-weight:900;color:var(--red)" id="stat-risco">—</div><div style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--gray);text-transform:uppercase;margin-top:3px">Sem avaliação recente</div></div>
+  </div>
+  <div class="card-title">Ação rápida</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+    <button class="btn btn-primary" onclick="abrirModal('modal-cadastro')">+ Novo avaliado</button>
+    <button class="btn btn-ghost" onclick="showPage('avaliacao')">Nova avaliação</button>
+  </div>
+  <div class="card-title">Alertas</div>
+  <div id="painel-alertas"><div class="alert alert-lime">Carregando...</div></div>
+</div>
+
+<!-- AVALIAÇÃO -->
+<div id="page-avaliacao" class="page">
+  <div class="section-eyebrow">Avaliação física</div>
+  <div class="section-title">Nova Avaliação</div>
+  <div class="section-sub">Fotos + medidas + hábitos. A IA analisa postura e estima % de gordura.</div>
+  <div class="card">
+    <div class="card-title">Avaliado(a)</div>
+    <div class="form-grid">
+      <div class="field"><label>Selecionar avaliado(a)</label><select id="sel-pessoa"><option value="">— Escolha —</option></select></div>
+      <div class="field"><label>Semana / ciclo</label><input type="text" id="semana-treino" placeholder="ex: Semana 1" value="Semana 1"></div>
+    </div>
+    <div id="pessoa-info-row" style="display:none;margin-top:12px;padding:10px 12px;background:var(--surface2);border-radius:8px;font-size:11px;color:var(--gray)"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Fotos (com grade postural)</div>
+    <div class="card-note">Mesma roupa justa, mesma luz, mesma distância. A grade alinha ombro e quadril para comparação entre semanas. <strong style="color:var(--white)">Fotos processadas localmente — não vão a servidores externos.</strong></div>
+    <div class="photo-grid">
+      <div class="photo-slot" id="slot-frente" onclick="triggerUpload('frente')"><div class="posture-grid-overlay"><div class="h-line h-shoulders"></div><div class="h-line h-hips"></div><div class="v-line v-center"></div></div><div class="photo-slot-icon">📸</div><div class="photo-slot-label">Frente</div><input type="file" id="file-frente" accept="image/*" style="display:none" onchange="previewPhoto(this,'slot-frente','frente')"></div>
+      <div class="photo-slot" id="slot-lado-d" onclick="triggerUpload('lado-d')"><div class="posture-grid-overlay"><div class="h-line h-shoulders"></div><div class="h-line h-hips"></div><div class="v-line v-center"></div></div><div class="photo-slot-icon">📸</div><div class="photo-slot-label">Lat. Direita</div><input type="file" id="file-lado-d" accept="image/*" style="display:none" onchange="previewPhoto(this,'slot-lado-d','lado-d')"></div>
+      <div class="photo-slot" id="slot-lado-e" onclick="triggerUpload('lado-e')"><div class="posture-grid-overlay"><div class="h-line h-shoulders"></div><div class="h-line h-hips"></div><div class="v-line v-center"></div></div><div class="photo-slot-icon">📸</div><div class="photo-slot-label">Lat. Esquerda</div><input type="file" id="file-lado-e" accept="image/*" style="display:none" onchange="previewPhoto(this,'slot-lado-e','lado-e')"></div>
+      <div class="photo-slot" id="slot-costas" onclick="triggerUpload('costas')"><div class="posture-grid-overlay"><div class="h-line h-shoulders"></div><div class="h-line h-hips"></div><div class="v-line v-center"></div></div><div class="photo-slot-icon">📸</div><div class="photo-slot-label">Costas</div><input type="file" id="file-costas" accept="image/*" style="display:none" onchange="previewPhoto(this,'slot-costas','costas')"></div>
+    </div>
+    <div id="photos-count-msg" style="font-size:11px;color:var(--gray)">0 de 4 fotos — quanto mais fotos, melhor a análise postural e o % de gordura.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Medidas</div>
+    <div class="form-grid-4">
+      <div class="field"><label>Peso (kg)</label><input type="number" id="med-peso" placeholder="68" step="0.1"></div>
+      <div class="field"><label>Altura em cm (ex: 165)</label><input type="number" id="med-altura" placeholder="Ex: 165"></div>
+      <div class="field"><label>Idade</label><input type="number" id="med-idade" placeholder="38"></div>
+      <div class="field"><label>Sexo</label><select id="med-sexo"><option value="F">Feminino</option><option value="M">Masculino</option></select></div>
+    </div>
+    <div class="form-grid-3" style="margin-top:12px">
+      <div class="field"><label>Cintura (cm)</label><input type="number" id="med-cintura" placeholder="82"></div>
+      <div class="field"><label>Quadril (cm)</label><input type="number" id="med-quadril" placeholder="100"></div>
+      <div class="field"><label>Abdômen (cm)</label><input type="number" id="med-abdomen" placeholder="89"></div>
+    </div>
+    <div class="form-grid-3" style="margin-top:12px">
+      <div class="field"><label>Braço (cm)</label><input type="number" id="med-braco" placeholder="32"></div>
+      <div class="field"><label>Coxa (cm)</label><input type="number" id="med-coxa" placeholder="58"></div>
+      <div class="field"><label>IMC</label><div class="imc-display" id="imc-display">—</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Hábitos de vida (preencha o que souber)</div>
+    <div class="form-grid" style="margin-bottom:14px">
+      <div class="field"><label>Horas de sono</label><input type="text" id="hab-sono" placeholder="ex: 7h, irregular"></div>
+      <div class="field"><label>Água por dia (litros)</label><input type="number" id="hab-agua" placeholder="ex: 2" step="0.1"></div>
+    </div>
+    <div class="slider-field"><div class="slider-header"><div class="slider-label">Nível de estresse</div><div class="slider-value" id="val-estresse">5</div></div><div class="slider-desc">1 = tranquila, 10 = no limite</div><input type="range" min="1" max="10" value="5" id="sl-estresse" oninput="syncSlider('estresse')"></div>
+    <div class="slider-field"><div class="slider-header"><div class="slider-label">Satisfação com alimentação</div><div class="slider-value" id="val-alim">5</div></div><div class="slider-desc">1 = insatisfeita, 10 = muito satisfeita</div><input type="range" min="1" max="10" value="5" id="sl-alim" oninput="syncSlider('alim')"></div>
+    <div class="slider-field" style="margin-bottom:0"><div class="slider-header"><div class="slider-label">Vitalidade geral</div><div class="slider-value" id="val-vital">5</div></div><div class="slider-desc">1 = cansada o tempo todo, 10 = cheia de energia</div><input type="range" min="1" max="10" value="5" id="sl-vital" oninput="syncSlider('vital')"></div>
+  </div>
+  <button class="btn btn-primary btn-full" id="btn-analisar" onclick="analisarComIA()">⚡ Gerar análise completa com IA</button>
+  <div id="resultado-section" style="display:none;margin-top:20px">
+    <div class="alert alert-warning">🔒 Rascunho interno — o(a) avaliado(a) não vê nada até você clicar em "Liberar".</div>
+    <div class="card-title" style="margin-bottom:10px">Análise gerada</div>
+    <div id="ai-output" class="ai-output"></div>
+    <div id="score-composicao-section" style="display:none;margin-top:18px">
+      <div class="card" style="border-color:var(--lime)">
+        <div class="score-ring-container">
+          <div class="score-ring"><svg width="130" height="130" viewBox="0 0 130 130"><circle cx="65" cy="65" r="54" fill="none" stroke="#1a1a1a" stroke-width="10"/><circle id="score-circle" cx="65" cy="65" r="54" fill="none" stroke="#c8f000" stroke-width="10" stroke-dasharray="339" stroke-dashoffset="339" stroke-linecap="round" style="transition:stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1)"/></svg><div class="score-ring-text"><div class="score-number" id="score-display">0</div><div class="score-label">pontos</div></div></div>
+          <div class="score-title" id="score-titulo">—</div>
+          <div class="score-subtitle" id="score-subtitulo">—</div>
+        </div>
+        <div class="composicao-display" id="composicao-display">
+          <div class="composicao-label">% de gordura estimado por IA</div>
+          <div class="composicao-pct" id="composicao-pct">—</div>
+          <div id="composicao-faixa-badge" class="composicao-faixa faixa-fitness">—</div>
+          <div class="composicao-desc" id="composicao-desc">—</div>
+          <div style="font-size:9px;color:var(--gray2);margin-top:8px">Estimativa por visão computacional. Precisão comparável à bioimpedância (CCC ≥ 0,96 vs DXA). Não substitui avaliação clínica.</div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+          <button class="btn btn-gold" id="btn-liberar" onclick="liberarParaPessoa()">🔓 Liberar para avaliado(a)</button>
+          <button class="btn btn-ghost" onclick="showPage('historico')">Ver evolução</button>
+        </div>
+        <div id="liberado-msg" style="display:none;margin-top:12px" class="alert alert-success">✅ Relatório salvo e liberado!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTÓRICO -->
+<div id="page-historico" class="page">
+  <div class="section-eyebrow">Evolução</div>
+  <div class="section-title">Linha do Tempo</div>
+  <div class="section-sub">Histórico real de cada avaliado(a), salvo no banco de dados.</div>
+  <div style="margin-bottom:20px">
+    <div class="field" style="margin:0"><select id="sel-hist-pessoa" onchange="carregarHistorico()"><option value="">— Selecione um(a) avaliado(a) —</option></select></div>
+  </div>
+  <div class="page-tabs" id="hist-tabs">
+    <button class="page-tab active" data-tab="tab-zona">Zona</button>
+    <button class="page-tab" data-tab="tab-composicao">% Gordura</button>
+    <button class="page-tab" data-tab="tab-avaliacoes">Avaliações</button>
+  </div>
+  <div id="tab-zona" class="tab-content active">
+    <div class="card"><div class="card-title">Pirâmide de Saúde Funcional</div><div class="card-note">Combina físico + hábitos de vida. Quanto mais alto, mais sustentável o resultado.</div><div class="pyramid-container" id="pyramid-container"><div style="color:var(--gray);font-size:12px">Selecione um(a) avaliado(a) para ver a zona atual.</div></div></div>
+  </div>
+  <div id="tab-composicao" class="tab-content">
+    <div class="card"><div class="card-title">Evolução do % de gordura</div><div id="composicao-chart" style="display:flex;align-items:flex-end;gap:8px;height:100px;margin-bottom:10px"></div><div id="composicao-labels" style="display:flex;gap:8px"></div></div>
+    <div class="card"><div class="card-title">Comparativo</div><div id="composicao-comparativo" style="text-align:center;color:var(--gray);font-size:12px">Selecione um(a) avaliado(a).</div></div>
+  </div>
+  <div id="tab-avaliacoes" class="tab-content">
+    <div class="card"><div class="card-title">Histórico de avaliações</div><div id="hist-lista-avaliacoes"><div style="color:var(--gray);font-size:12px">Selecione um(a) avaliado(a).</div></div></div>
+  </div>
+</div>
+
+<!-- AVALIADOS -->
+<div id="page-avaliados" class="page">
+  <div class="section-eyebrow">Gestão</div>
+  <div class="section-title">Avaliados</div>
+  <div class="section-sub">Todas as pessoas cadastradas no sistema.</div>
+  <div style="display:flex;gap:10px;margin-bottom:20px">
+    <button class="btn btn-primary" onclick="abrirModal('modal-cadastro')">+ Novo avaliado</button>
+    <button class="btn btn-ghost" onclick="carregarPessoasLista()">↻ Atualizar</button>
+  </div>
+  <div class="pessoa-grid" id="pessoas-list"><div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">Nenhum avaliado cadastrado</div><div class="empty-sub">Clique em "+ Novo avaliado" para começar.</div></div></div>
+</div>
+
+<script>
+// ══════════════════════════════
+// CONFIG
+// ══════════════════════════════
+const SENHA_ACESSO = 'oteupersonal2025';
+const SUPABASE_URL = 'https://alngxjzcncaocegckdof.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_MKZizcLZSuHfKcXFrB1s9Q_uQUZyCL0';
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const uploadedPhotos = {};
+let avaliacaoAtualId = null;
+
+// ══════════════════════════════
+// SENHA
+// ══════════════════════════════
+function toggleSenhaVisivel() {
+  const input = document.getElementById('senha-input');
+  const btn = document.getElementById('btn-toggle-senha');
+  if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+  else { input.type = 'password'; btn.textContent = '👁️'; }
+}
+function verificarSenha() {
+  const digitado = document.getElementById('senha-input').value.trim();
+  if (digitado === SENHA_ACESSO) {
+    document.getElementById('password-gate').style.display = 'none';
+    inicializar();
+  } else {
+    document.getElementById('senha-erro').style.display = 'block';
+    document.getElementById('senha-input').value = '';
+    document.getElementById('senha-input').focus();
+  }
+}
+
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+async function inicializar() {
+  await carregarSelectPessoas();
+  await carregarPainel();
+  await carregarPessoasLista();
+}
+
+// ══════════════════════════════
+// NAVEGAÇÃO
+// ══════════════════════════════
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+  const tab = document.querySelector(`.nav-tab[data-page="${pageId}"]`);
+  if (tab) tab.classList.add('active');
+  if (pageId === 'avaliados') carregarPessoasLista();
+  if (pageId === 'painel') carregarPainel();
+}
+document.querySelectorAll('.nav-tab[data-page]').forEach(btn => btn.addEventListener('click', () => showPage(btn.dataset.page)));
+
+function showHistTab(tabId) {
+  document.querySelectorAll('#page-historico .tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#hist-tabs .page-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  const btn = document.querySelector(`#hist-tabs [data-tab="${tabId}"]`);
+  if (btn) btn.classList.add('active');
+}
+document.querySelectorAll('#hist-tabs .page-tab').forEach(btn => btn.addEventListener('click', () => showHistTab(btn.dataset.tab)));
+
+// ══════════════════════════════
+// MODAL
+// ══════════════════════════════
+function abrirModal(id) { document.getElementById(id).classList.add('show'); }
+function fecharModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ══════════════════════════════
+// PESSOAS (avaliados)
+// ══════════════════════════════
+async function carregarSelectPessoas() {
+  const { data } = await db.from('alunas').select('*').order('nome');
+  const sel = document.getElementById('sel-pessoa');
+  const selHist = document.getElementById('sel-hist-pessoa');
+  [sel, selHist].forEach(s => {
+    const val = s.value;
+    while (s.options.length > 1) s.remove(1);
+    if (data) data.forEach(a => { const o = new Option(a.nome + ' · ' + (a.idade||'—') + ' anos', a.id); s.add(o); });
+    if (val) s.value = val;
+  });
+}
+
+async function salvarPessoa() {
+  const nome = document.getElementById('cad-nome').value.trim();
+  if (!nome) { document.getElementById('cad-erro').textContent = 'Nome é obrigatório.'; document.getElementById('cad-erro').style.display = 'block'; return; }
+  const { error } = await db.from('alunas').insert({
+    nome, telefone: document.getElementById('cad-tel').value,
+    idade: parseInt(document.getElementById('cad-idade').value) || null,
+    sexo: document.getElementById('cad-sexo').value,
+    tipo: document.getElementById('cad-tipo').value,
+    objetivo: document.getElementById('cad-objetivo').value,
+  });
+  if (error) { document.getElementById('cad-erro').textContent = 'Erro ao salvar: ' + error.message; document.getElementById('cad-erro').style.display = 'block'; return; }
+  fecharModal('modal-cadastro');
+  ['cad-nome','cad-tel','cad-idade','cad-objetivo'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cad-erro').style.display = 'none';
+  await carregarSelectPessoas();
+  await carregarPessoasLista();
+  await carregarPainel();
+}
+
+async function carregarPessoasLista() {
+  const { data } = await db.from('alunas').select('*, avaliacoes(score, zona, pct_gordura, liberado, created_at)').order('nome');
+  const container = document.getElementById('pessoas-list');
+  if (!data || data.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">Nenhum avaliado cadastrado</div><div class="empty-sub">Clique em "+ Novo avaliado" para começar.</div></div>'; return; }
+  container.innerHTML = data.map(a => {
+    const avals = a.avaliacoes || [];
+    const ultima = avals.sort((x,y) => new Date(y.created_at) - new Date(x.created_at))[0];
+    const pendentes = avals.filter(x => !x.liberado).length;
+    const diasSemAval = ultima ? Math.floor((Date.now() - new Date(ultima.created_at)) / 86400000) : 999;
+    const risco = diasSemAval > 21 ? 'red' : diasSemAval > 14 ? 'yellow' : 'green';
+    return `<div class="pessoa-card" onclick="verPessoaHistorico('${a.id}')">
+      <div class="pessoa-risk risk-${risco}"></div>
+      <div class="pessoa-avatar">${a.nome.charAt(0)}</div>
+      <div class="pessoa-info">
+        <div class="pessoa-name">${a.nome}</div>
+        <div class="pessoa-meta">${a.idade || '—'} anos · ${a.tipo} · ${avals.length} avaliações</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+        ${pendentes > 0 ? `<div class="pending-tag">${pendentes} pendente${pendentes>1?'s':''}</div>` : ultima ? `<div class="pessoa-score-badge">${ultima.pct_gordura ? ultima.pct_gordura+'% · ' : ''}${ultima.zona || ''}</div>` : '<div style="font-size:10px;color:var(--gray)">Sem avaliação</div>'}
+      </div></div>`;
+  }).join('');
+}
+
+function verPessoaHistorico(id) {
+  document.getElementById('sel-hist-pessoa').value = id;
+  showPage('historico');
+  carregarHistorico();
+}
+
+// ══════════════════════════════
+// PAINEL
+// ══════════════════════════════
+async function carregarPainel() {
+  const { data: pessoas } = await db.from('alunas').select('id');
+  const { data: avals } = await db.from('avaliacoes').select('aluna_id, liberado, created_at');
+  const total = pessoas ? pessoas.length : 0;
+  const pendentes = avals ? avals.filter(a => !a.liberado).length : 0;
+  const semAvalRecente = pessoas ? pessoas.filter(a => {
+    const ultima = avals ? avals.filter(x => x.aluna_id === a.id).sort((x,y) => new Date(y.created_at) - new Date(x.created_at))[0] : null;
+    return !ultima || (Date.now() - new Date(ultima.created_at)) / 86400000 > 14;
+  }).length : 0;
+  document.getElementById('stat-ativos').textContent = total;
+  document.getElementById('stat-pendentes').textContent = pendentes;
+  document.getElementById('stat-risco').textContent = semAvalRecente;
+  const alertas = document.getElementById('painel-alertas');
+  if (total === 0) { alertas.innerHTML = '<div class="alert alert-lime">👋 Bem-vindo! Cadastre o primeiro avaliado para começar.</div>'; return; }
+  let html = '';
+  if (pendentes > 0) html += `<div class="alert alert-warning">🟡 ${pendentes} relatório${pendentes>1?'s':''} aguardando liberação.</div>`;
+  if (semAvalRecente > 0) html += `<div class="alert alert-warning">🔴 ${semAvalRecente} avaliado${semAvalRecente>1?'s':''} sem avaliação há mais de 14 dias.</div>`;
+  if (!html) html = '<div class="alert alert-success">✅ Tudo em dia!</div>';
+  alertas.innerHTML = html;
+}
+
+// ══════════════════════════════
+// FORMULÁRIO
+// ══════════════════════════════
+function syncSlider(id) { document.getElementById('val-' + id).textContent = document.getElementById('sl-' + id).value; }
+function calcIMC() {
+  const peso = parseFloat(document.getElementById('med-peso').value);
+  let altura = parseFloat(document.getElementById('med-altura').value);
+  const el = document.getElementById('imc-display');
+  if (!peso || !altura) { el.textContent = '—'; return; }
+  // Normaliza: se a pessoa digitou em metros (ex: 1.65), converte pra cm
+  if (altura < 3) altura = altura * 100;
+  const imc = peso / Math.pow(altura/100, 2);
+  if (imc <= 0 || imc > 80 || !isFinite(imc)) { el.textContent = 'Verifique peso/altura'; return; }
+  const cls = imc < 18.5 ? 'Abaixo' : imc < 25 ? 'Adequado' : imc < 30 ? 'Sobrepeso' : 'Obesidade';
+  el.textContent = `${imc.toFixed(1)} · ${cls}`;
+}
+['med-peso','med-altura'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', calcIMC); });
+
+document.getElementById('sel-pessoa').addEventListener('change', function() {
+  const opt = this.options[this.selectedIndex];
+  const row = document.getElementById('pessoa-info-row');
+  if (this.value && opt.text !== '— Escolha —') {
+    row.style.display = 'block';
+    row.innerHTML = `<strong style="color:var(--lime)">${opt.text}</strong>`;
+  } else { row.style.display = 'none'; }
+});
+
+function triggerUpload(angle) { document.getElementById('file-' + angle).click(); }
+function previewPhoto(input, slotId, angle) {
+  if (!input.files || !input.files[0]) return;
+  const slot = document.getElementById(slotId);
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    slot.classList.add('has-photo');
+    let img = slot.querySelector('img');
+    if (!img) { img = document.createElement('img'); slot.insertBefore(img, slot.querySelector('.posture-grid-overlay')); }
+    img.src = e.target.result;
+    uploadedPhotos[angle] = e.target.result;
+    slot.querySelector('.photo-slot-icon').style.display = 'none';
+    slot.querySelector('.photo-slot-label').style.display = 'none';
+    const count = Object.keys(uploadedPhotos).length;
+    const msg = document.getElementById('photos-count-msg');
+    msg.textContent = count === 4 ? '✅ 4 fotos adicionadas — análise postural e % de gordura ativados.' : `${count} de 4 fotos adicionadas.`;
+    msg.style.color = count === 4 ? 'var(--lime)' : 'var(--gray)';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// ══════════════════════════════
+// IA — ANÁLISE
+// ══════════════════════════════
+async function analisarComIA() {
+  const pessoaId = document.getElementById('sel-pessoa').value;
+  if (!pessoaId) { alert('Selecione um(a) avaliado(a) antes de gerar a análise.'); return; }
+  const btn = document.getElementById('btn-analisar');
+  btn.disabled = true; btn.textContent = '⏳ Analisando...';
+  document.getElementById('resultado-section').style.display = 'block';
+  document.getElementById('liberado-msg').style.display = 'none';
+  document.getElementById('score-composicao-section').style.display = 'none';
+  document.getElementById('composicao-display').classList.remove('show');
+  document.getElementById('ai-output').innerHTML = `<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:8px">Processando${Object.keys(uploadedPhotos).length ? ' fotos e' : ''} dados...</span></div>`;
+
+  const semana = document.getElementById('semana-treino').value || 'Semana 1';
+  const peso = document.getElementById('med-peso').value;
+  const altura = document.getElementById('med-altura').value;
+  const idade = document.getElementById('med-idade').value;
+  const sexo = document.getElementById('med-sexo').value;
+  const cintura = document.getElementById('med-cintura').value;
+  const quadril = document.getElementById('med-quadril').value;
+  const abdomen = document.getElementById('med-abdomen').value;
+  const braco = document.getElementById('med-braco').value;
+  const coxa = document.getElementById('med-coxa').value;
+  const habSono = document.getElementById('hab-sono').value;
+  const habAgua = document.getElementById('hab-agua').value;
+  const habEstresse = document.getElementById('sl-estresse').value;
+  const habAlim = document.getElementById('sl-alim').value;
+  const habVital = document.getElementById('sl-vital').value;
+  const temFotos = Object.keys(uploadedPhotos).length > 0;
+
+  const promptText = `Você é um sistema de avaliação física para profissionais de educação física e nutrição. Relatório INTERNO — só o profissional vê antes de liberar.
+
+DADOS DO(A) AVALIADO(A):
+- Período: ${semana}
+- Sexo: ${sexo === 'F' ? 'feminino' : 'masculino'}${idade ? `, ${idade} anos` : ''}
+${peso ? `- Peso: ${peso}kg` : ''}${altura ? `, Altura: ${altura}cm` : ''}
+${cintura ? `- Cintura: ${cintura}cm` : ''}${quadril ? `, Quadril: ${quadril}cm` : ''}${abdomen ? `, Abdômen: ${abdomen}cm` : ''}
+${braco ? `- Braço: ${braco}cm` : ''}${coxa ? `, Coxa: ${coxa}cm` : ''}
+
+HÁBITOS DE VIDA:
+${habSono ? `- Sono: ${habSono}` : ''}${habAgua ? `, Água: ${habAgua}L/dia` : ''}
+- Estresse: ${habEstresse}/10, Alimentação: ${habAlim}/10, Vitalidade: ${habVital}/10
+
+${temFotos ? `FOTOS ENVIADAS (${Object.keys(uploadedPhotos).join(', ')}):
+Realize ANÁLISE POSTURAL detalhada baseada nas fotos:
+- Ombros: nivelados ou assimétrico? qual lado mais alto?
+- Quadril: nivelado, anteversão, retroversão ou lateralizado?
+- Coluna (lateral): curvatura normal, hipercifose, hiperlordose ou retificação?
+- Joelhos: alinhados, valgo ou varo?
+- Distribuição de gordura: onde se concentra?
+- Definição muscular visível?
+Estime % de gordura combinando análise visual das fotos com dados antropométricos.`
+: 'SEM FOTOS: análise postural indisponível. Estime % de gordura pelos dados antropométricos se suficientes.'}
+
+INSTRUÇÕES:
+1. SCORE 0–100: estado geral (físico + hábitos). Primeira avaliação = linha de base, não é negativo.
+2. ZONA: Z1(0-30 Alerta), Z2(31-50 Atenção), Z3(51-70 Equilíbrio), Z4(71-85 Alta Performance), Z5(86-100 Excelência).
+3. % GORDURA: número específico (ex: 26.8). Faixas femininas: Atlética <20%, Fitness 20-28%, Aceitável 29-35%, Aumentada >35%. Faixas masculinas: Atlética <10%, Fitness 10-18%, Aceitável 18-25%, Aumentada >25%. Retorne null se dados insuficientes.
+4. ANÁLISE POSTURAL: resumo objetivo do que foi observado nas fotos.
+5. ANÁLISE GERAL: 3–4 parágrafos, direto, técnico, sem clichês. Cite dados específicos.
+6. PONTOS DE ATENÇÃO: 2–3 itens concretos e acionáveis.
+
+RESPONDA SOMENTE em JSON válido, sem markdown:
+{"score":62,"zona":"Z3","nivel":"Em Equilíbrio","descricao_nivel":"texto curto","pct_gordura":26.8,"faixa_composicao":"Aceitável","desc_composicao":"observação das fotos","analise_postural":"ombros nivelados, leve hiperlordose lombar, joelhos alinhados","analise":"texto","pontos_atencao":["item1","item2"]}`;
+
+  const contentBlocks = [];
+  Object.values(uploadedPhotos).forEach(dataUrl => {
+    const match = dataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
+    if (match) contentBlocks.push({type:'image',source:{type:'base64',media_type:match[1],data:match[2]}});
+  });
+  contentBlocks.push({type:'text',text:promptText});
+
+  let parsed = null;
+  try {
+    const resp = await fetch('/.netlify/functions/api', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1400,messages:[{role:'user',content:contentBlocks}]})
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+    const raw = data.content.map(i => i.text||'').join('');
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('JSON não encontrado');
+    parsed = JSON.parse(jsonMatch[0]);
+  } catch(err) {
+    console.error(err);
+    let alturaNorm = parseFloat(altura);
+    if (alturaNorm && alturaNorm < 3) alturaNorm = alturaNorm * 100;
+    const imc = peso && alturaNorm ? peso / Math.pow(alturaNorm/100,2) : null;
+    const pct = imc && imc < 80 ? Math.round((1.2*imc + 0.23*(parseInt(idade)||35) - 10.8*(sexo==='M'?1:0) - 5.4)*10)/10 : null;
+    parsed = {
+      score:55, zona:'Z3', nivel:'Em Equilíbrio',
+      descricao_nivel:'Modo offline — API não conectada. Configure a chave no Netlify.',
+      pct_gordura: pct, faixa_composicao: getFaixa(pct, sexo),
+      desc_composicao: pct ? 'Estimativa por equação de Deurenberg (sem fotos/API).' : null,
+      analise_postural: temFotos ? 'API não conectada — análise postural indisponível.' : null,
+      analise:'Análise gerada em modo offline.\n\nPara análise completa com visão computacional (% de gordura por foto e análise postural automática), configure a variável ANTHROPIC_API_KEY no Netlify e faça o redeploy.',
+      pontos_atencao:['Configure a API Anthropic para análise completa.','Adicione as 4 fotos para análise postural e estimativa de % de gordura por IA.']
+    };
+  }
+
+  renderResultado(parsed);
+  const { data: saved } = await db.from('avaliacoes').insert({
+    aluna_id: pessoaId, semana,
+    peso: parseFloat(peso)||null, altura: parseFloat(altura)||null,
+    idade: parseInt(idade)||null, sexo,
+    cintura: parseFloat(cintura)||null, quadril: parseFloat(quadril)||null,
+    abdomen: parseFloat(abdomen)||null, braco: parseFloat(braco)||null, coxa: parseFloat(coxa)||null,
+    imc: peso&&altura ? parseFloat((parseFloat(peso)/Math.pow(parseFloat(altura)/100,2)).toFixed(1)) : null,
+    pct_gordura: parsed.pct_gordura, faixa_composicao: parsed.faixa_composicao,
+    desc_composicao: parsed.desc_composicao, analise_postural: parsed.analise_postural,
+    score: parsed.score, zona: parsed.zona, nivel: parsed.nivel,
+    analise: parsed.analise, pontos_atencao: parsed.pontos_atencao,
+    habitos_sono: habSono||null, habitos_agua: habAgua||null,
+    habitos_estresse: parseInt(habEstresse), habitos_alimentacao: parseInt(habAlim),
+    habitos_vitalidade: parseInt(habVital),
+    liberado: false
+  }).select().single();
+  if (saved) avaliacaoAtualId = saved.id;
+  btn.disabled = false; btn.textContent = '⚡ Gerar análise completa com IA';
+}
+
+function getFaixa(pct, sexo) {
+  if (!pct) return null;
+  if (sexo === 'F') { if(pct<20)return'Atlética'; if(pct<28)return'Fitness'; if(pct<36)return'Aceitável'; return'Aumentada'; }
+  else { if(pct<10)return'Atlética'; if(pct<18)return'Fitness'; if(pct<25)return'Aceitável'; return'Aumentada'; }
+}
+
+function renderResultado(parsed) {
+  let html = `ANÁLISE INTERNA\n\n${parsed.analise}\n\n`;
+  if (parsed.analise_postural) html += `ANÁLISE POSTURAL (IA)\n${parsed.analise_postural}\n\n`;
+  if (parsed.pontos_atencao?.length) { html += 'PONTOS DE ATENÇÃO\n'; parsed.pontos_atencao.forEach(p => { html += `▸ ${p}\n`; }); }
+  document.getElementById('ai-output').textContent = html;
+  document.getElementById('score-composicao-section').style.display = 'block';
+  const offset = 339 - (parsed.score/100)*339;
+  setTimeout(() => { document.getElementById('score-circle').style.strokeDashoffset = offset; }, 100);
+  let count = 0;
+  const iv = setInterval(() => { count = Math.min(count+2, parsed.score); document.getElementById('score-display').textContent = count; if(count>=parsed.score) clearInterval(iv); }, 30);
+  document.getElementById('score-titulo').textContent = `${parsed.nivel} · ${parsed.zona}`;
+  document.getElementById('score-subtitulo').textContent = parsed.descricao_nivel;
+  const cd = document.getElementById('composicao-display');
+  if (parsed.pct_gordura) {
+    cd.classList.add('show');
+    document.getElementById('composicao-pct').textContent = `${parsed.pct_gordura}%`;
+    const badge = document.getElementById('composicao-faixa-badge');
+    badge.textContent = parsed.faixa_composicao || '—';
+    badge.className = 'composicao-faixa ' + ({Atlética:'faixa-atletica',Fitness:'faixa-fitness',Aceitável:'faixa-aceitavel',Aumentada:'faixa-aumentada'}[parsed.faixa_composicao]||'faixa-fitness');
+    document.getElementById('composicao-desc').textContent = parsed.desc_composicao || '';
+  } else cd.classList.remove('show');
+}
+
+async function liberarParaPessoa() {
+  if (!avaliacaoAtualId) { alert('Salve a avaliação primeiro.'); return; }
+  const { error } = await db.from('avaliacoes').update({liberado:true}).eq('id', avaliacaoAtualId);
+  if (!error) {
+    document.getElementById('liberado-msg').style.display = 'block';
+    document.getElementById('btn-liberar').disabled = true;
+    await carregarPainel();
+  }
+}
+
+// ══════════════════════════════
+// HISTÓRICO
+// ══════════════════════════════
+async function carregarHistorico() {
+  const pessoaId = document.getElementById('sel-hist-pessoa').value;
+  if (!pessoaId) return;
+  const { data: avals } = await db.from('avaliacoes').select('*').eq('aluna_id', pessoaId).order('created_at');
+  if (!avals || avals.length === 0) {
+    document.getElementById('hist-lista-avaliacoes').innerHTML = '<div style="color:var(--gray);font-size:12px">Nenhuma avaliação registrada.</div>';
+    return;
+  }
+  const ultima = avals[avals.length-1];
+  renderPiramide(ultima.zona, ultima.score);
+
+  const gorduraData = avals.filter(a => a.pct_gordura);
+  const gchart = document.getElementById('composicao-chart');
+  const glabels = document.getElementById('composicao-labels');
+  if (gorduraData.length > 0) {
+    const maxG = Math.max(...gorduraData.map(a=>a.pct_gordura));
+    gchart.innerHTML = gorduraData.map((a,i) => `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="font-size:9px;font-weight:700;color:var(--lime)">${a.pct_gordura}%</div>
+        <div style="flex:1;width:100%;background:var(--surface2);border-radius:4px;overflow:hidden;display:flex;align-items:flex-end">
+          <div style="width:100%;height:${(a.pct_gordura/maxG)*100}%;background:${i===gorduraData.length-1?'var(--lime)':'#3a5200'};border-radius:4px"></div>
+        </div>
+      </div>`).join('');
+    glabels.innerHTML = gorduraData.map(a => `<div style="flex:1;font-size:8px;color:var(--gray);text-align:center;font-weight:600">${a.semana||'—'}</div>`).join('');
+    const primeiro = gorduraData[0];
+    const diff = (ultima.pct_gordura - primeiro.pct_gordura).toFixed(1);
+    document.getElementById('composicao-comparativo').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:12px">
+        <div><div style="font-size:22px;font-weight:900;color:var(--gray)">${primeiro.pct_gordura}%</div><div style="font-size:10px;color:var(--gray)">${primeiro.semana||'Início'}</div></div>
+        <div style="font-size:20px;color:var(--lime)">→</div>
+        <div><div style="font-size:22px;font-weight:900;color:var(--lime)">${ultima.pct_gordura}%</div><div style="font-size:10px;color:var(--gray)">${ultima.semana||'Atual'}</div></div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:${diff<0?'var(--lime)':'var(--red)'}">${diff>0?'+':''}${diff} pontos percentuais</div>`;
+  }
+
+  document.getElementById('hist-lista-avaliacoes').innerHTML = [...avals].reverse().map(a => `
+    <div class="hist-avaliacao-item">
+      <div>
+        <div style="font-size:12px;font-weight:700">${a.semana||'Avaliação'}</div>
+        <div style="font-size:10px;color:var(--gray)">${new Date(a.created_at).toLocaleDateString('pt-BR')}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        ${a.pct_gordura ? `<div style="font-size:12px;font-weight:700;color:var(--lime)">${a.pct_gordura}%</div>` : ''}
+        <div style="font-size:11px;color:var(--gray)">${a.zona||'—'} · ${a.score||'—'} pts</div>
+        ${a.liberado ? '<span style="font-size:9px;color:#4caf50;font-weight:700">LIBERADO</span>' : '<span style="font-size:9px;color:var(--amber);font-weight:700">RASCUNHO</span>'}
+      </div>
+    </div>`).join('');
+}
+
+function renderPiramide(zona, score) {
+  const labels = {Z1:'Z1 · Alerta',Z2:'Z2 · Atenção',Z3:'Z3 · Em Equilíbrio',Z4:'Z4 · Alta Performance',Z5:'Z5 · Excelência'};
+  const classes = {Z5:'pz5',Z4:'pz4',Z3:'pz3',Z2:'pz2',Z1:'pz1'};
+  const container = document.getElementById('pyramid-container');
+  container.innerHTML = ['Z5','Z4','Z3','Z2','Z1'].map(z => `
+    <div class="pyramid-level ${classes[z]} ${z!==zona?'dim':''}" style="position:relative">
+      ${labels[z]}${z===zona?`<span class="pyramid-current-tag">Aqui · ${score} pts</span>`:''}
+    </div>`).join('');
+}
+</script>
+</body>
+</html>
