@@ -80,6 +80,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .faixa-aceitavel{background:rgba(255,193,7,0.2);border:1px solid var(--amber);color:var(--amber);}
 .faixa-aumentada{background:rgba(255,68,68,0.2);border:1px solid var(--red);color:var(--red);}
 .composicao-desc{font-size:11px;color:var(--gray);margin-top:8px;line-height:1.5;}
+.massa-magra-grid.show{display:grid!important;}
 .pyramid-container{display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 0;}
 .pyramid-level{height:36px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:11px;font-weight:900;letter-spacing:0.04em;color:var(--bg);transition:all 0.3s;position:relative;text-transform:uppercase;}
 .pyramid-level.dim{opacity:0.22;}
@@ -281,6 +282,10 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
           <div class="composicao-pct" id="composicao-pct">—</div>
           <div id="composicao-faixa-badge" class="composicao-faixa faixa-fitness">—</div>
           <div class="composicao-desc" id="composicao-desc">—</div>
+          <div id="massa-magra-row" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);grid-template-columns:1fr 1fr;gap:12px" class="massa-magra-grid">
+            <div><div style="font-size:20px;font-weight:900;color:var(--white)" id="massa-magra-valor">—</div><div style="font-size:9px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px">Massa magra <span id="massa-magra-pct" style="color:var(--gray2)"></span></div></div>
+            <div><div style="font-size:20px;font-weight:900;color:var(--white)" id="massa-gorda-valor">—</div><div style="font-size:9px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px">Massa gorda <span id="massa-gorda-pct" style="color:var(--gray2)"></span></div></div>
+          </div>
           <div style="font-size:9px;color:var(--gray2);margin-top:8px">Estimativa por visão computacional. Precisão comparável à bioimpedância (CCC ≥ 0,96 vs DXA). Não substitui avaliação clínica.</div>
         </div>
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
@@ -597,12 +602,13 @@ INSTRUÇÕES:
 1. SCORE 0–100: estado geral (físico + hábitos). Primeira avaliação = linha de base, não é negativo.
 2. ZONA: Z1(0-30 Alerta), Z2(31-50 Atenção), Z3(51-70 Equilíbrio), Z4(71-85 Alta Performance), Z5(86-100 Excelência).
 3. % GORDURA: número específico (ex: 26.8). Faixas femininas: Atlética <20%, Fitness 20-28%, Aceitável 29-35%, Aumentada >35%. Faixas masculinas: Atlética <10%, Fitness 10-18%, Aceitável 18-25%, Aumentada >25%. Retorne null se dados insuficientes.
-4. ANÁLISE POSTURAL: resumo objetivo do que foi observado nas fotos.
-5. ANÁLISE GERAL: 3–4 parágrafos, direto, técnico, sem clichês. Cite dados específicos.
-6. PONTOS DE ATENÇÃO: 2–3 itens concretos e acionáveis.
+4. MASSA MAGRA: se peso foi informado e % de gordura foi calculado, calcule massa_gorda_kg = peso × (pct_gordura/100), e massa_magra_kg = peso − massa_gorda_kg. Ambos com 1 casa decimal. Se peso não foi informado ou pct_gordura é null, retorne ambos como null.
+5. ANÁLISE POSTURAL: resumo objetivo do que foi observado nas fotos.
+6. ANÁLISE GERAL: 3–4 parágrafos, direto, técnico, sem clichês. Cite dados específicos.
+7. PONTOS DE ATENÇÃO: 2–3 itens concretos e acionáveis.
 
 RESPONDA SOMENTE em JSON válido, sem markdown:
-{"score":62,"zona":"Z3","nivel":"Em Equilíbrio","descricao_nivel":"texto curto","pct_gordura":26.8,"faixa_composicao":"Aceitável","desc_composicao":"observação das fotos","analise_postural":"ombros nivelados, leve hiperlordose lombar, joelhos alinhados","analise":"texto","pontos_atencao":["item1","item2"]}`;
+{"score":62,"zona":"Z3","nivel":"Em Equilíbrio","descricao_nivel":"texto curto","pct_gordura":26.8,"faixa_composicao":"Aceitável","desc_composicao":"observação das fotos","massa_magra_kg":51.2,"massa_gorda_kg":18.8,"analise_postural":"ombros nivelados, leve hiperlordose lombar, joelhos alinhados","analise":"texto","pontos_atencao":["item1","item2"]}`;
 
   const contentBlocks = [];
   Object.values(uploadedPhotos).forEach(dataUrl => {
@@ -630,10 +636,14 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
     if (alturaNorm && alturaNorm < 3) alturaNorm = alturaNorm * 100;
     const imc = peso && alturaNorm ? peso / Math.pow(alturaNorm/100,2) : null;
     const pct = imc && imc < 80 ? Math.round((1.2*imc + 0.23*(parseInt(idade)||35) - 10.8*(sexo==='M'?1:0) - 5.4)*10)/10 : null;
+    const pesoNum = parseFloat(peso);
+    const massaGorda = (pct && pesoNum) ? Math.round(pesoNum * (pct/100) * 10)/10 : null;
+    const massaMagra = (pct && pesoNum) ? Math.round((pesoNum - massaGorda) * 10)/10 : null;
     parsed = {
       score:55, zona:'Z3', nivel:'Em Equilíbrio',
       descricao_nivel:'Modo offline — API não conectada. Configure a chave no Netlify.',
       pct_gordura: pct, faixa_composicao: getFaixa(pct, sexo),
+      massa_magra_kg: massaMagra, massa_gorda_kg: massaGorda,
       desc_composicao: pct ? 'Estimativa por equação de Deurenberg (sem fotos/API).' : null,
       analise_postural: temFotos ? 'API não conectada — análise postural indisponível.' : null,
       analise:'Análise gerada em modo offline.\n\nPara análise completa com visão computacional (% de gordura por foto e análise postural automática), configure a variável ANTHROPIC_API_KEY no Netlify e faça o redeploy.',
@@ -650,6 +660,7 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
     abdomen: parseFloat(abdomen)||null, braco: parseFloat(braco)||null, coxa: parseFloat(coxa)||null,
     imc: peso&&altura ? parseFloat((parseFloat(peso)/Math.pow(parseFloat(altura)/100,2)).toFixed(1)) : null,
     pct_gordura: parsed.pct_gordura, faixa_composicao: parsed.faixa_composicao,
+    massa_magra_kg: parsed.massa_magra_kg, massa_gorda_kg: parsed.massa_gorda_kg,
     desc_composicao: parsed.desc_composicao, analise_postural: parsed.analise_postural,
     score: parsed.score, zona: parsed.zona, nivel: parsed.nivel,
     analise: parsed.analise, pontos_atencao: parsed.pontos_atencao,
@@ -688,6 +699,17 @@ function renderResultado(parsed) {
     badge.textContent = parsed.faixa_composicao || '—';
     badge.className = 'composicao-faixa ' + ({Atlética:'faixa-atletica',Fitness:'faixa-fitness',Aceitável:'faixa-aceitavel',Aumentada:'faixa-aumentada'}[parsed.faixa_composicao]||'faixa-fitness');
     document.getElementById('composicao-desc').textContent = parsed.desc_composicao || '';
+    const massaRow = document.getElementById('massa-magra-row');
+    if (parsed.massa_magra_kg && parsed.massa_gorda_kg) {
+      massaRow.classList.add('show');
+      const pctMagra = (100 - parsed.pct_gordura).toFixed(1);
+      document.getElementById('massa-magra-valor').textContent = `${parsed.massa_magra_kg} kg`;
+      document.getElementById('massa-magra-pct').textContent = `(${pctMagra}%)`;
+      document.getElementById('massa-gorda-valor').textContent = `${parsed.massa_gorda_kg} kg`;
+      document.getElementById('massa-gorda-pct').textContent = `(${parsed.pct_gordura}%)`;
+    } else {
+      massaRow.classList.remove('show');
+    }
   } else cd.classList.remove('show');
 }
 
