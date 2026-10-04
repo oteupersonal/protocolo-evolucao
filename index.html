@@ -81,6 +81,44 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .faixa-aumentada{background:rgba(255,68,68,0.2);border:1px solid var(--red);color:var(--red);}
 .composicao-desc{font-size:11px;color:var(--gray);margin-top:8px;line-height:1.5;}
 .massa-magra-grid.show{display:grid!important;}
+.rings-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;}
+.rings-wrap{position:relative;width:130px;height:130px;flex-shrink:0;}
+.rings-wrap svg{width:100%;height:100%;transform:rotate(-90deg);}
+.rings-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.rings-score{font-size:24px;font-weight:900;color:var(--lime);line-height:1;}
+.rings-lbl{font-size:8px;font-weight:700;letter-spacing:0.12em;color:var(--gray);text-transform:uppercase;margin-top:2px;}
+.ring-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;font-size:11px;padding:6px 0;}
+.ring-bullet{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ring-name{font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;}
+.ring-desc{color:var(--gray);font-size:10px;}
+.ring-val{font-weight:900;text-align:right;white-space:nowrap;}
+@media(max-width:600px){.rings-card{grid-template-columns:1fr;justify-items:center;text-align:center}.ring-row{grid-template-columns:1fr;text-align:center}}
+.delta-mini{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;}
+.delta-mini-lbl{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;}
+.delta-mini-val{font-size:15px;font-weight:900;}
+.delta-mini-sub{font-size:10px;font-weight:700;margin-top:2px;}
+
+@media print {
+  @page { margin: 14mm; }
+  body { background: #ffffff !important; color: #111111 !important; }
+  nav, .no-print, .page-tabs { display: none !important; }
+  .page { display: none !important; padding: 0 !important; max-width: 100% !important; }
+  #page-relatorio.page { display: block !important; }
+  .tab-content { display: block !important; page-break-inside: avoid; }
+  .card, .rings-card, .hero, #page-relatorio > div[style*="border-color"] {
+    background: #ffffff !important; border: 1px solid #d0d0d0 !important;
+    box-shadow: none !important; page-break-inside: avoid; margin-bottom: 14px !important;
+  }
+  .card-title { color: #6b7a00 !important; }
+  #rel-score-num, #rel-nivel, .comp-pct, .hero-num { color: #6b9b00 !important; }
+  #rel-headline, #rel-tag, #rel-assinatura { color: #333333 !important; }
+  .rel-faixa-badge, .composicao-faixa { background: #f0f8d8 !important; color: #4a5c00 !important; border-color: #a8c94a !important; }
+  .ai-output { background: #fafafa !important; border: 1px solid #d0d0d0 !important; color: #222222 !important; }
+  .delta-mini { background: #f7f7f7 !important; border: 1px solid #e0e0e0 !important; }
+  svg circle[stroke="#c8f000"], svg circle[id*="ring"], svg circle[id*="score-circle"] { stroke: #7a9900 !important; }
+  .pyramid-level { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
 .pyramid-container{display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 0;}
 .pyramid-level{height:36px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:11px;font-weight:900;letter-spacing:0.04em;color:var(--bg);transition:all 0.3s;position:relative;text-transform:uppercase;}
 .pyramid-level.dim{opacity:0.22;}
@@ -290,7 +328,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         </div>
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
           <button class="btn btn-gold" id="btn-liberar" onclick="liberarParaPessoa()">🔓 Liberar para avaliado(a)</button>
-          <button class="btn btn-ghost" onclick="showPage('historico')">Ver evolução</button>
+          <button class="btn btn-primary" onclick="abrirRelatorio(avaliacaoAtualId)">📄 Ver Relatório Completo</button>
         </div>
         <div id="liberado-msg" style="display:none;margin-top:12px" class="alert alert-success">✅ Relatório salvo e liberado!</div>
       </div>
@@ -333,6 +371,165 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     <button class="btn btn-ghost" onclick="carregarPessoasLista()">↻ Atualizar</button>
   </div>
   <div class="pessoa-grid" id="pessoas-list"><div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">Nenhum avaliado cadastrado</div><div class="empty-sub">Clique em "+ Novo avaliado" para começar.</div></div></div>
+</div>
+
+<!-- RELATÓRIO -->
+<div id="page-relatorio" class="page">
+  <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px">
+    <button class="btn btn-ghost" onclick="showPage('historico')">← Voltar</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨️ Exportar PDF</button>
+  </div>
+
+  <div id="rel-header" style="text-align:center;margin-bottom:20px">
+    <div style="display:inline-block;background:var(--lime-dim);border:1px solid var(--lime);color:var(--lime);font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:10px" id="rel-tag">Carregando...</div>
+    <div id="rel-headline" style="font-size:15px;color:var(--white);line-height:1.6;max-width:480px;margin:0 auto;font-weight:700"></div>
+    <div id="rel-assinatura" style="font-size:10px;color:var(--gray);margin-top:12px;letter-spacing:0.02em">Thiago Santos · CREF 6104-G/CE · Apoio técnico — não substitui avaliação clínica</div>
+  </div>
+
+  <!-- Hero score -->
+  <div class="card" style="display:flex;align-items:center;gap:20px;border-color:var(--lime)">
+    <div style="position:relative;width:100px;height:100px;flex-shrink:0">
+      <svg width="100" height="100" viewBox="0 0 100 100" style="transform:rotate(-90deg)">
+        <circle cx="50" cy="50" r="42" fill="none" stroke="#1a1a1a" stroke-width="8"/>
+        <circle id="rel-score-circle" cx="50" cy="50" r="42" fill="none" stroke="#c8f000" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" stroke-linecap="round"/>
+      </svg>
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div id="rel-score-num" style="font-size:26px;font-weight:900;color:var(--lime);line-height:1">—</div>
+        <div style="font-size:8px;color:var(--gray);letter-spacing:0.1em;text-transform:uppercase">pontos</div>
+      </div>
+    </div>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div id="rel-nivel" style="font-size:16px;font-weight:900">—</div>
+        <div id="rel-score-trend" style="font-size:11px;font-weight:700"></div>
+      </div>
+      <div id="rel-desc-nivel" style="font-size:11px;color:var(--gray);line-height:1.4;margin-top:2px">—</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
+        <div id="rel-zona-tag" style="display:inline-block;background:var(--lime-dim);border:1px solid var(--lime);color:var(--lime);font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px">—</div>
+        <svg id="rel-score-sparkline" width="70" height="24" viewBox="0 0 70 24" style="display:none"></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tríade de indicadores do ciclo -->
+  <div class="rings-card">
+    <div class="rings-wrap">
+      <svg viewBox="0 0 130 130">
+        <circle cx="65" cy="65" r="56" fill="none" stroke="#1a1a1a" stroke-width="9"/>
+        <circle cx="65" cy="65" r="42" fill="none" stroke="#1a1a1a" stroke-width="9"/>
+        <circle cx="65" cy="65" r="28" fill="none" stroke="#1a1a1a" stroke-width="9"/>
+        <circle id="ring-comp" cx="65" cy="65" r="56" fill="none" stroke="#c8f000" stroke-width="9" stroke-linecap="round" stroke-dasharray="352" stroke-dashoffset="352"/>
+        <circle id="ring-treino" cx="65" cy="65" r="42" fill="none" stroke="#4da6ff" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"/>
+        <circle id="ring-sono" cx="65" cy="65" r="28" fill="none" stroke="#ffc107" stroke-width="9" stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="176"/>
+      </svg>
+      <div class="rings-center">
+        <div class="rings-score" id="rings-media">—</div>
+        <div class="rings-lbl">Média</div>
+      </div>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:8px">Indicadores do ciclo</div>
+      <div class="ring-row"><span class="ring-bullet" style="background:#c8f000"></span><span class="ring-name">Composição</span><span class="ring-val" id="ring-comp-val" style="color:#c8f000">—</span></div>
+      <div class="ring-row"><span class="ring-bullet" style="background:#4da6ff"></span><span class="ring-name">Vitalidade</span><span class="ring-val" id="ring-treino-val" style="color:#4da6ff">—</span></div>
+      <div class="ring-row"><span class="ring-bullet" style="background:#ffc107"></span><span class="ring-name">Sono &amp; Hábitos</span><span class="ring-val" id="ring-sono-val" style="color:#ffc107">—</span></div>
+    </div>
+  </div>
+
+  <div class="page-tabs" id="rel-tabs">
+    <button class="page-tab active" data-reltab="rel-tab-geral">Visão Geral</button>
+    <button class="page-tab" data-reltab="rel-tab-medidas">Medidas</button>
+    <button class="page-tab" data-reltab="rel-tab-postura">Postura</button>
+    <button class="page-tab" data-reltab="rel-tab-habitos">Hábitos</button>
+    <button class="page-tab" data-reltab="rel-tab-evolucao">Evolução</button>
+  </div>
+
+  <!-- TAB: VISÃO GERAL -->
+  <div id="rel-tab-geral" class="tab-content active">
+    <div class="card">
+      <div class="card-title">Composição corporal (IA)</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap">
+        <div style="position:relative;width:140px;height:140px;flex-shrink:0">
+          <svg width="140" height="140" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r="60" fill="none" stroke="#1a1a1a" stroke-width="18"/>
+            <circle id="rel-donut-magra" cx="75" cy="75" r="60" fill="none" stroke="#c8f000" stroke-width="18" stroke-dasharray="377" stroke-dashoffset="377" stroke-linecap="round" transform="rotate(-90 75 75)"/>
+            <circle id="rel-donut-circle" cx="75" cy="75" r="60" fill="none" stroke="#ff4444" stroke-width="18" stroke-dasharray="377" stroke-dashoffset="377" stroke-linecap="round" transform="rotate(-90 75 75)"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div id="rel-pct-gordura" style="font-size:26px;font-weight:900;color:var(--lime);line-height:1">—</div>
+            <div style="font-size:8px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px">Gordura</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px" id="rel-massa-legend">
+          <div style="display:none" id="rel-massa-legend-empty">Dados de massa não disponíveis nesta avaliação.</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:14px"><div id="rel-faixa-badge" class="composicao-faixa" style="display:inline-block">—</div></div>
+      <div id="rel-desc-composicao" style="font-size:11px;color:var(--gray);margin-top:10px;text-align:center;line-height:1.5"></div>
+    </div>
+
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:linear-gradient(135deg,rgba(77,166,255,0.15),rgba(77,166,255,0.05));border:1px solid rgba(77,166,255,0.3);border-radius:12px;padding:14px 16px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray);margin-bottom:6px">IMC</div>
+          <div id="rel-imc-valor" style="font-size:22px;font-weight:900;color:#4da6ff">—</div>
+          <div id="rel-imc-classe" style="font-size:10px;color:var(--gray);font-weight:600">—</div>
+        </div>
+        <div style="background:linear-gradient(135deg,rgba(184,146,255,0.15),rgba(184,146,255,0.05));border:1px solid rgba(184,146,255,0.3);border-radius:12px;padding:14px 16px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray);margin-bottom:6px">Cintura/Quadril</div>
+          <div id="rel-rcq-valor" style="font-size:22px;font-weight:900;color:#b892ff">—</div>
+          <div id="rel-rcq-classe" style="font-size:10px;color:var(--gray);font-weight:600">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: MEDIDAS -->
+  <div id="rel-tab-medidas" class="tab-content">
+    <div class="card">
+      <div class="card-title">Medidas registradas</div>
+      <div id="rel-medidas-lista"></div>
+    </div>
+  </div>
+
+  <!-- TAB: POSTURA -->
+  <div id="rel-tab-postura" class="tab-content">
+    <div class="card">
+      <div class="card-title">Análise postural (IA)</div>
+      <div id="rel-postura-texto" style="font-size:12px;line-height:1.7;color:var(--white);white-space:pre-wrap">—</div>
+    </div>
+  </div>
+
+  <!-- TAB: HÁBITOS -->
+  <div id="rel-tab-habitos" class="tab-content">
+    <div class="card">
+      <div class="card-title">Hábitos de vida</div>
+      <div id="rel-habitos-conteudo"></div>
+    </div>
+  </div>
+
+  <!-- TAB: EVOLUÇÃO -->
+  <div id="rel-tab-evolucao" class="tab-content">
+    <div class="card" id="rel-deltas-card" style="display:none">
+      <div class="card-title">Comparativo com avaliação anterior</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" id="rel-deltas-grid"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Pirâmide de Saúde Funcional</div>
+      <div class="pyramid-container" id="rel-pyramid"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">% de gordura ao longo do tempo</div>
+      <div id="rel-evo-chart" style="display:flex;align-items:flex-end;gap:8px;height:90px;margin-bottom:8px"></div>
+      <div id="rel-evo-labels" style="display:flex;gap:8px"></div>
+    </div>
+  </div>
+
+  <div class="card-title" style="margin-top:8px">Análise técnica completa</div>
+  <div class="ai-output" id="rel-analise-completa">—</div>
+
+  <div style="font-size:9px;color:var(--gray2);text-align:center;margin-top:20px;line-height:1.6">
+    Estimativa por visão computacional. Precisão comparável à bioimpedância (CCC ≥ 0,96 vs DXA) segundo estudo publicado na Nature Digital Medicine (2025). Não substitui avaliação clínica presencial.
+  </div>
 </div>
 
 <script>
@@ -401,6 +598,15 @@ function showHistTab(tabId) {
   if (btn) btn.classList.add('active');
 }
 document.querySelectorAll('#hist-tabs .page-tab').forEach(btn => btn.addEventListener('click', () => showHistTab(btn.dataset.tab)));
+
+function showRelTab(tabId) {
+  document.querySelectorAll('#page-relatorio .tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#rel-tabs .page-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  const btn = document.querySelector(`#rel-tabs [data-reltab="${tabId}"]`);
+  if (btn) btn.classList.add('active');
+}
+document.querySelectorAll('#rel-tabs .page-tab').forEach(btn => btn.addEventListener('click', () => showRelTab(btn.dataset.reltab)));
 
 // ══════════════════════════════
 // MODAL
@@ -762,7 +968,7 @@ async function carregarHistorico() {
   }
 
   document.getElementById('hist-lista-avaliacoes').innerHTML = [...avals].reverse().map(a => `
-    <div class="hist-avaliacao-item">
+    <div class="hist-avaliacao-item" style="cursor:pointer" onclick="abrirRelatorio('${a.id}')">
       <div>
         <div style="font-size:12px;font-weight:700">${a.semana||'Avaliação'}</div>
         <div style="font-size:10px;color:var(--gray)">${new Date(a.created_at).toLocaleDateString('pt-BR')}</div>
@@ -771,18 +977,355 @@ async function carregarHistorico() {
         ${a.pct_gordura ? `<div style="font-size:12px;font-weight:700;color:var(--lime)">${a.pct_gordura}%</div>` : ''}
         <div style="font-size:11px;color:var(--gray)">${a.zona||'—'} · ${a.score||'—'} pts</div>
         ${a.liberado ? '<span style="font-size:9px;color:#4caf50;font-weight:700">LIBERADO</span>' : '<span style="font-size:9px;color:var(--amber);font-weight:700">RASCUNHO</span>'}
+        <span style="color:var(--gray);font-size:12px">›</span>
       </div>
     </div>`).join('');
 }
 
-function renderPiramide(zona, score) {
+function renderPiramide(zona, score, containerId) {
   const labels = {Z1:'Z1 · Alerta',Z2:'Z2 · Atenção',Z3:'Z3 · Em Equilíbrio',Z4:'Z4 · Alta Performance',Z5:'Z5 · Excelência'};
   const classes = {Z5:'pz5',Z4:'pz4',Z3:'pz3',Z2:'pz2',Z1:'pz1'};
-  const container = document.getElementById('pyramid-container');
+  const container = document.getElementById(containerId || 'pyramid-container');
+  if (!container) return;
   container.innerHTML = ['Z5','Z4','Z3','Z2','Z1'].map(z => `
     <div class="pyramid-level ${classes[z]} ${z!==zona?'dim':''}" style="position:relative">
       ${labels[z]}${z===zona?`<span class="pyramid-current-tag">Aqui · ${score} pts</span>`:''}
     </div>`).join('');
+}
+
+// ══════════════════════════════
+// RELATÓRIO COMPLETO
+// ══════════════════════════════
+function getFaixaClasse(faixa) {
+  return {Atlética:'faixa-atletica',Fitness:'faixa-fitness',Aceitável:'faixa-aceitavel',Aumentada:'faixa-aumentada'}[faixa] || 'faixa-fitness';
+}
+
+function calcularIMCManual(peso, altura) {
+  if (!peso || !altura) return null;
+  let alt = altura < 3 ? altura * 100 : altura;
+  const imc = peso / Math.pow(alt/100, 2);
+  if (!isFinite(imc) || imc <= 0 || imc > 80) return null;
+  return imc;
+}
+
+function classificarIMC(imc) {
+  if (imc < 18.5) return 'Abaixo do peso';
+  if (imc < 25) return 'Adequado';
+  if (imc < 30) return 'Sobrepeso';
+  return 'Obesidade';
+}
+
+async function abrirRelatorio(avaliacaoId) {
+  if (!avaliacaoId) { alert('Gere ou selecione uma avaliação primeiro.'); return; }
+  showPage('relatorio');
+
+  const { data: a, error } = await db.from('avaliacoes').select('*, alunas(nome, idade, sexo)').eq('id', avaliacaoId).single();
+  if (error || !a) {
+    document.getElementById('rel-headline').textContent = 'Não foi possível carregar esta avaliação.';
+    return;
+  }
+
+  const nome = a.alunas?.nome || 'Avaliado(a)';
+  const idade = a.alunas?.idade || a.idade || '—';
+  const primeiroNome = nome.split(' ')[0];
+
+  // Header
+  document.getElementById('rel-tag').textContent = `${nome} · ${idade} anos`;
+
+  // Headline: puxa gatilho de progresso real quando há avaliação anterior; senão, foca na linha de base
+  const { data: histParaHeadline } = await db.from('avaliacoes')
+    .select('pct_gordura, created_at').eq('aluna_id', a.aluna_id).order('created_at');
+  const historicoOrdenado = histParaHeadline || [];
+  const posicaoAtual = historicoOrdenado.findIndex(h => h.created_at === a.created_at);
+  const avaliacaoAnteriorHeadline = posicaoAtual > 0 ? historicoOrdenado[posicaoAtual - 1] : null;
+
+  let headline;
+  if (avaliacaoAnteriorHeadline && a.pct_gordura && avaliacaoAnteriorHeadline.pct_gordura) {
+    const diffGordura = +(a.pct_gordura - avaliacaoAnteriorHeadline.pct_gordura).toFixed(1);
+    if (diffGordura < -0.3) {
+      headline = `${primeiroNome}, sua composição evoluiu: ${Math.abs(diffGordura)} ponto${Math.abs(diffGordura)>=2?'s':''} percentual a menos de gordura desde a última avaliação. Você está em ${a.zona || '—'}${a.faixa_composicao ? `, faixa ${a.faixa_composicao}` : ''}.`;
+    } else if (diffGordura > 0.3) {
+      headline = `${primeiroNome}, sua composição está em ${a.zona || '—'}${a.faixa_composicao ? `, faixa ${a.faixa_composicao}` : ''}. Pequena variação desde a última avaliação — é um bom momento para revisar consistência de treino e hábitos.`;
+    } else {
+      headline = `${primeiroNome}, sua composição se manteve estável em ${a.zona || '—'}${a.faixa_composicao ? `, faixa ${a.faixa_composicao}` : ''} desde a última avaliação — sinal de consistência.`;
+    }
+  } else {
+    headline = `${primeiroNome}, esta é sua linha de base: ${a.zona || '—'}${a.faixa_composicao ? `, composição ${a.faixa_composicao}` : ''}. A partir daqui, cada avaliação mostra sua evolução real.`;
+  }
+  if (a.pontos_atencao?.[0]) {
+    headline += ` Ponto de maior alavancagem agora: ${a.pontos_atencao[0].replace(/^./, c => c.toLowerCase())}`;
+  }
+  document.getElementById('rel-headline').textContent = headline;
+
+  // Score ring
+  const score = a.score || 0;
+  const offset = 264 - (score/100)*264;
+  setTimeout(() => { document.getElementById('rel-score-circle').style.strokeDashoffset = offset; }, 100);
+  document.getElementById('rel-score-num').textContent = score;
+  document.getElementById('rel-nivel').textContent = a.nivel || '—';
+  document.getElementById('rel-desc-nivel').textContent = a.descricao_nivel || '';
+  document.getElementById('rel-zona-tag').textContent = a.zona ? `Zona ${a.zona.replace('Z','')} · ${a.zona}` : '—';
+
+  // Sparkline de tendência do score (estilo Apple Health / Whoop) — usa até as últimas 6 avaliações
+  const { data: histScoreSpark } = await db.from('avaliacoes')
+    .select('score, created_at').eq('aluna_id', a.aluna_id).order('created_at');
+  const scoresValidos = (histScoreSpark || []).filter(h => h.score !== null).slice(-6);
+  const trendEl = document.getElementById('rel-score-trend');
+  const sparkSvg = document.getElementById('rel-score-sparkline');
+  if (scoresValidos.length >= 2) {
+    const vals = scoresValidos.map(h => h.score);
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const range = max - min || 1;
+    const pontos = vals.map((v, i) => {
+      const x = (i / (vals.length - 1)) * 68 + 1;
+      const y = 22 - ((v - min) / range) * 20;
+      return `${x},${y}`;
+    }).join(' ');
+    sparkSvg.innerHTML = `<polyline points="${pontos}" fill="none" stroke="var(--lime)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    sparkSvg.style.display = 'block';
+    const diff = vals[vals.length-1] - vals[vals.length-2];
+    if (diff > 0) trendEl.innerHTML = `<span style="color:var(--lime)">↗ +${diff}</span>`;
+    else if (diff < 0) trendEl.innerHTML = `<span style="color:var(--red)">↘ ${diff}</span>`;
+    else trendEl.innerHTML = `<span style="color:var(--gray)">→ estável</span>`;
+  } else {
+    sparkSvg.style.display = 'none';
+    trendEl.innerHTML = '';
+  }
+
+  // Composição (donut de 2 fatias: gordura vermelha + magra lima, como pizza chart real)
+  if (a.pct_gordura) {
+    const circunfDonut = 377;
+    const gorduraLen = (a.pct_gordura/100) * circunfDonut;
+    const magraLen = circunfDonut - gorduraLen;
+    const circGordura = document.getElementById('rel-donut-circle');
+    const circMagra = document.getElementById('rel-donut-magra');
+    setTimeout(() => {
+      // Fatia vermelha (gordura): começa em 0°
+      circGordura.setAttribute('stroke-dasharray', `${gorduraLen} ${circunfDonut}`);
+      circGordura.style.strokeDashoffset = 0;
+      // Fatia lima (magra): começa logo após a fatia de gordura terminar
+      circMagra.setAttribute('stroke-dasharray', `${magraLen} ${circunfDonut}`);
+      circMagra.style.strokeDashoffset = -gorduraLen;
+    }, 100);
+    document.getElementById('rel-pct-gordura').textContent = `${a.pct_gordura}%`;
+    const badge = document.getElementById('rel-faixa-badge');
+    badge.textContent = a.faixa_composicao || '—';
+    badge.className = 'composicao-faixa ' + getFaixaClasse(a.faixa_composicao);
+    document.getElementById('rel-desc-composicao').textContent = a.desc_composicao || '';
+
+    const legend = document.getElementById('rel-massa-legend');
+    if (a.massa_magra_kg && a.massa_gorda_kg) {
+      const pctMagra = (100 - a.pct_gordura).toFixed(1);
+      legend.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px"><div style="width:10px;height:10px;border-radius:50%;background:var(--red)"></div><div><div style="font-size:16px;font-weight:900">${a.massa_gorda_kg} kg</div><div style="font-size:9px;color:var(--gray);text-transform:uppercase">Massa gorda · ${a.pct_gordura}%</div></div></div>
+        <div style="display:flex;align-items:center;gap:10px"><div style="width:10px;height:10px;border-radius:50%;background:var(--lime)"></div><div><div style="font-size:16px;font-weight:900">${a.massa_magra_kg} kg</div><div style="font-size:9px;color:var(--gray);text-transform:uppercase">Massa magra · ${pctMagra}%</div></div></div>`;
+    } else {
+      legend.innerHTML = '<div style="font-size:11px;color:var(--gray)">Massa magra/gorda não calculada (peso não informado).</div>';
+    }
+  } else {
+    document.getElementById('rel-pct-gordura').textContent = '—';
+    document.getElementById('rel-faixa-badge').textContent = 'Sem dados';
+    document.getElementById('rel-massa-legend').innerHTML = '<div style="font-size:11px;color:var(--gray)">% de gordura não estimado nesta avaliação.</div>';
+  }
+
+  // IMC e RCQ
+  const imc = a.imc || calcularIMCManual(a.peso, a.altura);
+  if (imc) {
+    document.getElementById('rel-imc-valor').textContent = imc.toFixed(1);
+    document.getElementById('rel-imc-classe').textContent = classificarIMC(imc);
+  } else {
+    document.getElementById('rel-imc-valor').textContent = '—';
+    document.getElementById('rel-imc-classe').textContent = 'Sem dados';
+  }
+  if (a.cintura && a.quadril) {
+    const rcq = (a.cintura / a.quadril);
+    document.getElementById('rel-rcq-valor').textContent = rcq.toFixed(2);
+    const sexo = a.sexo || a.alunas?.sexo || 'F';
+    const risco = sexo === 'F' ? (rcq < 0.85 ? 'Baixo risco' : 'Atenção') : (rcq < 0.9 ? 'Baixo risco' : 'Atenção');
+    document.getElementById('rel-rcq-classe').textContent = risco;
+  } else {
+    document.getElementById('rel-rcq-valor').textContent = '—';
+    document.getElementById('rel-rcq-classe').textContent = 'Sem dados';
+  }
+
+  // Medidas
+  const medidas = [
+    {nome:'Peso', val: a.peso, unit:'kg', max:120},
+    {nome:'Cintura', val: a.cintura, unit:'cm', max:130},
+    {nome:'Quadril', val: a.quadril, unit:'cm', max:130},
+    {nome:'Abdômen', val: a.abdomen, unit:'cm', max:130},
+    {nome:'Braço', val: a.braco, unit:'cm', max:50},
+    {nome:'Coxa', val: a.coxa, unit:'cm', max:80},
+  ].filter(m => m.val);
+  const medidasList = document.getElementById('rel-medidas-lista');
+  medidasList.innerHTML = medidas.length ? medidas.map(m => `
+    <div class="measure-row" style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:12px;font-weight:600;flex:1">${m.nome}</div>
+      <div style="flex:2;height:5px;background:var(--surface2);border-radius:3px;margin:0 12px;overflow:hidden"><div style="height:100%;background:var(--lime);border-radius:3px;width:${Math.min((m.val/m.max)*100,100)}%"></div></div>
+      <div style="font-size:13px;font-weight:900;color:var(--lime);width:60px;text-align:right">${m.val} ${m.unit}</div>
+    </div>`).join('') : '<div style="font-size:12px;color:var(--gray)">Nenhuma medida registrada nesta avaliação.</div>';
+
+  // Postura
+  document.getElementById('rel-postura-texto').textContent = a.analise_postural || 'Análise postural não disponível (sem fotos ou API não conectada nesta avaliação).';
+
+  // Hábitos — sistema semáforo (vermelho/laranja/verde), estilo ring de app de saúde
+  const habitosEl = document.getElementById('rel-habitos-conteudo');
+  const temHabitos = a.habitos_sono || a.habitos_agua || a.habitos_estresse || a.habitos_alimentacao || a.habitos_vitalidade;
+  if (temHabitos) {
+    // Normaliza cada hábito pra uma escala 0-10 onde 10 = ótimo, e classifica em semáforo
+    const habitosNormalizados = [];
+    if (a.habitos_sono) {
+      const sonoNum = parseFloat(a.habitos_sono);
+      const score10 = isNaN(sonoNum) ? null : Math.max(0, Math.min(10, (sonoNum / 8) * 10));
+      habitosNormalizados.push({icon:'😴', label:'Sono', display: a.habitos_sono + (isNaN(sonoNum)?'':'h'), score10, raw:a.habitos_sono});
+    }
+    if (a.habitos_agua) {
+      const aguaNum = parseFloat(a.habitos_agua);
+      const score10 = isNaN(aguaNum) ? null : Math.max(0, Math.min(10, (aguaNum / 2.5) * 10));
+      habitosNormalizados.push({icon:'💧', label:'Água', display: a.habitos_agua + 'L', score10, raw:a.habitos_agua});
+    }
+    if (a.habitos_estresse) habitosNormalizados.push({icon:'🧠', label:'Estresse', display: a.habitos_estresse+'/10', score10: 10 - a.habitos_estresse, raw:a.habitos_estresse, invertido:true});
+    if (a.habitos_alimentacao) habitosNormalizados.push({icon:'🍽️', label:'Alimentação', display: a.habitos_alimentacao+'/10', score10: a.habitos_alimentacao, raw:a.habitos_alimentacao});
+    if (a.habitos_vitalidade) habitosNormalizados.push({icon:'⚡', label:'Vitalidade', display: a.habitos_vitalidade+'/10', score10: a.habitos_vitalidade, raw:a.habitos_vitalidade});
+
+    function corSemaforo(score10) {
+      if (score10 === null) return {cor:'var(--gray)', bg:'rgba(255,255,255,0.05)', nivel:'—'};
+      if (score10 >= 7) return {cor:'var(--lime)', bg:'rgba(200,240,0,0.1)', nivel:'Bom'};
+      if (score10 >= 4) return {cor:'var(--amber)', bg:'rgba(255,193,7,0.1)', nivel:'Atenção'};
+      return {cor:'var(--red)', bg:'rgba(255,68,68,0.1)', nivel:'Crítico'};
+    }
+
+    habitosEl.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:10px;margin-bottom:16px">
+        ${habitosNormalizados.map(h => {
+          const sem = corSemaforo(h.score10);
+          const circunf = 100.5;
+          const offset = h.score10 === null ? circunf : circunf - (circunf * h.score10 / 10);
+          return `<div style="background:${sem.bg};border:1px solid ${sem.cor};border-radius:12px;padding:12px 8px;text-align:center">
+            <div style="position:relative;width:56px;height:56px;margin:0 auto 6px">
+              <svg width="56" height="56" viewBox="0 0 40 40" style="transform:rotate(-90deg)">
+                <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>
+                <circle cx="20" cy="20" r="16" fill="none" stroke="${sem.cor}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${circunf}" stroke-dashoffset="${offset}"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px">${h.icon}</div>
+            </div>
+            <div style="font-size:13px;font-weight:900;color:${sem.cor}">${h.display}</div>
+            <div style="font-size:8px;color:var(--gray);text-transform:uppercase;letter-spacing:0.04em;margin-top:1px">${h.label}</div>
+            <div style="font-size:8px;font-weight:700;color:${sem.cor};margin-top:3px">${sem.nivel}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${(a.habitos_estresse >= 7 && a.habitos_alimentacao <= 5) ? '<div style="padding:10px 12px;background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.3);border-radius:8px;font-size:11px;color:var(--amber);line-height:1.5">⚠️ Estresse alto combinado com baixa satisfação alimentar pode travar o resultado físico mesmo com treino consistente. Vale abordar na próxima sessão.</div>' : ''}
+    `;
+  } else {
+    habitosEl.innerHTML = '<div style="font-size:12px;color:var(--gray)">Nenhum dado de hábitos registrado nesta avaliação.</div>';
+  }
+
+  // Pirâmide
+  renderPiramide(a.zona, a.score, 'rel-pyramid');
+
+  // Busca todo o histórico desta pessoa (para evolução, rings e deltas)
+  const { data: todasAvals } = await db.from('avaliacoes')
+    .select('semana, pct_gordura, score, peso, cintura, habitos_estresse, habitos_vitalidade, created_at')
+    .eq('aluna_id', a.aluna_id).order('created_at');
+  const hist = todasAvals || [];
+
+  // Evolução do % de gordura
+  const comGordura = hist.filter(x => x.pct_gordura);
+  const evoChart = document.getElementById('rel-evo-chart');
+  const evoLabels = document.getElementById('rel-evo-labels');
+  if (comGordura.length > 1) {
+    const maxG = Math.max(...comGordura.map(x => x.pct_gordura));
+    evoChart.innerHTML = comGordura.map((x, i) => `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="font-size:9px;font-weight:700;color:var(--lime)">${x.pct_gordura}%</div>
+        <div style="flex:1;width:100%;background:var(--surface2);border-radius:4px;overflow:hidden;display:flex;align-items:flex-end">
+          <div style="width:100%;height:${(x.pct_gordura/maxG)*100}%;background:${i===comGordura.length-1?'var(--lime)':'#3a5200'};border-radius:4px"></div>
+        </div>
+      </div>`).join('');
+    evoLabels.innerHTML = comGordura.map(x => `<div style="flex:1;font-size:8px;color:var(--gray);text-align:center;font-weight:600">${x.semana||'—'}</div>`).join('');
+  } else {
+    evoChart.innerHTML = '<div style="font-size:11px;color:var(--gray);width:100%;text-align:center;align-self:center">Ainda não há histórico suficiente para gráfico de evolução (é a primeira avaliação, ou % de gordura não foi calculado em avaliações anteriores).</div>';
+    evoLabels.innerHTML = '';
+  }
+
+  // ── Indicadores do ciclo (rings) — calculados a partir de dados reais, nunca fixos ──
+  // Composição: normaliza pct_gordura (menor = melhor). Sem foto/IA nesta avaliação → anel fica vazio, sem inventar número.
+  let pctComp = null;
+  if (a.pct_gordura) {
+    const sexo = a.sexo || a.alunas?.sexo || 'F';
+    const pior = sexo === 'F' ? 40 : 30, melhor = sexo === 'F' ? 15 : 6;
+    pctComp = Math.round(Math.min(100, Math.max(0, (pior - a.pct_gordura) / (pior - melhor) * 100)));
+  }
+  // Vitalidade: média de vitalidade/estresse relatados (1-10 cada)
+  let pctVital = null;
+  if (a.habitos_vitalidade || a.habitos_estresse) {
+    const vit = a.habitos_vitalidade || 5;
+    const estInv = 10 - (a.habitos_estresse || 5);
+    pctVital = Math.round(((vit + estInv) / 20) * 100);
+  }
+  // Sono & hábitos: consistência = nº de avaliações com hábitos preenchidos / total (proxy de constância real)
+  let pctHabitos = null;
+  if (hist.length > 0) {
+    const comHabitos = hist.filter(x => x.habitos_estresse || x.habitos_vitalidade).length;
+    pctHabitos = Math.round((comHabitos / hist.length) * 100);
+  }
+
+  const ringVals = [pctComp, pctVital, pctHabitos];
+  const ringsPreenchidos = ringVals.filter(v => v !== null);
+  const media = ringsPreenchidos.length ? Math.round(ringsPreenchidos.reduce((s,v)=>s+v,0) / ringsPreenchidos.length) : null;
+  document.getElementById('rings-media').textContent = media !== null ? media + '%' : '—';
+
+  const circunf = {comp: 352, treino: 264, sono: 176};
+  function setRing(circleId, valId, pct, circunferencia) {
+    const circle = document.getElementById(circleId);
+    const valEl = document.getElementById(valId);
+    if (pct === null) { valEl.textContent = 'Sem dados'; circle.style.strokeDashoffset = circunferencia; return; }
+    valEl.textContent = pct + '%';
+    setTimeout(() => { circle.style.strokeDashoffset = circunferencia - (circunferencia * pct / 100); }, 150);
+  }
+  setRing('ring-comp', 'ring-comp-val', pctComp, circunf.comp);
+  setRing('ring-treino', 'ring-treino-val', pctVital, circunf.treino);
+  setRing('ring-sono', 'ring-sono-val', pctHabitos, circunf.sono);
+
+  // ── Comparativo com avaliação anterior (deltas reais, nunca fixos) ──
+  const idxAtual = hist.findIndex(h => h.created_at === a.created_at);
+  const anterior = idxAtual > 0 ? hist[idxAtual - 1] : null;
+  const deltasCard = document.getElementById('rel-deltas-card');
+  const deltasGrid = document.getElementById('rel-deltas-grid');
+  if (anterior) {
+    deltasCard.style.display = 'block';
+    const itens = [];
+    if (a.pct_gordura && anterior.pct_gordura) {
+      const d = +(a.pct_gordura - anterior.pct_gordura).toFixed(1);
+      itens.push({lbl:'% Gordura', val:a.pct_gordura+'%', d, unidade:'%', menorMelhor:true});
+    }
+    if (a.peso && anterior.peso) {
+      const d = +(a.peso - anterior.peso).toFixed(1);
+      itens.push({lbl:'Peso', val:a.peso+'kg', d, unidade:'kg', menorMelhor:true});
+    }
+    if (a.score !== null && anterior.score !== null) {
+      const d = a.score - anterior.score;
+      itens.push({lbl:'Score', val:a.score+'pts', d, unidade:'pts', menorMelhor:false});
+    }
+    deltasGrid.innerHTML = itens.map(it => {
+      const melhorou = it.menorMelhor ? it.d < 0 : it.d > 0;
+      const cor = Math.abs(it.d) < 0.05 ? 'var(--gray)' : (melhorou ? 'var(--lime)' : 'var(--red)');
+      const seta = it.d > 0 ? '↑' : it.d < 0 ? '↓' : '=';
+      return `<div class="delta-mini"><div class="delta-mini-lbl">${it.lbl}</div><div class="delta-mini-val">${it.val}</div><div class="delta-mini-sub" style="color:${cor}">${seta} ${Math.abs(it.d)}${it.unidade} vs anterior</div></div>`;
+    }).join('') || '<div style="grid-column:1/-1;font-size:11px;color:var(--gray);text-align:center">Sem dados comparáveis na avaliação anterior.</div>';
+  } else {
+    deltasCard.style.display = 'none';
+  }
+
+  // Análise completa
+  let analiseCompleta = a.analise || 'Análise não disponível.';
+  if (a.pontos_atencao?.length) {
+    analiseCompleta += '\n\nPONTOS DE ATENÇÃO\n' + a.pontos_atencao.map(p => `▸ ${p}`).join('\n');
+  }
+  document.getElementById('rel-analise-completa').textContent = analiseCompleta;
+
+  showRelTab('rel-tab-geral');
 }
 </script>
 </body>
