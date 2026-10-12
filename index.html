@@ -85,11 +85,11 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .rings-wrap{position:relative;width:130px;height:130px;flex-shrink:0;}
 .rings-wrap svg{width:100%;height:100%;transform:rotate(-90deg);}
 .rings-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.rings-score{font-size:24px;font-weight:900;color:var(--lime);line-height:1;}
-.rings-lbl{font-size:8px;font-weight:700;letter-spacing:0.12em;color:var(--gray);text-transform:uppercase;margin-top:2px;}
-.ring-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;font-size:11px;padding:6px 0;}
+.rings-score{font-size:17px;font-weight:900;color:var(--lime);line-height:1;}
+.rings-lbl{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--gray);text-transform:uppercase;margin-top:2px;}
+.ring-row{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:10px;font-size:13px;padding:7px 0;}
 .ring-bullet{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.ring-name{font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;}
+.ring-name{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;}
 .ring-desc{color:var(--gray);font-size:10px;}
 .ring-val{font-weight:900;text-align:right;white-space:nowrap;}
 @media(max-width:600px){.rings-card{grid-template-columns:1fr;justify-items:center;text-align:center}.ring-row{grid-template-columns:1fr;text-align:center}}
@@ -98,25 +98,108 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .delta-mini-val{font-size:15px;font-weight:900;}
 .delta-mini-sub{font-size:10px;font-weight:700;margin-top:2px;}
 
+/* ── Relatório robusto: habitos, gauges, resumo ── */
+.habit-card{flex:1 1 140px;max-width:200px;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px 10px;text-align:center;}
+.habit-ring{position:relative;width:78px;height:78px;margin:0 auto 10px;}
+.habit-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#ffffff;}
+.habit-name{font-size:13px;font-weight:800;}
+.habit-meta{font-size:11px;color:#b5b5b5;margin-top:3px;line-height:1.4;}
+.habit-chip{display:inline-block;font-size:11px;font-weight:800;padding:3px 10px;border-radius:12px;margin-top:8px;}
+.ring-status{font-size:11px;font-weight:800;padding:3px 9px;border-radius:10px;white-space:nowrap;}
+.resumo-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px;}
+.resumo-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--border);}
+#rel-resumo .resumo-item:first-child{border-top:none;padding-top:2px;}
+.resumo-ico{font-size:22px;line-height:1.2;}
+.resumo-tit{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--lime);}
+.resumo-txt{font-size:14px;line-height:1.5;color:#ffffff;margin-top:2px;}
+.gauge-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:760px){.gauge-grid{grid-template-columns:1fr 1fr;}}
+.gauge-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.gauge-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+.gauge-name{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#b5b5b5;}
+.gauge-value{font-size:26px;font-weight:900;color:#ffffff;}
+.gauge-bar-wrap{position:relative;}
+.gauge-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;}
+.gauge-seg{height:100%;}
+.gauge-marker{position:absolute;top:-5px;width:4px;height:22px;background:#ffffff;border-radius:2px;transform:translateX(-50%);box-shadow:0 0 0 2px rgba(0,0,0,0.65);}
+.gauge-labels{display:flex;margin-top:9px;font-size:11px;color:#b5b5b5;}
+.gauge-labels span{flex:none;text-align:center;white-space:nowrap;overflow:visible;}
+.gauge-status{display:inline-block;font-size:12px;font-weight:800;padding:3px 11px;border-radius:12px;margin-top:12px;}
+.gauge-explain{font-size:12px;color:#c4c4c4;line-height:1.55;margin-top:8px;}
+.info-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:760px){.info-grid{grid-template-columns:1fr 1fr 1fr;}}
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.info-title{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#b5b5b5;}
+.info-big{font-size:26px;font-weight:900;color:var(--lime);margin-top:6px;}
+.info-sub{font-size:12px;color:#c4c4c4;line-height:1.55;margin-top:8px;}
+.sec-title-big{font-size:12px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--lime);margin:24px 0 12px;}
+/* ── Reconstrução visual premium do relatório ── */
+.rel-grid-3{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:860px){.rel-grid-3{grid-template-columns:1fr 1fr 1fr;align-items:start;}}
+.status-check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.status-check-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+.status-check-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.status-check-lbl{font-size:9px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.04em;}
+.status-check-icon{font-size:12px;}
+.status-check-val{font-size:12px;font-weight:700;}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.badge-pill{display:inline-flex;align-items:center;gap:6px;background:var(--lime-dim);border:1px solid var(--lime);color:var(--lime);font-size:10px;font-weight:700;padding:6px 12px;border-radius:20px;}
+.mini-indices-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+.mini-index-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+.mini-index-lbl{font-size:9px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;}
+.mini-index-val{font-size:18px;font-weight:900;}
+.mini-index-sub{font-size:10px;margin-top:2px;}
+.risk-bar-track{height:6px;background:linear-gradient(90deg,var(--lime),var(--amber),var(--red));border-radius:3px;position:relative;margin-top:10px;}
+.risk-bar-marker{position:absolute;top:-4px;width:3px;height:14px;background:var(--white);border-radius:2px;transform:translateX(-50%);}
+.stage-table-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.stage-table-row:last-child{border-bottom:none;}
+.stage-name{font-size:11px;color:var(--gray);font-weight:600;}
+.stage-vals{display:flex;align-items:baseline;gap:8px;}
+.stage-val-old{font-size:11px;color:var(--gray2);text-decoration:line-through;}
+.stage-val-new{font-size:15px;font-weight:900;}
+.goal-numbered{display:flex;gap:12px;padding:14px 0;border-top:1px solid var(--border);}
+.goal-num-circle{width:24px;height:24px;border-radius:50%;background:var(--lime);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;}
+.goal-text-title{font-size:12px;font-weight:700;margin-bottom:3px;}
+.goal-text-desc{font-size:11px;color:var(--gray);line-height:1.5;}
+
 @media print {
-  @page { margin: 14mm; }
+  @page { size: A4; margin: 12mm; }
   body { background: #ffffff !important; color: #111111 !important; }
   nav, .no-print, .page-tabs { display: none !important; }
   .page { display: none !important; padding: 0 !important; max-width: 100% !important; }
   #page-relatorio.page { display: block !important; }
-  .tab-content { display: block !important; page-break-inside: avoid; }
-  .card, .rings-card, .hero, #page-relatorio > div[style*="border-color"] {
-    background: #ffffff !important; border: 1px solid #d0d0d0 !important;
-    box-shadow: none !important; page-break-inside: avoid; margin-bottom: 14px !important;
+  .tab-content { display: block !important; page-break-inside: avoid; margin-bottom: 20px; }
+
+  /* Header do relatório — fundo lima suave, mais vistoso que card genérico */
+  #rel-header { background: linear-gradient(135deg,#f5fce0,#ffffff) !important; border: none !important; border-left: 5px solid #a8c800 !important; border-radius: 0 !important; padding: 24px 28px !important; margin-bottom: 18px !important; text-align: left !important; }
+  #rel-tag { background: #f0f8d8 !important; border: 1px solid #a8c800 !important; color: #5a7000 !important; }
+  #rel-headline { color: #0a0a0a !important; font-size: 18px !important; font-weight: 800 !important; max-width: 100% !important; }
+  #rel-assinatura { color: #666666 !important; }
+
+  .card, .rings-card, #page-relatorio > div[style*="border-color"] {
+    background: #ffffff !important; border: 1px solid #e3e3e3 !important;
+    box-shadow: none !important; page-break-inside: avoid; margin-bottom: 14px !important; border-radius: 10px !important;
   }
-  .card-title { color: #6b7a00 !important; }
-  #rel-score-num, #rel-nivel, .comp-pct, .hero-num { color: #6b9b00 !important; }
-  #rel-headline, #rel-tag, #rel-assinatura { color: #333333 !important; }
-  .rel-faixa-badge, .composicao-faixa { background: #f0f8d8 !important; color: #4a5c00 !important; border-color: #a8c94a !important; }
-  .ai-output { background: #fafafa !important; border: 1px solid #d0d0d0 !important; color: #222222 !important; }
-  .delta-mini { background: #f7f7f7 !important; border: 1px solid #e0e0e0 !important; }
-  svg circle[stroke="#c8f000"], svg circle[id*="ring"], svg circle[id*="score-circle"] { stroke: #7a9900 !important; }
-  .pyramid-level { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .card-title { color: #6b8f00 !important; font-weight: 800 !important; }
+  #rel-score-num, #rel-nivel, .comp-pct, .hero-num, #rel-pct-gordura, .donut-pct-big { color: #6b9b00 !important; }
+  .rel-faixa-badge, .composicao-faixa { background: #fff3cd !important; color: #7a5c00 !important; border-color: #e6b800 !important; }
+  .ai-output { background: #fafafa !important; border: 1px solid #e3e3e3 !important; color: #222222 !important; }
+  .delta-mini { background: #f7f7f7 !important; border: 1px solid #e3e3e3 !important; }
+  .delta-mini-val { color: #0a0a0a !important; }
+
+  /* Mantém as cores reais dos rings/donut/semáforo — não achata tudo em cinza */
+  svg circle { print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
+  .pyramid-level { print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
+  .status-check-item, .habit-ring-box, .mini-index-box { print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
+
+  .goal-numbered, .goal-big { border-top-color: #e3e3e3 !important; }
+  .habit-card, .gauge-card, .info-card, .resumo-card { background: #ffffff !important; border: 1px solid #e3e3e3 !important; page-break-inside: avoid; }
+  .habit-ring-val, .gauge-value, .resumo-txt { color: #111111 !important; }
+  .gauge-name, .gauge-labels, .gauge-explain, .info-title, .info-sub, .habit-meta { color: #555555 !important; }
+  .info-big, .resumo-tit, .sec-title-big { color: #6b8f00 !important; }
+  .resumo-item { border-top-color: #e3e3e3 !important; }
+  .goal-num-circle, .goal-circle-big { background: #a8c800 !important; color: #ffffff !important; }
+
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }
 .pyramid-container{display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 0;}
@@ -419,8 +502,8 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         <circle cx="65" cy="65" r="42" fill="none" stroke="#1a1a1a" stroke-width="9"/>
         <circle cx="65" cy="65" r="28" fill="none" stroke="#1a1a1a" stroke-width="9"/>
         <circle id="ring-comp" cx="65" cy="65" r="56" fill="none" stroke="#c8f000" stroke-width="9" stroke-linecap="round" stroke-dasharray="352" stroke-dashoffset="352"/>
-        <circle id="ring-treino" cx="65" cy="65" r="42" fill="none" stroke="#4da6ff" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"/>
-        <circle id="ring-sono" cx="65" cy="65" r="28" fill="none" stroke="#ffc107" stroke-width="9" stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="176"/>
+        <circle id="ring-treino" cx="65" cy="65" r="42" fill="none" stroke="#22d3ee" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"/>
+        <circle id="ring-sono" cx="65" cy="65" r="28" fill="none" stroke="#b46bff" stroke-width="9" stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="176"/>
       </svg>
       <div class="rings-center">
         <div class="rings-score" id="rings-media">—</div>
@@ -429,9 +512,10 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
     <div>
       <div class="card-title" style="margin-bottom:8px">Indicadores do ciclo</div>
-      <div class="ring-row"><span class="ring-bullet" style="background:#c8f000"></span><span class="ring-name">Composição</span><span class="ring-val" id="ring-comp-val" style="color:#c8f000">—</span></div>
-      <div class="ring-row"><span class="ring-bullet" style="background:#4da6ff"></span><span class="ring-name">Vitalidade</span><span class="ring-val" id="ring-treino-val" style="color:#4da6ff">—</span></div>
-      <div class="ring-row"><span class="ring-bullet" style="background:#ffc107"></span><span class="ring-name">Sono &amp; Hábitos</span><span class="ring-val" id="ring-sono-val" style="color:#ffc107">—</span></div>
+      <div class="ring-row"><span class="ring-bullet" style="background:#c8f000"></span><span class="ring-name">Composição</span><span class="ring-val" id="ring-comp-val" style="color:#c8f000">-</span><span class="ring-status" id="ring-comp-status"></span></div>
+      <div class="ring-row"><span class="ring-bullet" style="background:#22d3ee"></span><span class="ring-name">Vitalidade</span><span class="ring-val" id="ring-treino-val" style="color:#22d3ee">-</span><span class="ring-status" id="ring-treino-status"></span></div>
+      <div class="ring-row"><span class="ring-bullet" style="background:#b46bff"></span><span class="ring-name">Sono &amp; Hábitos</span><span class="ring-val" id="ring-sono-val" style="color:#b46bff">-</span><span class="ring-status" id="ring-sono-status"></span></div>
+      <div style="font-size:12px;color:#c4c4c4;margin-top:10px;line-height:1.6">A cor do anel identifica o indicador. O selo mostra o status: <span style="color:#2ee66b">●</span> Bom <span style="color:#ffc107">●</span> Atenção <span style="color:#ff4444">●</span> Crítico. Um indicador crítico limita a média geral.</div>
     </div>
   </div>
 
@@ -445,48 +529,88 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 
   <!-- TAB: VISÃO GERAL -->
   <div id="rel-tab-geral" class="tab-content active">
-    <div class="card">
-      <div class="card-title">Composição corporal (IA)</div>
-      <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap">
-        <div style="position:relative;width:140px;height:140px;flex-shrink:0">
-          <svg width="140" height="140" viewBox="0 0 150 150">
+    <div class="resumo-card">
+      <div class="card-title" style="margin-bottom:6px">Resumo em 3 pontos</div>
+      <div id="rel-resumo"></div>
+    </div>
+    <div class="rel-grid-3">
+
+      <!-- Coluna 1: Score + Zona (replica o hero, versão compacta p/ grid) -->
+      <div class="card" style="text-align:center">
+        <div class="card-title">Score funcional</div>
+        <div style="position:relative;width:110px;height:110px;margin:8px auto">
+          <svg width="110" height="110" viewBox="0 0 100 100" style="transform:rotate(-90deg)">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#1a1a1a" stroke-width="8"/>
+            <circle id="rel-score-circle-mini" cx="50" cy="50" r="42" fill="none" stroke="#c8f000" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" stroke-linecap="round"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div id="rel-score-num-mini" style="font-size:24px;font-weight:900;color:var(--lime)">—</div>
+            <div style="font-size:8px;color:var(--gray);letter-spacing:0.1em;text-transform:uppercase">/ 100</div>
+          </div>
+        </div>
+        <div id="rel-zona-tag-mini" style="display:inline-block;background:var(--lime-dim);border:1px solid var(--lime);color:var(--lime);font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px">—</div>
+        <div id="rel-nivel-mini" style="font-size:12px;font-weight:700;margin-top:8px">—</div>
+        <div id="rel-desc-nivel-mini" style="font-size:10px;color:var(--gray);line-height:1.4;margin-top:4px">—</div>
+      </div>
+
+      <!-- Coluna 2: Composição corporal (donut) -->
+      <div class="card" style="text-align:center">
+        <div class="card-title">Composição corporal (IA)</div>
+        <div style="position:relative;width:120px;height:120px;margin:4px auto 8px">
+          <svg width="120" height="120" viewBox="0 0 150 150">
             <circle cx="75" cy="75" r="60" fill="none" stroke="#1a1a1a" stroke-width="18"/>
             <circle id="rel-donut-magra" cx="75" cy="75" r="60" fill="none" stroke="#c8f000" stroke-width="18" stroke-dasharray="377" stroke-dashoffset="377" stroke-linecap="round" transform="rotate(-90 75 75)"/>
             <circle id="rel-donut-circle" cx="75" cy="75" r="60" fill="none" stroke="#ff4444" stroke-width="18" stroke-dasharray="377" stroke-dashoffset="377" stroke-linecap="round" transform="rotate(-90 75 75)"/>
           </svg>
           <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-            <div id="rel-pct-gordura" style="font-size:26px;font-weight:900;color:var(--lime);line-height:1">—</div>
+            <div id="rel-pct-gordura" style="font-size:24px;font-weight:900;color:var(--lime);line-height:1">—</div>
             <div style="font-size:8px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px">Gordura</div>
           </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:14px" id="rel-massa-legend">
+        <div id="rel-faixa-badge" class="composicao-faixa" style="display:inline-block">—</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;text-align:left" id="rel-massa-legend">
           <div style="display:none" id="rel-massa-legend-empty">Dados de massa não disponíveis nesta avaliação.</div>
         </div>
       </div>
-      <div style="text-align:center;margin-top:14px"><div id="rel-faixa-badge" class="composicao-faixa" style="display:inline-block">—</div></div>
-      <div id="rel-desc-composicao" style="font-size:11px;color:var(--gray);margin-top:10px;text-align:center;line-height:1.5"></div>
-    </div>
 
-    <div class="card">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div style="background:linear-gradient(135deg,rgba(77,166,255,0.15),rgba(77,166,255,0.05));border:1px solid rgba(77,166,255,0.3);border-radius:12px;padding:14px 16px">
-          <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray);margin-bottom:6px">IMC</div>
-          <div id="rel-imc-valor" style="font-size:22px;font-weight:900;color:#4da6ff">—</div>
-          <div id="rel-imc-classe" style="font-size:10px;color:var(--gray);font-weight:600">—</div>
+      <!-- Coluna 3: Índices estruturais -->
+      <div class="card">
+        <div class="card-title">Índices estruturais</div>
+        <div class="mini-indices-grid">
+          <div class="mini-index-box">
+            <div class="mini-index-lbl">IMC</div>
+            <div id="rel-imc-valor" class="mini-index-val" style="color:#4da6ff">—</div>
+            <div id="rel-imc-classe" class="mini-index-sub" style="color:var(--gray)">—</div>
+          </div>
+          <div class="mini-index-box">
+            <div class="mini-index-lbl">Cintura/Quadril</div>
+            <div id="rel-rcq-valor" class="mini-index-val" style="color:#b892ff">—</div>
+            <div id="rel-rcq-classe" class="mini-index-sub" style="color:var(--gray)">—</div>
+          </div>
         </div>
-        <div style="background:linear-gradient(135deg,rgba(184,146,255,0.15),rgba(184,146,255,0.05));border:1px solid rgba(184,146,255,0.3);border-radius:12px;padding:14px 16px">
-          <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray);margin-bottom:6px">Cintura/Quadril</div>
-          <div id="rel-rcq-valor" style="font-size:22px;font-weight:900;color:#b892ff">—</div>
-          <div id="rel-rcq-classe" style="font-size:10px;color:var(--gray);font-weight:600">—</div>
+        <div style="margin-top:14px">
+          <div class="card-title" style="margin-bottom:6px;font-size:9px">Tendência do score</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg id="rel-score-sparkline-geral" width="90" height="28" viewBox="0 0 70 24" style="display:none"></svg>
+            <div id="rel-score-trend-geral" style="font-size:11px;font-weight:700"></div>
+          </div>
         </div>
       </div>
+
     </div>
+
+    <div id="rel-desc-composicao" style="font-size:11px;color:var(--gray);margin-top:12px;text-align:center;line-height:1.5;max-width:500px;margin-left:auto;margin-right:auto"></div>
+
+    <div class="sec-title-big">Indicadores com escala de referência</div>
+    <div class="gauge-grid" id="rel-gauges"></div>
+    <div class="sec-title-big">Sua composição em números</div>
+    <div class="info-grid" id="rel-info-cards"></div>
   </div>
 
   <!-- TAB: MEDIDAS -->
   <div id="rel-tab-medidas" class="tab-content">
     <div class="card">
-      <div class="card-title">Medidas registradas</div>
+      <div class="card-title" id="rel-medidas-titulo">Medidas registradas</div>
       <div id="rel-medidas-lista"></div>
     </div>
   </div>
@@ -494,7 +618,15 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   <!-- TAB: POSTURA -->
   <div id="rel-tab-postura" class="tab-content">
     <div class="card">
-      <div class="card-title">Análise postural (IA)</div>
+      <div class="card-title">Diagnóstico postural (IA)</div>
+      <div class="status-check-grid" id="rel-postura-cards"></div>
+    </div>
+    <div class="card" id="rel-postura-sugestoes-card" style="display:none">
+      <div class="card-title">Intervenções sugeridas</div>
+      <div id="rel-postura-sugestoes"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Observações completas</div>
       <div id="rel-postura-texto" style="font-size:12px;line-height:1.7;color:var(--white);white-space:pre-wrap">—</div>
     </div>
   </div>
@@ -511,7 +643,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   <div id="rel-tab-evolucao" class="tab-content">
     <div class="card" id="rel-deltas-card" style="display:none">
       <div class="card-title">Comparativo com avaliação anterior</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" id="rel-deltas-grid"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px" id="rel-deltas-grid"></div>
     </div>
     <div class="card">
       <div class="card-title">Pirâmide de Saúde Funcional</div>
@@ -521,6 +653,10 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       <div class="card-title">% de gordura ao longo do tempo</div>
       <div id="rel-evo-chart" style="display:flex;align-items:flex-end;gap:8px;height:90px;margin-bottom:8px"></div>
       <div id="rel-evo-labels" style="display:flex;gap:8px"></div>
+    </div>
+    <div class="card" id="rel-proximos-passos-card" style="display:none">
+      <div class="card-title">Próximos passos recomendados</div>
+      <div id="rel-proximos-passos"></div>
     </div>
   </div>
 
@@ -794,7 +930,7 @@ ${habSono ? `- Sono: ${habSono}` : ''}${habAgua ? `, Água: ${habAgua}L/dia` : '
 - Estresse: ${habEstresse}/10, Alimentação: ${habAlim}/10, Vitalidade: ${habVital}/10
 
 ${temFotos ? `FOTOS ENVIADAS (${Object.keys(uploadedPhotos).join(', ')}):
-Realize ANÁLISE POSTURAL detalhada baseada nas fotos:
+Realize ANÁLISE POSTURAL detalhada baseada nas fotos, região por região:
 - Ombros: nivelados ou assimétrico? qual lado mais alto?
 - Quadril: nivelado, anteversão, retroversão ou lateralizado?
 - Coluna (lateral): curvatura normal, hipercifose, hiperlordose ou retificação?
@@ -810,11 +946,12 @@ INSTRUÇÕES:
 3. % GORDURA: número específico (ex: 26.8). Faixas femininas: Atlética <20%, Fitness 20-28%, Aceitável 29-35%, Aumentada >35%. Faixas masculinas: Atlética <10%, Fitness 10-18%, Aceitável 18-25%, Aumentada >25%. Retorne null se dados insuficientes.
 4. MASSA MAGRA: se peso foi informado e % de gordura foi calculado, calcule massa_gorda_kg = peso × (pct_gordura/100), e massa_magra_kg = peso − massa_gorda_kg. Ambos com 1 casa decimal. Se peso não foi informado ou pct_gordura é null, retorne ambos como null.
 5. ANÁLISE POSTURAL: resumo objetivo do que foi observado nas fotos.
-6. ANÁLISE GERAL: 3–4 parágrafos, direto, técnico, sem clichês. Cite dados específicos.
-7. PONTOS DE ATENÇÃO: 2–3 itens concretos e acionáveis.
+6. SUGESTÕES POSTURAIS: para cada região (ombros, quadril, coluna, joelhos) com achado fora do ideal, sugira UMA intervenção prática e específica (ex: alongamento, mobilidade, fortalecimento) em até 12 palavras. Regiões sem alteração não entram neste array — não force sugestão onde não há problema.
+7. ANÁLISE GERAL: 3–4 parágrafos, direto, técnico, sem clichês. Cite dados específicos.
+8. PONTOS DE ATENÇÃO: 2–3 itens concretos e acionáveis.
 
 RESPONDA SOMENTE em JSON válido, sem markdown:
-{"score":62,"zona":"Z3","nivel":"Em Equilíbrio","descricao_nivel":"texto curto","pct_gordura":26.8,"faixa_composicao":"Aceitável","desc_composicao":"observação das fotos","massa_magra_kg":51.2,"massa_gorda_kg":18.8,"analise_postural":"ombros nivelados, leve hiperlordose lombar, joelhos alinhados","analise":"texto","pontos_atencao":["item1","item2"]}`;
+{"score":62,"zona":"Z3","nivel":"Em Equilíbrio","descricao_nivel":"texto curto","pct_gordura":26.8,"faixa_composicao":"Aceitável","desc_composicao":"observação das fotos","massa_magra_kg":51.2,"massa_gorda_kg":18.8,"analise_postural":"ombros nivelados, leve hiperlordose lombar, joelhos alinhados","sugestoes_posturais":[{"regiao":"Coluna","achado":"Hiperlordose lombar leve","intervencao":"Fortalecimento de core e alongamento de flexores de quadril"}],"analise":"texto","pontos_atencao":["item1","item2"]}`;
 
   const contentBlocks = [];
   Object.values(uploadedPhotos).forEach(dataUrl => {
@@ -868,6 +1005,7 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
     pct_gordura: parsed.pct_gordura, faixa_composicao: parsed.faixa_composicao,
     massa_magra_kg: parsed.massa_magra_kg, massa_gorda_kg: parsed.massa_gorda_kg,
     desc_composicao: parsed.desc_composicao, analise_postural: parsed.analise_postural,
+    sugestoes_posturais: parsed.sugestoes_posturais || null,
     score: parsed.score, zona: parsed.zona, nivel: parsed.nivel,
     analise: parsed.analise, pontos_atencao: parsed.pontos_atencao,
     habitos_sono: habSono||null, habitos_agua: habAgua||null,
@@ -1000,6 +1138,36 @@ function getFaixaClasse(faixa) {
   return {Atlética:'faixa-atletica',Fitness:'faixa-fitness',Aceitável:'faixa-aceitavel',Aumentada:'faixa-aumentada'}[faixa] || 'faixa-fitness';
 }
 
+// Meta de água: referência de 35 ml por kg de peso (2,5 L se o peso não foi informado)
+function metaAguaL(peso) {
+  const p = parseFloat(peso);
+  return p > 0 ? Math.round(p * 0.035 * 10) / 10 : 2.5;
+}
+
+// Escala de referência com marcador (estilo InBody / Shaped)
+function gaugeHTML(o) {
+  const range = o.max - o.min;
+  const pos = Math.max(0, Math.min(100, ((o.valor - o.min) / range) * 100));
+  let ant = o.min, segs = '', labs = '', zona = o.zonas[o.zonas.length - 1], achou = false;
+  o.zonas.forEach(z => {
+    const larg = ((z.ate - ant) / range) * 100;
+    segs += '<div class="gauge-seg" style="width:' + larg + '%;background:' + z.cor + '"></div>';
+    labs += '<span style="width:' + larg + '%">' + z.rot + '</span>';
+    if (!achou && o.valor < z.ate) { zona = z; achou = true; }
+    ant = z.ate;
+  });
+  return '<div class="gauge-card">' +
+    '<div class="gauge-top"><div class="gauge-name">' + o.nome + '</div><div class="gauge-value">' + o.texto + '</div></div>' +
+    '<div class="gauge-bar-wrap"><div class="gauge-bar">' + segs + '</div><div class="gauge-marker" style="left:' + pos + '%"></div></div>' +
+    '<div class="gauge-labels">' + labs + '</div>' +
+    '<div class="gauge-status" style="color:' + zona.cor + ';background:' + zona.cor + '22">● ' + zona.rot + '</div>' +
+    '<div class="gauge-explain">' + o.explica + '</div></div>';
+}
+
+function infoCardHTML(titulo, grande, sub) {
+  return '<div class="info-card"><div class="info-title">' + titulo + '</div><div class="info-big">' + grande + '</div><div class="info-sub">' + sub + '</div></div>';
+}
+
 function calcularIMCManual(peso, altura) {
   if (!peso || !altura) return null;
   let alt = altura < 3 ? altura * 100 : altura;
@@ -1057,14 +1225,27 @@ async function abrirRelatorio(avaliacaoId) {
   }
   document.getElementById('rel-headline').textContent = headline;
 
-  // Score ring
+  // Score ring — popula hero E a versão mini do grid "Visão Geral" simultaneamente
   const score = a.score || 0;
   const offset = 264 - (score/100)*264;
-  setTimeout(() => { document.getElementById('rel-score-circle').style.strokeDashoffset = offset; }, 100);
+  setTimeout(() => {
+    document.getElementById('rel-score-circle').style.strokeDashoffset = offset;
+    const miniCircle = document.getElementById('rel-score-circle-mini');
+    if (miniCircle) miniCircle.style.strokeDashoffset = offset;
+  }, 100);
   document.getElementById('rel-score-num').textContent = score;
   document.getElementById('rel-nivel').textContent = a.nivel || '—';
   document.getElementById('rel-desc-nivel').textContent = a.descricao_nivel || '';
   document.getElementById('rel-zona-tag').textContent = a.zona ? `Zona ${a.zona.replace('Z','')} · ${a.zona}` : '—';
+  const zonaTxt = a.zona ? `Zona ${a.zona.replace('Z','')} · ${a.zona}` : '—';
+  ['rel-score-num-mini','rel-nivel-mini','rel-desc-nivel-mini','rel-zona-tag-mini'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (i===0) el.textContent = score;
+    if (i===1) el.textContent = a.nivel || '—';
+    if (i===2) el.textContent = a.descricao_nivel || '';
+    if (i===3) el.textContent = zonaTxt;
+  });
 
   // Sparkline de tendência do score (estilo Apple Health / Whoop) — usa até as últimas 6 avaliações
   const { data: histScoreSpark } = await db.from('avaliacoes')
@@ -1072,6 +1253,8 @@ async function abrirRelatorio(avaliacaoId) {
   const scoresValidos = (histScoreSpark || []).filter(h => h.score !== null).slice(-6);
   const trendEl = document.getElementById('rel-score-trend');
   const sparkSvg = document.getElementById('rel-score-sparkline');
+  const trendElGeral = document.getElementById('rel-score-trend-geral');
+  const sparkSvgGeral = document.getElementById('rel-score-sparkline-geral');
   if (scoresValidos.length >= 2) {
     const vals = scoresValidos.map(h => h.score);
     const min = Math.min(...vals), max = Math.max(...vals);
@@ -1081,15 +1264,19 @@ async function abrirRelatorio(avaliacaoId) {
       const y = 22 - ((v - min) / range) * 20;
       return `${x},${y}`;
     }).join(' ');
-    sparkSvg.innerHTML = `<polyline points="${pontos}" fill="none" stroke="var(--lime)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const polylineHTML = `<polyline points="${pontos}" fill="none" stroke="var(--lime)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    sparkSvg.innerHTML = polylineHTML;
     sparkSvg.style.display = 'block';
     const diff = vals[vals.length-1] - vals[vals.length-2];
-    if (diff > 0) trendEl.innerHTML = `<span style="color:var(--lime)">↗ +${diff}</span>`;
-    else if (diff < 0) trendEl.innerHTML = `<span style="color:var(--red)">↘ ${diff}</span>`;
-    else trendEl.innerHTML = `<span style="color:var(--gray)">→ estável</span>`;
+    const trendHTML = diff > 0 ? `<span style="color:var(--lime)">↗ +${diff}</span>` : diff < 0 ? `<span style="color:var(--red)">↘ ${diff}</span>` : `<span style="color:var(--gray)">→ estável</span>`;
+    trendEl.innerHTML = trendHTML;
+    if (sparkSvgGeral) { sparkSvgGeral.innerHTML = polylineHTML; sparkSvgGeral.style.display = 'block'; }
+    if (trendElGeral) trendElGeral.innerHTML = trendHTML;
   } else {
     sparkSvg.style.display = 'none';
     trendEl.innerHTML = '';
+    if (sparkSvgGeral) sparkSvgGeral.style.display = 'none';
+    if (trendElGeral) trendElGeral.innerHTML = '';
   }
 
   // Composição (donut de 2 fatias: gordura vermelha + magra lima, como pizza chart real)
@@ -1148,72 +1335,153 @@ async function abrirRelatorio(avaliacaoId) {
     document.getElementById('rel-rcq-classe').textContent = 'Sem dados';
   }
 
-  // Medidas
+  // Medidas — busca avaliação anterior pra montar comparativo real (nunca número inventado)
+  const { data: medidasHistRaw } = await db.from('avaliacoes')
+    .select('peso, cintura, quadril, abdomen, braco, coxa, semana, created_at')
+    .eq('aluna_id', a.aluna_id).order('created_at');
+  const medidasHist = medidasHistRaw || [];
+  const idxMedAtual = medidasHist.findIndex(h => h.created_at === a.created_at);
+  const medAnterior = idxMedAtual > 0 ? medidasHist[idxMedAtual - 1] : null;
+
   const medidas = [
-    {nome:'Peso', val: a.peso, unit:'kg', max:120},
-    {nome:'Cintura', val: a.cintura, unit:'cm', max:130},
-    {nome:'Quadril', val: a.quadril, unit:'cm', max:130},
-    {nome:'Abdômen', val: a.abdomen, unit:'cm', max:130},
-    {nome:'Braço', val: a.braco, unit:'cm', max:50},
-    {nome:'Coxa', val: a.coxa, unit:'cm', max:80},
+    {nome:'Peso', val: a.peso, unit:'kg', max:120, chave:'peso'},
+    {nome:'Cintura', val: a.cintura, unit:'cm', max:130, chave:'cintura'},
+    {nome:'Quadril', val: a.quadril, unit:'cm', max:130, chave:'quadril'},
+    {nome:'Abdômen', val: a.abdomen, unit:'cm', max:130, chave:'abdomen'},
+    {nome:'Braço', val: a.braco, unit:'cm', max:50, chave:'braco', neutro:true},
+    {nome:'Coxa', val: a.coxa, unit:'cm', max:80, chave:'coxa', neutro:true},
   ].filter(m => m.val);
+
+  document.getElementById('rel-medidas-titulo').textContent = medAnterior
+    ? `Medidas — comparativo com ${medAnterior.semana || 'avaliação anterior'}`
+    : 'Medidas registradas (linha de base)';
+
   const medidasList = document.getElementById('rel-medidas-lista');
-  medidasList.innerHTML = medidas.length ? medidas.map(m => `
-    <div class="measure-row" style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)">
+  medidasList.innerHTML = medidas.length ? medidas.map(m => {
+    const valorAnterior = medAnterior ? medAnterior[m.chave] : null;
+    if (valorAnterior) {
+      const diff = +(m.val - valorAnterior).toFixed(1);
+      const cor = Math.abs(diff) < 0.05 ? 'var(--gray)' : m.neutro ? 'var(--white)' : (diff < 0 ? '#2ee66b' : 'var(--amber)');
+      return `<div class="stage-table-row">
+        <div class="stage-name">${m.nome}</div>
+        <div class="stage-vals">
+          <span class="stage-val-old">${valorAnterior}${m.unit}</span>
+          <span class="stage-val-new" style="color:${cor}">${m.val}${m.unit}</span>
+          <span style="font-size:10px;font-weight:700;color:${cor}">${diff > 0 ? '+' : ''}${diff}${m.unit}</span>
+        </div>
+      </div>`;
+    }
+    return `<div class="measure-row" style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)">
       <div style="font-size:12px;font-weight:600;flex:1">${m.nome}</div>
       <div style="flex:2;height:5px;background:var(--surface2);border-radius:3px;margin:0 12px;overflow:hidden"><div style="height:100%;background:var(--lime);border-radius:3px;width:${Math.min((m.val/m.max)*100,100)}%"></div></div>
       <div style="font-size:13px;font-weight:900;color:var(--lime);width:60px;text-align:right">${m.val} ${m.unit}</div>
-    </div>`).join('') : '<div style="font-size:12px;color:var(--gray)">Nenhuma medida registrada nesta avaliação.</div>';
+    </div>`;
+  }).join('') : '<div style="font-size:12px;color:var(--gray)">Nenhuma medida registrada nesta avaliação.</div>';
 
-  // Postura
-  document.getElementById('rel-postura-texto').textContent = a.analise_postural || 'Análise postural não disponível (sem fotos ou API não conectada nesta avaliação).';
+  // Postura — extrai itens do texto estruturado que a IA já retorna (ex: "Ombros: nivelados...")
+  // Mantém honestidade: se a IA não respondeu em formato de linhas, cai no texto corrido sem forçar cards vazios
+  const posturaTexto = a.analise_postural || '';
+  const posturaCards = document.getElementById('rel-postura-cards');
+  const regioesIcone = {ombros:'🧍', quadril:'📏', 'coluna':'🦴', joelhos:'🦵', pelve:'📏'};
+  const linhasPostura = posturaTexto.split(/\n|;\.(?=\s*[A-ZÀ-Ú])/).map(l => l.trim()).filter(Boolean);
+  const itensEstruturados = [];
+  linhasPostura.forEach(linha => {
+    const m = linha.match(/^([A-Za-zÀ-ú ]{3,20}):\s*(.+)$/);
+    if (m) itensEstruturados.push({regiao: m[1].trim(), desc: m[2].trim()});
+  });
+  if (itensEstruturados.length >= 2) {
+    posturaCards.innerHTML = itensEstruturados.map(it => {
+      const chaveIcone = Object.keys(regioesIcone).find(k => it.regiao.toLowerCase().includes(k));
+      const icon = chaveIcone ? regioesIcone[chaveIcone] : '•';
+      const atencao = /assimetr|desvio|elevad|hiperlord|hipercifo|valgo|varo|anterioriza|retroversão|anteversão/i.test(it.desc);
+      return `<div class="status-check-item">
+        <div class="status-check-top"><span class="status-check-lbl">${icon} ${it.regiao}</span><span class="status-check-icon">${atencao ? '⚠️' : '✓'}</span></div>
+        <div class="status-check-val" style="color:${atencao ? 'var(--amber)' : 'var(--lime)'}">${it.desc}</div>
+      </div>`;
+    }).join('');
+  } else {
+    posturaCards.innerHTML = '<div style="grid-column:1/-1;font-size:11px;color:var(--gray)">Análise não estruturada por região nesta avaliação — veja o texto completo abaixo.</div>';
+  }
+  document.getElementById('rel-postura-texto').textContent = posturaTexto || 'Análise postural não disponível (sem fotos ou API não conectada nesta avaliação).';
+
+  // Sugestões de intervenção postural (achado + conduta), campo estruturado vindo direto da IA
+  const sugestoesEl = document.getElementById('rel-postura-sugestoes');
+  const sugestoesCard = document.getElementById('rel-postura-sugestoes-card');
+  if (sugestoesEl && sugestoesCard) {
+    if (a.sugestoes_posturais?.length) {
+      sugestoesCard.style.display = 'block';
+      sugestoesEl.innerHTML = a.sugestoes_posturais.map(s => `
+        <div class="goal-big">
+          <div class="goal-circle-big" style="background:var(--amber);font-size:16px">🎯</div>
+          <div>
+            <div style="font-size:12px;font-weight:800;color:var(--amber);margin-bottom:3px">${s.regiao}${s.achado ? ' — ' + s.achado : ''}</div>
+            <div class="goal-desc-big">${s.intervencao}</div>
+          </div>
+        </div>`).join('');
+    } else {
+      sugestoesCard.style.display = 'none';
+    }
+  }
 
   // Hábitos — sistema semáforo (vermelho/laranja/verde), estilo ring de app de saúde
+  let resumoForte = null, resumoAtencao = null;
   const habitosEl = document.getElementById('rel-habitos-conteudo');
   const temHabitos = a.habitos_sono || a.habitos_agua || a.habitos_estresse || a.habitos_alimentacao || a.habitos_vitalidade;
   if (temHabitos) {
-    // Normaliza cada hábito pra uma escala 0-10 onde 10 = ótimo, e classifica em semáforo
+    // Cada hábito tem cor própria (identidade, estilo Apple Watch). O status vai no selo.
+    const metaAgua = metaAguaL(a.peso);
     const habitosNormalizados = [];
+    const sonoNum = parseFloat(a.habitos_sono);
     if (a.habitos_sono) {
-      const sonoNum = parseFloat(a.habitos_sono);
       const score10 = isNaN(sonoNum) ? null : Math.max(0, Math.min(10, (sonoNum / 8) * 10));
-      habitosNormalizados.push({icon:'😴', label:'Sono', display: a.habitos_sono + (isNaN(sonoNum)?'':'h'), score10, raw:a.habitos_sono});
+      habitosNormalizados.push({icon:'😴', label:'Sono', cor:'#b46bff', display: isNaN(sonoNum) ? String(a.habitos_sono).slice(0,6) : sonoNum + 'h', score10, meta:'Meta: 7 a 9 h por noite'});
     }
     if (a.habitos_agua) {
       const aguaNum = parseFloat(a.habitos_agua);
-      const score10 = isNaN(aguaNum) ? null : Math.max(0, Math.min(10, (aguaNum / 2.5) * 10));
-      habitosNormalizados.push({icon:'💧', label:'Água', display: a.habitos_agua + 'L', score10, raw:a.habitos_agua});
+      const score10 = isNaN(aguaNum) ? null : Math.max(0, Math.min(10, (aguaNum / metaAgua) * 10));
+      habitosNormalizados.push({icon:'💧', label:'Água', cor:'#3aa0ff', display: (isNaN(aguaNum) ? a.habitos_agua : aguaNum) + 'L', score10, meta:'Meta: cerca de ' + String(metaAgua).replace('.', ',') + ' L por dia'});
     }
-    if (a.habitos_estresse) habitosNormalizados.push({icon:'🧠', label:'Estresse', display: a.habitos_estresse+'/10', score10: 10 - a.habitos_estresse, raw:a.habitos_estresse, invertido:true});
-    if (a.habitos_alimentacao) habitosNormalizados.push({icon:'🍽️', label:'Alimentação', display: a.habitos_alimentacao+'/10', score10: a.habitos_alimentacao, raw:a.habitos_alimentacao});
-    if (a.habitos_vitalidade) habitosNormalizados.push({icon:'⚡', label:'Vitalidade', display: a.habitos_vitalidade+'/10', score10: a.habitos_vitalidade, raw:a.habitos_vitalidade});
+    if (a.habitos_estresse) habitosNormalizados.push({icon:'🧠', label:'Estresse', cor:'#ff5fa2', display: a.habitos_estresse+'/10', score10: 10 - a.habitos_estresse, meta:'Meta: nível 3 ou menos'});
+    if (a.habitos_alimentacao) habitosNormalizados.push({icon:'🍽️', label:'Alimentação', cor:'#ff9f43', display: a.habitos_alimentacao+'/10', score10: a.habitos_alimentacao, meta:'Meta: satisfação 7 ou mais'});
+    if (a.habitos_vitalidade) habitosNormalizados.push({icon:'⚡', label:'Vitalidade', cor:'#22d3ee', display: a.habitos_vitalidade+'/10', score10: a.habitos_vitalidade, meta:'Meta: energia 7 ou mais'});
 
     function corSemaforo(score10) {
-      if (score10 === null) return {cor:'var(--gray)', bg:'rgba(255,255,255,0.05)', nivel:'—'};
-      if (score10 >= 7) return {cor:'var(--lime)', bg:'rgba(200,240,0,0.1)', nivel:'Bom'};
-      if (score10 >= 4) return {cor:'var(--amber)', bg:'rgba(255,193,7,0.1)', nivel:'Atenção'};
-      return {cor:'var(--red)', bg:'rgba(255,68,68,0.1)', nivel:'Crítico'};
+      if (score10 === null) return {cor:'#8a8a8a', bg:'rgba(255,255,255,0.06)', borda:'#2a2a2a', nivel:'Sem dado'};
+      if (score10 >= 7) return {cor:'#2ee66b', bg:'rgba(46,230,107,0.14)', borda:'rgba(46,230,107,0.45)', nivel:'Bom'};
+      if (score10 >= 4) return {cor:'#ffc107', bg:'rgba(255,193,7,0.14)', borda:'rgba(255,193,7,0.45)', nivel:'Atenção'};
+      return {cor:'#ff4444', bg:'rgba(255,68,68,0.14)', borda:'rgba(255,68,68,0.6)', nivel:'Crítico'};
+    }
+
+    const comNota = habitosNormalizados.filter(h => h.score10 !== null).sort((x, y) => y.score10 - x.score10);
+    if (comNota.length) {
+      const melhor = comNota[0], pior = comNota[comNota.length - 1];
+      if (melhor.score10 >= 7) resumoForte = melhor.icon + ' ' + melhor.label + ' (' + melhor.display + ') está na faixa boa.';
+      if (pior.score10 < 7) resumoAtencao = pior.icon + ' ' + pior.label + ' (' + pior.display + ') é o hábito que mais pede atenção agora.';
     }
 
     habitosEl.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:10px;margin-bottom:16px">
+      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:14px">
         ${habitosNormalizados.map(h => {
           const sem = corSemaforo(h.score10);
           const circunf = 100.5;
           const offset = h.score10 === null ? circunf : circunf - (circunf * h.score10 / 10);
-          return `<div style="background:${sem.bg};border:1px solid ${sem.cor};border-radius:12px;padding:12px 8px;text-align:center">
-            <div style="position:relative;width:56px;height:56px;margin:0 auto 6px">
-              <svg width="56" height="56" viewBox="0 0 40 40" style="transform:rotate(-90deg)">
-                <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>
-                <circle cx="20" cy="20" r="16" fill="none" stroke="${sem.cor}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${circunf}" stroke-dashoffset="${offset}"/>
+          return `<div class="habit-card" style="border-color:${sem.borda}">
+            <div class="habit-ring">
+              <svg width="78" height="78" viewBox="0 0 40 40" style="transform:rotate(-90deg)">
+                <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="5"/>
+                <circle cx="20" cy="20" r="16" fill="none" stroke="${h.cor}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${circunf}" stroke-dashoffset="${offset}"/>
               </svg>
-              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px">${h.icon}</div>
+              <div class="habit-ring-val">${h.display}</div>
             </div>
-            <div style="font-size:13px;font-weight:900;color:${sem.cor}">${h.display}</div>
-            <div style="font-size:8px;color:var(--gray);text-transform:uppercase;letter-spacing:0.04em;margin-top:1px">${h.label}</div>
-            <div style="font-size:8px;font-weight:700;color:${sem.cor};margin-top:3px">${sem.nivel}</div>
+            <div class="habit-name" style="color:${h.cor}">${h.icon} ${h.label}</div>
+            <div class="habit-meta">${h.meta}</div>
+            <div class="habit-chip" style="color:${sem.cor};background:${sem.bg}">● ${sem.nivel}</div>
           </div>`;
         }).join('')}
+      </div>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:12px;color:#c4c4c4;margin-bottom:14px">
+        <span>A cor do anel identifica o hábito. O selo mostra o status:</span>
+        <span><span style="color:#2ee66b">●</span> Bom</span><span><span style="color:#ffc107">●</span> Atenção</span><span><span style="color:#ff4444">●</span> Crítico</span>
       </div>
       ${(a.habitos_estresse >= 7 && a.habitos_alimentacao <= 5) ? '<div style="padding:10px 12px;background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.3);border-radius:8px;font-size:11px;color:var(--amber);line-height:1.5">⚠️ Estresse alto combinado com baixa satisfação alimentar pode travar o resultado físico mesmo com treino consistente. Vale abordar na próxima sessão.</div>' : ''}
     `;
@@ -1226,7 +1494,7 @@ async function abrirRelatorio(avaliacaoId) {
 
   // Busca todo o histórico desta pessoa (para evolução, rings e deltas)
   const { data: todasAvals } = await db.from('avaliacoes')
-    .select('semana, pct_gordura, score, peso, cintura, habitos_estresse, habitos_vitalidade, created_at')
+    .select('semana, pct_gordura, score, peso, cintura, massa_magra_kg, massa_gorda_kg, habitos_estresse, habitos_vitalidade, created_at')
     .eq('aluna_id', a.aluna_id).order('created_at');
   const hist = todasAvals || [];
 
@@ -1264,29 +1532,51 @@ async function abrirRelatorio(avaliacaoId) {
     const estInv = 10 - (a.habitos_estresse || 5);
     pctVital = Math.round(((vit + estInv) / 20) * 100);
   }
-  // Sono & hábitos: consistência = nº de avaliações com hábitos preenchidos / total (proxy de constância real)
+  // Sono & hábitos: desempenho REAL de sono, água e alimentação (nunca "preencheu o formulário").
+  // Pilar crítico (nota < 4) trava o anel no vermelho: sono péssimo não é compensado por água boa.
   let pctHabitos = null;
-  if (hist.length > 0) {
-    const comHabitos = hist.filter(x => x.habitos_estresse || x.habitos_vitalidade).length;
-    pctHabitos = Math.round((comHabitos / hist.length) * 100);
+  const notasHabitos = [];
+  const sonoNumRing = parseFloat(a.habitos_sono);
+  if (!isNaN(sonoNumRing)) notasHabitos.push(Math.max(0, Math.min(10, (sonoNumRing / 8) * 10)));
+  const aguaNumRing = parseFloat(a.habitos_agua);
+  if (!isNaN(aguaNumRing)) notasHabitos.push(Math.max(0, Math.min(10, (aguaNumRing / metaAguaL(a.peso)) * 10)));
+  if (a.habitos_alimentacao) notasHabitos.push(a.habitos_alimentacao);
+  if (notasHabitos.length) {
+    const mediaNotas = notasHabitos.reduce((t, v) => t + v, 0) / notasHabitos.length;
+    pctHabitos = Math.round(mediaNotas * 10);
+    if (notasHabitos.some(n => n < 4)) pctHabitos = Math.min(pctHabitos, 39);
   }
 
   const ringVals = [pctComp, pctVital, pctHabitos];
   const ringsPreenchidos = ringVals.filter(v => v !== null);
-  const media = ringsPreenchidos.length ? Math.round(ringsPreenchidos.reduce((s,v)=>s+v,0) / ringsPreenchidos.length) : null;
-  document.getElementById('rings-media').textContent = media !== null ? media + '%' : '—';
+  let media = ringsPreenchidos.length ? Math.round(ringsPreenchidos.reduce((t,v)=>t+v,0) / ringsPreenchidos.length) : null;
+  // Um indicador crítico limita a média geral: anel bom não esconde anel vermelho
+  if (media !== null && ringsPreenchidos.some(v => v < 40)) media = Math.min(media, 55);
+  const mediaEl = document.getElementById('rings-media');
+  mediaEl.textContent = media !== null ? media + '%' : '-';
 
+  // Cor do anel = identidade do indicador (estilo Apple Watch). O status vai no selo ao lado.
+  function statusPorDesempenho(pct) {
+    if (pct === null) return {txt:'Sem dados', cor:'#8a8a8a', bg:'rgba(255,255,255,0.06)'};
+    if (pct >= 70) return {txt:'Bom', cor:'#2ee66b', bg:'rgba(46,230,107,0.14)'};
+    if (pct >= 40) return {txt:'Atenção', cor:'#ffc107', bg:'rgba(255,193,7,0.14)'};
+    return {txt:'Crítico', cor:'#ff4444', bg:'rgba(255,68,68,0.14)'};
+  }
   const circunf = {comp: 352, treino: 264, sono: 176};
-  function setRing(circleId, valId, pct, circunferencia) {
+  function setRing(circleId, valId, statusId, pct, circunferencia) {
     const circle = document.getElementById(circleId);
     const valEl = document.getElementById(valId);
-    if (pct === null) { valEl.textContent = 'Sem dados'; circle.style.strokeDashoffset = circunferencia; return; }
-    valEl.textContent = pct + '%';
+    const stEl = document.getElementById(statusId);
+    const st = statusPorDesempenho(pct);
+    if (stEl) { stEl.textContent = st.txt; stEl.style.color = st.cor; stEl.style.background = st.bg; }
+    if (pct === null) { if (valEl) valEl.textContent = '-'; circle.style.strokeDashoffset = circunferencia; return; }
+    if (valEl) valEl.textContent = pct + '%';
     setTimeout(() => { circle.style.strokeDashoffset = circunferencia - (circunferencia * pct / 100); }, 150);
   }
-  setRing('ring-comp', 'ring-comp-val', pctComp, circunf.comp);
-  setRing('ring-treino', 'ring-treino-val', pctVital, circunf.treino);
-  setRing('ring-sono', 'ring-sono-val', pctHabitos, circunf.sono);
+  setRing('ring-comp', 'ring-comp-val', 'ring-comp-status', pctComp, circunf.comp);
+  setRing('ring-treino', 'ring-treino-val', 'ring-treino-status', pctVital, circunf.treino);
+  setRing('ring-sono', 'ring-sono-val', 'ring-sono-status', pctHabitos, circunf.sono);
+  mediaEl.style.color = '#ffffff';
 
   // ── Comparativo com avaliação anterior (deltas reais, nunca fixos) ──
   const idxAtual = hist.findIndex(h => h.created_at === a.created_at);
@@ -1304,18 +1594,115 @@ async function abrirRelatorio(avaliacaoId) {
       const d = +(a.peso - anterior.peso).toFixed(1);
       itens.push({lbl:'Peso', val:a.peso+'kg', d, unidade:'kg', menorMelhor:true});
     }
+    if (a.massa_magra_kg && anterior.massa_magra_kg) {
+      const d = +(a.massa_magra_kg - anterior.massa_magra_kg).toFixed(1);
+      itens.push({lbl:'Massa magra', val:a.massa_magra_kg+'kg', d, unidade:'kg', menorMelhor:false});
+    }
+    if (a.massa_gorda_kg && anterior.massa_gorda_kg) {
+      const d = +(a.massa_gorda_kg - anterior.massa_gorda_kg).toFixed(1);
+      itens.push({lbl:'Massa gorda', val:a.massa_gorda_kg+'kg', d, unidade:'kg', menorMelhor:true});
+    }
     if (a.score !== null && anterior.score !== null) {
       const d = a.score - anterior.score;
       itens.push({lbl:'Score', val:a.score+'pts', d, unidade:'pts', menorMelhor:false});
     }
     deltasGrid.innerHTML = itens.map(it => {
       const melhorou = it.menorMelhor ? it.d < 0 : it.d > 0;
-      const cor = Math.abs(it.d) < 0.05 ? 'var(--gray)' : (melhorou ? 'var(--lime)' : 'var(--red)');
+      const cor = Math.abs(it.d) < 0.05 ? 'var(--gray)' : (melhorou ? '#2ee66b' : 'var(--red)');
       const seta = it.d > 0 ? '↑' : it.d < 0 ? '↓' : '=';
       return `<div class="delta-mini"><div class="delta-mini-lbl">${it.lbl}</div><div class="delta-mini-val">${it.val}</div><div class="delta-mini-sub" style="color:${cor}">${seta} ${Math.abs(it.d)}${it.unidade} vs anterior</div></div>`;
     }).join('') || '<div style="grid-column:1/-1;font-size:11px;color:var(--gray);text-align:center">Sem dados comparáveis na avaliação anterior.</div>';
   } else {
     deltasCard.style.display = 'none';
+  }
+
+  // ── Resumo em 3 pontos + indicadores com escala de referência + metas ──
+  (function renderIndicadoresRobustos() {
+    const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const sexoG = a.sexo || a.alunas?.sexo || 'F';
+    const F = sexoG === 'F';
+    const idadeG = a.idade || a.alunas?.idade;
+    const alturaCm = a.altura ? (a.altura < 3 ? a.altura * 100 : a.altura) : null;
+    const imcG = a.imc || calcularIMCManual(a.peso, a.altura);
+
+    const resumoEl = document.getElementById('rel-resumo');
+    if (resumoEl) {
+      const linhas = [
+        {ico:'📊', tit:'Composição', txt: a.pct_gordura
+          ? 'Gordura em ' + a.pct_gordura + '% (faixa ' + esc(a.faixa_composicao || '-') + ')' + (a.massa_magra_kg ? ', com ' + a.massa_magra_kg + ' kg de massa magra.' : '.')
+          : 'Composição não estimada nesta avaliação (faltaram fotos ou dados).'},
+        {ico:'💪', tit:'Ponto forte', txt: resumoForte || (temHabitos ? 'Nenhum hábito está na faixa Bom ainda. É a maior oportunidade de evolução.' : 'Hábitos de vida não foram registrados nesta avaliação.')},
+        {ico:'🎯', tit:'Ponto de atenção', txt: resumoAtencao || (a.pontos_atencao && a.pontos_atencao[0] ? esc(a.pontos_atencao[0]) : 'Sem alertas relevantes nesta avaliação.')}
+      ];
+      resumoEl.innerHTML = linhas.map(l => '<div class="resumo-item"><div class="resumo-ico">' + l.ico + '</div><div><div class="resumo-tit">' + l.tit + '</div><div class="resumo-txt">' + l.txt + '</div></div></div>').join('');
+    }
+
+    const gaugesEl = document.getElementById('rel-gauges');
+    if (gaugesEl) {
+      const g = [];
+      if (a.pct_gordura) g.push(gaugeHTML({nome:'% de gordura', valor:a.pct_gordura, texto:a.pct_gordura + '%', min: F ? 5 : 3, max: F ? 50 : 40,
+        zonas: F ? [{ate:20,cor:'#4da6ff',rot:'Atlética'},{ate:28,cor:'#2ee66b',rot:'Fitness'},{ate:36,cor:'#ffc107',rot:'Aceitável'},{ate:50,cor:'#ff4444',rot:'Aumentada'}]
+                 : [{ate:10,cor:'#4da6ff',rot:'Atlética'},{ate:18,cor:'#2ee66b',rot:'Fitness'},{ate:25,cor:'#ffc107',rot:'Aceitável'},{ate:40,cor:'#ff4444',rot:'Aumentada'}],
+        explica:'Quanto do seu peso é gordura. A faixa ideal muda conforme o sexo. Atlética e Fitness indicam uma composição muito boa.'}));
+      if (imcG) g.push(gaugeHTML({nome:'IMC', valor:imcG, texto:imcG.toFixed(1), min:14, max:40,
+        zonas:[{ate:18.5,cor:'#4da6ff',rot:'Abaixo'},{ate:25,cor:'#2ee66b',rot:'Adequado'},{ate:30,cor:'#ffc107',rot:'Sobrepeso'},{ate:40,cor:'#ff4444',rot:'Obesidade'}],
+        explica:'Relaciona peso e altura. Não separa gordura de músculo, por isso é lido junto com o % de gordura.'}));
+      if (a.cintura && a.quadril) {
+        const rcq = a.cintura / a.quadril;
+        g.push(gaugeHTML({nome:'Cintura / quadril', valor:rcq, texto:rcq.toFixed(2), min: F ? 0.65 : 0.7, max: F ? 1.0 : 1.15,
+          zonas: F ? [{ate:0.80,cor:'#2ee66b',rot:'Baixo risco'},{ate:0.85,cor:'#ffc107',rot:'Moderado'},{ate:1.0,cor:'#ff4444',rot:'Elevado'}]
+                   : [{ate:0.90,cor:'#2ee66b',rot:'Baixo risco'},{ate:1.0,cor:'#ffc107',rot:'Moderado'},{ate:1.15,cor:'#ff4444',rot:'Elevado'}],
+          explica:'Cintura dividida pelo quadril. Mostra onde a gordura se concentra: acima do ideal indica mais gordura na região abdominal.'}));
+      }
+      if (a.cintura && alturaCm) {
+        const rce = a.cintura / alturaCm;
+        g.push(gaugeHTML({nome:'Cintura / altura', valor:rce, texto:rce.toFixed(2), min:0.35, max:0.75,
+          zonas:[{ate:0.5,cor:'#2ee66b',rot:'Adequada'},{ate:0.6,cor:'#ffc107',rot:'Atenção'},{ate:0.75,cor:'#ff4444',rot:'Elevada'}],
+          explica:'Cintura dividida pela altura. Manter abaixo de 0,50 é a meta mais usada para reduzir risco cardiometabólico.'}));
+      }
+      gaugesEl.innerHTML = g.length ? g.join('') : '<div style="font-size:12px;color:#b5b5b5">Sem dados suficientes para as escalas de referência nesta avaliação.</div>';
+    }
+
+    const infoEl = document.getElementById('rel-info-cards');
+    if (infoEl) {
+      const info = [];
+      if (a.peso && alturaCm && idadeG) {
+        const tmb = Math.round(10 * a.peso + 6.25 * alturaCm - 5 * idadeG + (F ? -161 : 5));
+        info.push(infoCardHTML('Metabolismo basal', tmb + ' kcal', 'Energia que o corpo gasta em repouso, estimada pela fórmula de Mifflin-St Jeor. Não inclui treino nem atividades do dia.'));
+      }
+      if (alturaCm) {
+        const h = alturaCm / 100;
+        const mn = 18.5 * h * h, mx = 24.9 * h * h;
+        const dentro = a.peso && a.peso >= mn && a.peso <= mx;
+        info.push(infoCardHTML('Faixa de peso saudável', mn.toFixed(1) + ' a ' + mx.toFixed(1) + ' kg',
+          'Baseada no IMC adequado (18,5 a 24,9) para a sua altura. ' + (a.peso ? 'Seu peso atual é ' + a.peso + ' kg' + (dentro ? ', dentro da faixa.' : '.') : '') + ' Não considera massa muscular.'));
+      }
+      if (a.pct_gordura && a.massa_magra_kg && a.peso) {
+        const alvo = F ? 28 : 18;
+        if (a.pct_gordura > alvo) {
+          const pesoAlvo = a.massa_magra_kg / (1 - alvo / 100);
+          const perder = a.peso - pesoAlvo;
+          info.push(infoCardHTML('Meta de composição', perder.toFixed(1) + ' kg', 'de gordura a menos para chegar a ' + alvo + '% (limite da faixa Fitness), mantendo a massa magra atual. Peso estimado nessa meta: ' + pesoAlvo.toFixed(1) + ' kg.'));
+        } else {
+          info.push(infoCardHTML('Meta de composição', 'Na faixa', 'Você já está em ' + a.pct_gordura + '%, dentro da faixa Fitness ou melhor. O foco passa a ser manter e ganhar massa magra.'));
+        }
+      }
+      infoEl.innerHTML = info.length ? info.join('') : '<div style="font-size:12px;color:#b5b5b5">Preencha peso, altura e idade para ver estes números.</div>';
+    }
+  })();
+
+  // Próximos passos — mesma informação de pontos_atencao gerada pela IA, em formato visual numerado
+  const proximosCard = document.getElementById('rel-proximos-passos-card');
+  const proximosEl = document.getElementById('rel-proximos-passos');
+  if (a.pontos_atencao?.length) {
+    proximosCard.style.display = 'block';
+    proximosEl.innerHTML = a.pontos_atencao.map((p, i) => `
+      <div class="goal-numbered">
+        <div class="goal-num-circle">${i+1}</div>
+        <div><div class="goal-text-desc">${p}</div></div>
+      </div>`).join('');
+  } else {
+    proximosCard.style.display = 'none';
   }
 
   // Análise completa
