@@ -162,45 +162,43 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .goal-text-title{font-size:12px;font-weight:700;margin-bottom:3px;}
 .goal-text-desc{font-size:11px;color:var(--gray);line-height:1.5;}
 
+.field-hint{font-size:11px;color:#b5b5b5;margin-top:3px;line-height:1.4;}
+.btn-mini{background:transparent;border:1px solid var(--amber);color:var(--amber);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;}
 @media print {
-  @page { size: A4; margin: 12mm; }
-  body { background: #ffffff !important; color: #111111 !important; }
+  @page { size: A4; margin: 10mm; }
+  html, body { background: #080808 !important; color: #ffffff !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   nav, .no-print, .page-tabs { display: none !important; }
   .page { display: none !important; padding: 0 !important; max-width: 100% !important; }
   #page-relatorio.page { display: block !important; }
-  .tab-content { display: block !important; page-break-inside: avoid; margin-bottom: 20px; }
+  .tab-content { display: block !important; margin-bottom: 18px; }
+  .card, .rings-card, .resumo-card, .gauge-card, .info-card, .habit-card, .delta-mini, .goal-big, .goal-numbered, .stage-table-row, .status-check-item { break-inside: avoid; page-break-inside: avoid; }
+  #rel-header { text-align: left !important; }
 
-  /* Header do relatório — fundo lima suave, mais vistoso que card genérico */
-  #rel-header { background: linear-gradient(135deg,#f5fce0,#ffffff) !important; border: none !important; border-left: 5px solid #a8c800 !important; border-radius: 0 !important; padding: 24px 28px !important; margin-bottom: 18px !important; text-align: left !important; }
-  #rel-tag { background: #f0f8d8 !important; border: 1px solid #a8c800 !important; color: #5a7000 !important; }
-  #rel-headline { color: #0a0a0a !important; font-size: 18px !important; font-weight: 800 !important; max-width: 100% !important; }
-  #rel-assinatura { color: #666666 !important; }
-
-  .card, .rings-card, #page-relatorio > div[style*="border-color"] {
-    background: #ffffff !important; border: 1px solid #e3e3e3 !important;
-    box-shadow: none !important; page-break-inside: avoid; margin-bottom: 14px !important; border-radius: 10px !important;
-  }
-  .card-title { color: #6b8f00 !important; font-weight: 800 !important; }
-  #rel-score-num, #rel-nivel, .comp-pct, .hero-num, #rel-pct-gordura, .donut-pct-big { color: #6b9b00 !important; }
-  .rel-faixa-badge, .composicao-faixa { background: #fff3cd !important; color: #7a5c00 !important; border-color: #e6b800 !important; }
-  .ai-output { background: #fafafa !important; border: 1px solid #e3e3e3 !important; color: #222222 !important; }
-  .delta-mini { background: #f7f7f7 !important; border: 1px solid #e3e3e3 !important; }
-  .delta-mini-val { color: #0a0a0a !important; }
-
-  /* Mantém as cores reais dos rings/donut/semáforo — não achata tudo em cinza */
-  svg circle { print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
-  .pyramid-level { print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
-  .status-check-item, .habit-ring-box, .mini-index-box { print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
-
-  .goal-numbered, .goal-big { border-top-color: #e3e3e3 !important; }
-  .habit-card, .gauge-card, .info-card, .resumo-card { background: #ffffff !important; border: 1px solid #e3e3e3 !important; page-break-inside: avoid; }
-  .habit-ring-val, .gauge-value, .resumo-txt { color: #111111 !important; }
-  .gauge-name, .gauge-labels, .gauge-explain, .info-title, .info-sub, .habit-meta { color: #555555 !important; }
-  .info-big, .resumo-tit, .sec-title-big { color: #6b8f00 !important; }
-  .resumo-item { border-top-color: #e3e3e3 !important; }
-  .goal-num-circle, .goal-circle-big { background: #a8c800 !important; color: #ffffff !important; }
-
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  /* Versão clara (botão PDF claro) */
+  html.print-light, html.print-light body { background: #ffffff !important; color: #111111 !important; }
+  html.print-light .card, html.print-light .rings-card, html.print-light .resumo-card, html.print-light .gauge-card, html.print-light .info-card, html.print-light .habit-card { background: #ffffff !important; border: 1px solid #d9d9d9 !important; box-shadow: none !important; }
+  html.print-light .delta-mini, html.print-light .status-check-item, html.print-light .mini-index-box { background: #f6f6f6 !important; border: 1px solid #e0e0e0 !important; }
+  html.print-light .ai-output { background: #fafafa !important; border: 1px solid #d9d9d9 !important; color: #222222 !important; }
+  html.print-light .habit-ring-val, html.print-light .gauge-value, html.print-light .resumo-txt, html.print-light .goal-desc-big, html.print-light .delta-mini-val, html.print-light #rel-headline { color: #111111 !important; }
+  html.print-light .gauge-name, html.print-light .gauge-labels, html.print-light .gauge-explain, html.print-light .info-title, html.print-light .info-sub, html.print-light .habit-meta, html.print-light .ring-name, html.print-light .stage-name, html.print-light .goal-text-desc { color: #444444 !important; }
+  html.print-light .card-title, html.print-light .sec-title-big, html.print-light .resumo-tit, html.print-light .info-big, html.print-light .rings-score { color: #4d6b00 !important; }
+  html.print-light [style*=";color:var(--white)"], html.print-light [style^="color:var(--white)"] { color: #111111 !important; }
+  html.print-light [style*=";color:#fff"], html.print-light [style^="color:#fff"] { color: #111111 !important; }
+  html.print-light [style*=";color:var(--lime)"], html.print-light [style^="color:var(--lime)"] { color: #4d6b00 !important; }
+  html.print-light [style*=";color:#c8f000"], html.print-light [style^="color:#c8f000"] { color: #4d6b00 !important; }
+  html.print-light [style*=";color:#a3e635"], html.print-light [style^="color:#a3e635"] { color: #4d6b00 !important; }
+  html.print-light [style*=";color:#2ee66b"], html.print-light [style^="color:#2ee66b"] { color: #168a3f !important; }
+  html.print-light [style*=";color:#ffc107"], html.print-light [style^="color:#ffc107"] { color: #a06b00 !important; }
+  html.print-light [style*=";color:var(--amber)"], html.print-light [style^="color:var(--amber)"] { color: #a06b00 !important; }
+  html.print-light [style*=";color:#ff4444"], html.print-light [style^="color:#ff4444"] { color: #c62828 !important; }
+  html.print-light [style*=";color:var(--red)"], html.print-light [style^="color:var(--red)"] { color: #c62828 !important; }
+  html.print-light [style*=";color:#22d3ee"], html.print-light [style^="color:#22d3ee"] { color: #0e8fa6 !important; }
+  html.print-light [style*=";color:#b46bff"], html.print-light [style^="color:#b46bff"] { color: #7a35d6 !important; }
+  html.print-light [style*=";color:#ff9f43"], html.print-light [style^="color:#ff9f43"] { color: #c26a12 !important; }
+  html.print-light [style*=";color:#ff5fa2"], html.print-light [style^="color:#ff5fa2"] { color: #c2306f !important; }
+  html.print-light [style*=";color:#3aa0ff"], html.print-light [style^="color:#3aa0ff"] { color: #1767c2 !important; }
+  html.print-light .goal-num-circle, html.print-light .goal-circle-big { background: #a8c800 !important; color: #ffffff !important; }
 }
 .pyramid-container{display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 0;}
 .pyramid-level{height:36px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:11px;font-weight:900;letter-spacing:0.04em;color:var(--bg);transition:all 0.3s;position:relative;text-transform:uppercase;}
@@ -321,7 +319,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   <div class="section-sub">Avaliação física, postural e de composição corporal por IA.</div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
     <div class="card" style="padding:16px;text-align:center;margin-bottom:0"><div style="font-size:26px;font-weight:900;color:var(--lime)" id="stat-ativos">—</div><div style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--gray);text-transform:uppercase;margin-top:3px">Avaliados</div></div>
-    <div class="card" style="padding:16px;text-align:center;margin-bottom:0"><div style="font-size:26px;font-weight:900;color:var(--amber)" id="stat-pendentes">—</div><div style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--gray);text-transform:uppercase;margin-top:3px">Aguard. liberação</div></div>
+    <div class="card" style="padding:16px;text-align:center;margin-bottom:0"><div style="font-size:26px;font-weight:900;color:var(--amber)" id="stat-pendentes">—</div><div style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--gray);text-transform:uppercase;margin-top:3px">Para revisar</div></div>
     <div class="card" style="padding:16px;text-align:center;margin-bottom:0"><div style="font-size:26px;font-weight:900;color:var(--red)" id="stat-risco">—</div><div style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--gray);text-transform:uppercase;margin-top:3px">Sem avaliação recente</div></div>
   </div>
   <div class="card-title">Ação rápida</div>
@@ -348,7 +346,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   </div>
   <div class="card">
     <div class="card-title">Fotos (com grade postural)</div>
-    <div class="card-note">Mesma roupa justa, mesma luz, mesma distância. A grade alinha ombro e quadril para comparação entre semanas. <strong style="color:var(--white)">Fotos processadas localmente — não vão a servidores externos.</strong></div>
+    <div class="card-note">Mesma roupa justa, mesma luz, mesma distância. A grade alinha ombro e quadril para comparação entre semanas. <strong style="color:var(--white)">As fotos são reduzidas no seu aparelho e enviadas à IA (Anthropic) só para a análise. O app não as guarda.</strong></div>
     <div class="photo-grid">
       <div class="photo-slot" id="slot-frente" onclick="triggerUpload('frente')"><div class="posture-grid-overlay"><div class="h-line h-shoulders"></div><div class="h-line h-hips"></div><div class="v-line v-center"></div></div><div class="photo-slot-icon">📸</div><div class="photo-slot-label">Frente</div><input type="file" id="file-frente" accept="image/*" style="display:none" onchange="previewPhoto(this,'slot-frente','frente')"></div>
       <div class="photo-slot" id="slot-lado-d" onclick="triggerUpload('lado-d')"><div class="posture-grid-overlay"><div class="h-line h-shoulders"></div><div class="h-line h-hips"></div><div class="v-line v-center"></div></div><div class="photo-slot-icon">📸</div><div class="photo-slot-label">Lat. Direita</div><input type="file" id="file-lado-d" accept="image/*" style="display:none" onchange="previewPhoto(this,'slot-lado-d','lado-d')"></div>
@@ -371,15 +369,15 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       <div class="field"><label>Abdômen (cm)</label><input type="number" id="med-abdomen" placeholder="89"></div>
     </div>
     <div class="form-grid-3" style="margin-top:12px">
-      <div class="field"><label>Braço (cm)</label><input type="number" id="med-braco" placeholder="32"></div>
-      <div class="field"><label>Coxa (cm)</label><input type="number" id="med-coxa" placeholder="58"></div>
+      <div class="field"><label>Braço direito relaxado (cm)</label><input type="number" id="med-braco" placeholder="32"><div class="field-hint">Braço solto, no ponto médio entre ombro e cotovelo</div></div>
+      <div class="field"><label>Coxa direita, ponto médio (cm)</label><input type="number" id="med-coxa" placeholder="58"><div class="field-hint">Em pé, entre a dobra da virilha e o topo do joelho</div></div>
       <div class="field"><label>IMC</label><div class="imc-display" id="imc-display">—</div></div>
     </div>
   </div>
   <div class="card">
     <div class="card-title">Hábitos de vida (preencha o que souber)</div>
     <div class="form-grid" style="margin-bottom:14px">
-      <div class="field"><label>Horas de sono</label><input type="text" id="hab-sono" placeholder="ex: 7h, irregular"></div>
+      <div class="field"><label>Horas de sono</label><input type="text" id="hab-sono" placeholder="ex: 7 ou 7.5"><div class="field-hint">Use número: para 7h30, escreva 7.5</div></div>
       <div class="field"><label>Água por dia (litros)</label><input type="number" id="hab-agua" placeholder="ex: 2" step="0.1"></div>
     </div>
     <div class="slider-field"><div class="slider-header"><div class="slider-label">Nível de estresse</div><div class="slider-value" id="val-estresse">5</div></div><div class="slider-desc">1 = tranquila, 10 = no limite</div><input type="range" min="1" max="10" value="5" id="sl-estresse" oninput="syncSlider('estresse')"></div>
@@ -387,8 +385,9 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     <div class="slider-field" style="margin-bottom:0"><div class="slider-header"><div class="slider-label">Vitalidade geral</div><div class="slider-value" id="val-vital">5</div></div><div class="slider-desc">1 = cansada o tempo todo, 10 = cheia de energia</div><input type="range" min="1" max="10" value="5" id="sl-vital" oninput="syncSlider('vital')"></div>
   </div>
   <button class="btn btn-primary btn-full" id="btn-analisar" onclick="analisarComIA()">⚡ Gerar análise completa com IA</button>
+  <div id="ai-erro" style="display:none;margin-top:14px"></div>
   <div id="resultado-section" style="display:none;margin-top:20px">
-    <div class="alert alert-warning">🔒 Rascunho interno — o(a) avaliado(a) não vê nada até você clicar em "Liberar".</div>
+    <div class="alert alert-warning">🔒 Rascunho: revise a análise e clique em "Marcar como revisado".</div>
     <div class="card-title" style="margin-bottom:10px">Análise gerada</div>
     <div id="ai-output" class="ai-output"></div>
     <div id="score-composicao-section" style="display:none;margin-top:18px">
@@ -407,13 +406,13 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
             <div><div style="font-size:20px;font-weight:900;color:var(--white)" id="massa-magra-valor">—</div><div style="font-size:9px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px">Massa magra <span id="massa-magra-pct" style="color:var(--gray2)"></span></div></div>
             <div><div style="font-size:20px;font-weight:900;color:var(--white)" id="massa-gorda-valor">—</div><div style="font-size:9px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px">Massa gorda <span id="massa-gorda-pct" style="color:var(--gray2)"></span></div></div>
           </div>
-          <div style="font-size:9px;color:var(--gray2);margin-top:8px">Estimativa por visão computacional. Precisão comparável à bioimpedância (CCC ≥ 0,96 vs DXA). Não substitui avaliação clínica.</div>
+          <div style="font-size:9px;color:var(--gray2);margin-top:8px">Estimativa feita por inteligência artificial a partir das fotos e medidas informadas. Tem margem de erro e não substitui avaliação médica, bioimpedância ou DXA.</div>
         </div>
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
-          <button class="btn btn-gold" id="btn-liberar" onclick="liberarParaPessoa()">🔓 Liberar para avaliado(a)</button>
+          <button class="btn btn-gold" id="btn-liberar" onclick="liberarParaPessoa()">✅ Marcar como revisado</button>
           <button class="btn btn-primary" onclick="abrirRelatorio(avaliacaoAtualId)">📄 Ver Relatório Completo</button>
         </div>
-        <div id="liberado-msg" style="display:none;margin-top:12px" class="alert alert-success">✅ Relatório salvo e liberado!</div>
+        <div id="liberado-msg" style="display:none;margin-top:12px" class="alert alert-success">✅ Relatório salvo e marcado como revisado!</div>
       </div>
     </div>
   </div>
@@ -460,7 +459,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 <div id="page-relatorio" class="page">
   <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px">
     <button class="btn btn-ghost" onclick="showPage('historico')">← Voltar</button>
-    <button class="btn btn-primary" onclick="window.print()">🖨️ Exportar PDF</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" onclick="exportarPDF(false)">🖨️ PDF escuro</button><button class="btn btn-ghost" onclick="exportarPDF(true)">PDF claro</button></div>
   </div>
 
   <div id="rel-header" style="text-align:center;margin-bottom:20px">
@@ -664,7 +663,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   <div class="ai-output" id="rel-analise-completa">—</div>
 
   <div style="font-size:9px;color:var(--gray2);text-align:center;margin-top:20px;line-height:1.6">
-    Estimativa por visão computacional. Precisão comparável à bioimpedância (CCC ≥ 0,96 vs DXA) segundo estudo publicado na Nature Digital Medicine (2025). Não substitui avaliação clínica presencial.
+    Estimativa feita por inteligência artificial a partir das fotos e medidas informadas. Tem margem de erro e não substitui avaliação médica, bioimpedância ou DXA.
   </div>
 </div>
 
@@ -831,7 +830,7 @@ async function carregarPainel() {
   const alertas = document.getElementById('painel-alertas');
   if (total === 0) { alertas.innerHTML = '<div class="alert alert-lime">👋 Bem-vindo! Cadastre o primeiro avaliado para começar.</div>'; return; }
   let html = '';
-  if (pendentes > 0) html += `<div class="alert alert-warning">🟡 ${pendentes} relatório${pendentes>1?'s':''} aguardando liberação.</div>`;
+  if (pendentes > 0) html += `<div class="alert alert-warning">🟡 ${pendentes} relatório${pendentes>1?'s':''} aguardando revisão.</div>`;
   if (semAvalRecente > 0) html += `<div class="alert alert-warning">🔴 ${semAvalRecente} avaliado${semAvalRecente>1?'s':''} sem avaliação há mais de 14 dias.</div>`;
   if (!html) html = '<div class="alert alert-success">✅ Tudo em dia!</div>';
   alertas.innerHTML = html;
@@ -856,6 +855,7 @@ function calcIMC() {
 ['med-peso','med-altura'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', calcIMC); });
 
 document.getElementById('sel-pessoa').addEventListener('change', function() {
+  if (formularioUsado) { limparFotos(); formularioUsado = false; document.getElementById('resultado-section').style.display = 'none'; const er = document.getElementById('ai-erro'); if (er) er.style.display = 'none'; }
   const opt = this.options[this.selectedIndex];
   const row = document.getElementById('pessoa-info-row');
   if (this.value && opt.text !== '— Escolha —') {
@@ -865,34 +865,113 @@ document.getElementById('sel-pessoa').addEventListener('change', function() {
 });
 
 function triggerUpload(angle) { document.getElementById('file-' + angle).click(); }
-function previewPhoto(input, slotId, angle) {
+
+const NOMES_FOTO = {'frente':'Frente','lado-d':'Lateral direita','lado-e':'Lateral esquerda','costas':'Costas'};
+let formularioUsado = false;
+
+// Reduz (lado maior 1280 px) e converte para JPEG no próprio aparelho.
+// Evita estourar o limite de envio do servidor e corrige foto que não abre no celular.
+async function processarFoto(file) {
+  const MAX = 1280;
+  let bmp;
+  try {
+    bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  } catch (e) {
+    bmp = await new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); res(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('abrir')); };
+      img.src = url;
+    });
+  }
+  const w0 = bmp.width || bmp.naturalWidth, h0 = bmp.height || bmp.naturalHeight;
+  if (!w0 || !h0) throw new Error('vazia');
+  const esc = Math.min(1, MAX / Math.max(w0, h0));
+  const w = Math.round(w0 * esc), h = Math.round(h0 * esc);
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
+  ctx.drawImage(bmp, 0, 0, w, h);
+  if (bmp.close) bmp.close();
+  const dataUrl = cv.toDataURL('image/jpeg', 0.82);
+  if (!dataUrl || dataUrl.length < 1000) throw new Error('vazia');
+  return dataUrl;
+}
+
+function resetarSlotFoto(slot) {
+  slot.classList.remove('has-photo');
+  const img = slot.querySelector('img'); if (img) img.remove();
+  const ic = slot.querySelector('.photo-slot-icon'); if (ic) ic.style.display = '';
+  const lb = slot.querySelector('.photo-slot-label'); if (lb) lb.style.display = '';
+}
+
+function atualizarContagemFotos(erroMsg) {
+  const msg = document.getElementById('photos-count-msg');
+  if (!msg) return;
+  if (erroMsg) { msg.textContent = erroMsg; msg.style.color = 'var(--red)'; return; }
+  const count = Object.keys(uploadedPhotos).length;
+  msg.textContent = count === 4 ? '✅ 4 fotos adicionadas: análise postural e % de gordura ativados.' : count + ' de 4 fotos adicionadas.';
+  msg.style.color = count === 4 ? 'var(--lime)' : 'var(--gray)';
+}
+
+function limparFotos() {
+  Object.keys(uploadedPhotos).forEach(k => delete uploadedPhotos[k]);
+  ['frente','lado-d','lado-e','costas'].forEach(ang => {
+    const slot = document.getElementById('slot-' + ang); if (slot) resetarSlotFoto(slot);
+    const f = document.getElementById('file-' + ang); if (f) f.value = '';
+  });
+  atualizarContagemFotos();
+}
+
+async function previewPhoto(input, slotId, angle) {
   if (!input.files || !input.files[0]) return;
   const slot = document.getElementById(slotId);
-  const reader = new FileReader();
-  reader.onload = (e) => {
+  try {
+    const dataUrl = await processarFoto(input.files[0]);
     slot.classList.add('has-photo');
     let img = slot.querySelector('img');
     if (!img) { img = document.createElement('img'); slot.insertBefore(img, slot.querySelector('.posture-grid-overlay')); }
-    img.src = e.target.result;
-    uploadedPhotos[angle] = e.target.result;
+    img.src = dataUrl;
+    uploadedPhotos[angle] = dataUrl;
     slot.querySelector('.photo-slot-icon').style.display = 'none';
     slot.querySelector('.photo-slot-label').style.display = 'none';
-    const count = Object.keys(uploadedPhotos).length;
-    const msg = document.getElementById('photos-count-msg');
-    msg.textContent = count === 4 ? '✅ 4 fotos adicionadas — análise postural e % de gordura ativados.' : `${count} de 4 fotos adicionadas.`;
-    msg.style.color = count === 4 ? 'var(--lime)' : 'var(--gray)';
-  };
-  reader.readAsDataURL(input.files[0]);
+    atualizarContagemFotos();
+  } catch (e) {
+    input.value = '';
+    delete uploadedPhotos[angle];
+    resetarSlotFoto(slot);
+    atualizarContagemFotos('Não consegui abrir a foto "' + (NOMES_FOTO[angle] || angle) + '". No celular, envie a foto para você mesmo no WhatsApp e use a cópia.');
+  }
 }
 
 // ══════════════════════════════
 // IA — ANÁLISE
 // ══════════════════════════════
+function explicarErroIA(err) {
+  const st = err && err.status;
+  const det = String((err && err.detalhe) || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let motivo, dica;
+  if (err && err.tipo === 'cortada') { motivo = 'A resposta da IA veio incompleta.'; dica = 'Tente novamente. Se repetir, me avise.'; }
+  else if (err && err.tipo === 'formato') { motivo = 'A IA respondeu em um formato inesperado.'; dica = 'Tente novamente em instantes.'; }
+  else if (st === 413) { motivo = 'As fotos ficaram pesadas demais para enviar.'; dica = 'Tente com menos fotos ou fotos menores.'; }
+  else if (st === 401 || st === 403) { motivo = 'A chave da IA foi recusada.'; dica = 'No Netlify, confira a variável ANTHROPIC_API_KEY e faça um novo deploy.'; }
+  else if (st === 402 || st === 429) { motivo = 'O limite de uso ou o saldo da conta da IA acabou.'; dica = 'Confira o saldo no console da Anthropic e tente de novo em instantes.'; }
+  else if (st === 404) { motivo = 'O serviço de IA não foi encontrado.'; dica = 'Pode ser a função do Netlify fora do ar (créditos do Netlify) ou um nome de modelo inválido.'; }
+  else if (st === 529) { motivo = 'A IA está sobrecarregada no momento.'; dica = 'Aguarde um minuto e tente de novo.'; }
+  else if (st && st >= 500) { motivo = 'O servidor da IA falhou ou demorou demais.'; dica = 'Aguarde um minuto e tente de novo. Se repetir, veja os logs da função no Netlify.'; }
+  else if (st) { motivo = 'A IA recusou o pedido.'; dica = 'Confira os dados e tente de novo.'; }
+  else { motivo = 'Não consegui falar com o servidor.'; dica = 'Confira a internet e tente de novo.'; }
+  return { motivo: motivo, dica: dica, codigo: st ? 'Erro ' + st : 'Sem resposta', det: det };
+}
+
 async function analisarComIA() {
   const pessoaId = document.getElementById('sel-pessoa').value;
   if (!pessoaId) { alert('Selecione um(a) avaliado(a) antes de gerar a análise.'); return; }
   const btn = document.getElementById('btn-analisar');
   btn.disabled = true; btn.textContent = '⏳ Analisando...';
+  const erroEl = document.getElementById('ai-erro'); if (erroEl) erroEl.style.display = 'none';
   document.getElementById('resultado-section').style.display = 'block';
   document.getElementById('liberado-msg').style.display = 'none';
   document.getElementById('score-composicao-section').style.display = 'none';
@@ -943,7 +1022,7 @@ Estime % de gordura combinando análise visual das fotos com dados antropométri
 INSTRUÇÕES:
 1. SCORE 0–100: estado geral (físico + hábitos). Primeira avaliação = linha de base, não é negativo.
 2. ZONA: Z1(0-30 Alerta), Z2(31-50 Atenção), Z3(51-70 Equilíbrio), Z4(71-85 Alta Performance), Z5(86-100 Excelência).
-3. % GORDURA: número específico (ex: 26.8). Faixas femininas: Atlética <20%, Fitness 20-28%, Aceitável 29-35%, Aumentada >35%. Faixas masculinas: Atlética <10%, Fitness 10-18%, Aceitável 18-25%, Aumentada >25%. Retorne null se dados insuficientes.
+3. % GORDURA: número específico (ex: 26.8). Classificação ACE. Mulheres: Essencial até 13%, Atleta 14-20%, Fitness 21-24%, Aceitável 25-31%, Acima do ideal a partir de 32%. Homens: Essencial até 5%, Atleta 6-13%, Fitness 14-17%, Aceitável 18-24%, Acima do ideal a partir de 25%. Use exatamente estes nomes em faixa_composicao. Retorne null se dados insuficientes.
 4. MASSA MAGRA: se peso foi informado e % de gordura foi calculado, calcule massa_gorda_kg = peso × (pct_gordura/100), e massa_magra_kg = peso − massa_gorda_kg. Ambos com 1 casa decimal. Se peso não foi informado ou pct_gordura é null, retorne ambos como null.
 5. ANÁLISE POSTURAL: resumo objetivo do que foi observado nas fotos.
 6. SUGESTÕES POSTURAIS: para cada região (ombros, quadril, coluna, joelhos) com achado fora do ideal, sugira UMA intervenção prática e específica (ex: alongamento, mobilidade, fortalecimento) em até 12 palavras. Regiões sem alteração não entram neste array — não force sugestão onde não há problema.
@@ -964,38 +1043,39 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
   try {
     const resp = await fetch('/.netlify/functions/api', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1400,messages:[{role:'user',content:contentBlocks}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2500,messages:[{role:'user',content:contentBlocks}]})
     });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    if (!resp.ok) {
+      let det = '';
+      try { const j = await resp.json(); det = (j && j.error && (j.error.message || j.error)) || ''; } catch (e2) {}
+      const e = new Error('HTTP ' + resp.status); e.status = resp.status; e.detalhe = String(det).slice(0, 200); throw e;
+    }
     const data = await resp.json();
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) { const e = new Error('erro'); e.detalhe = String(data.error.message || '').slice(0, 200); throw e; }
     const raw = data.content.map(i => i.text||'').join('');
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('JSON não encontrado');
-    parsed = JSON.parse(jsonMatch[0]);
+    if (!jsonMatch) { const e = new Error('formato'); e.tipo = data.stop_reason === 'max_tokens' ? 'cortada' : 'formato'; throw e; }
+    let obj;
+    try { obj = JSON.parse(jsonMatch[0]); } catch (e3) { const e = new Error('formato'); e.tipo = 'formato'; throw e; }
+    if (typeof obj.score !== 'number' || !obj.zona) { const e = new Error('formato'); e.tipo = 'formato'; throw e; }
+    parsed = obj;
   } catch(err) {
     console.error(err);
-    let alturaNorm = parseFloat(altura);
-    if (alturaNorm && alturaNorm < 3) alturaNorm = alturaNorm * 100;
-    const imc = peso && alturaNorm ? peso / Math.pow(alturaNorm/100,2) : null;
-    const pct = imc && imc < 80 ? Math.round((1.2*imc + 0.23*(parseInt(idade)||35) - 10.8*(sexo==='M'?1:0) - 5.4)*10)/10 : null;
-    const pesoNum = parseFloat(peso);
-    const massaGorda = (pct && pesoNum) ? Math.round(pesoNum * (pct/100) * 10)/10 : null;
-    const massaMagra = (pct && pesoNum) ? Math.round((pesoNum - massaGorda) * 10)/10 : null;
-    parsed = {
-      score:55, zona:'Z3', nivel:'Em Equilíbrio',
-      descricao_nivel:'Modo offline — API não conectada. Configure a chave no Netlify.',
-      pct_gordura: pct, faixa_composicao: getFaixa(pct, sexo),
-      massa_magra_kg: massaMagra, massa_gorda_kg: massaGorda,
-      desc_composicao: pct ? 'Estimativa por equação de Deurenberg (sem fotos/API).' : null,
-      analise_postural: temFotos ? 'API não conectada — análise postural indisponível.' : null,
-      analise:'Análise gerada em modo offline.\n\nPara análise completa com visão computacional (% de gordura por foto e análise postural automática), configure a variável ANTHROPIC_API_KEY no Netlify e faça o redeploy.',
-      pontos_atencao:['Configure a API Anthropic para análise completa.','Adicione as 4 fotos para análise postural e estimativa de % de gordura por IA.']
-    };
+    const ex = explicarErroIA(err);
+    document.getElementById('resultado-section').style.display = 'none';
+    const painel = document.getElementById('ai-erro');
+    if (painel) {
+      painel.innerHTML = '<div class="alert alert-warning"><strong>Não foi possível gerar a análise com IA.</strong><br>' + ex.motivo + '<br><span style="font-weight:400">' + ex.dica + '</span><br><span style="font-weight:400;opacity:0.8">(' + ex.codigo + (ex.det ? ': ' + ex.det : '') + ')</span><br><span style="font-weight:400">Nada foi salvo. Seus dados continuam preenchidos: corrija e tente de novo.</span></div>';
+      painel.style.display = 'block';
+    }
+    btn.disabled = false; btn.textContent = '⚡ Gerar análise completa com IA';
+    return;
   }
+  // classificação ACE calculada pelo app (igual à escala do relatório)
+  if (parsed.pct_gordura) parsed.faixa_composicao = getFaixa(parsed.pct_gordura, sexo);
 
   renderResultado(parsed);
-  const { data: saved } = await db.from('avaliacoes').insert({
+  const { data: saved, error: erroSalvar } = await db.from('avaliacoes').insert({
     aluna_id: pessoaId, semana,
     peso: parseFloat(peso)||null, altura: parseFloat(altura)||null,
     idade: parseInt(idade)||null, sexo,
@@ -1013,14 +1093,40 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
     habitos_vitalidade: parseInt(habVital),
     liberado: false
   }).select().single();
-  if (saved) avaliacaoAtualId = saved.id;
+  if (erroSalvar || !saved) {
+    avaliacaoAtualId = null;
+    const painel = document.getElementById('ai-erro');
+    if (painel) {
+      painel.innerHTML = '<div class="alert alert-warning"><strong>A análise foi gerada, mas NÃO foi salva.</strong><br>' + String((erroSalvar && erroSalvar.message) || 'erro desconhecido').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) + '<br><span style="font-weight:400">Confira se o SQL das colunas foi rodado no Supabase e se o projeto não está pausado.</span></div>';
+      painel.style.display = 'block';
+    }
+    document.getElementById('btn-liberar').disabled = true;
+  } else {
+    avaliacaoAtualId = saved.id;
+    formularioUsado = true;
+    document.getElementById('btn-liberar').disabled = false;
+  }
   btn.disabled = false; btn.textContent = '⚡ Gerar análise completa com IA';
 }
 
-function getFaixa(pct, sexo) {
-  if (!pct) return null;
-  if (sexo === 'F') { if(pct<20)return'Atlética'; if(pct<28)return'Fitness'; if(pct<36)return'Aceitável'; return'Aumentada'; }
-  else { if(pct<10)return'Atlética'; if(pct<18)return'Fitness'; if(pct<25)return'Aceitável'; return'Aumentada'; }
+// Classificação de % de gordura: tabela ACE (American Council on Exercise)
+const FAIXAS_ACE = {
+  F: [{ate:14,rot:'Essencial',cor:'#4da6ff'},{ate:21,rot:'Atleta',cor:'#2ee66b'},{ate:25,rot:'Fitness',cor:'#a3e635'},{ate:32,rot:'Aceitável',cor:'#ffc107'},{ate:60,rot:'Acima do ideal',cor:'#ff5a4d'}],
+  M: [{ate:6,rot:'Essencial',cor:'#4da6ff'},{ate:14,rot:'Atleta',cor:'#2ee66b'},{ate:18,rot:'Fitness',cor:'#a3e635'},{ate:25,rot:'Aceitável',cor:'#ffc107'},{ate:50,rot:'Acima do ideal',cor:'#ff5a4d'}]
+};
+const MAPA_FAIXA_CLASSE = {Essencial:'faixa-atletica',Atleta:'faixa-atletica',Atlética:'faixa-atletica',Fitness:'faixa-fitness',Aceitável:'faixa-aceitavel','Acima do ideal':'faixa-aumentada',Aumentada:'faixa-aumentada'};
+function zonaACE(pct, sexo) {
+  const z = FAIXAS_ACE[sexo === 'M' ? 'M' : 'F'];
+  for (const f of z) if (pct < f.ate) return f;
+  return z[z.length - 1];
+}
+function getFaixa(pct, sexo) { if (!pct) return null; return zonaACE(pct, sexo).rot; }
+
+// Nota do sono (0 a 10): 7 h ou mais = Bom, 5 a 6,9 h = Atenção, abaixo de 5 h = Crítico
+function notaSono(h) {
+  if (h >= 7) return h <= 9 ? 10 : 8;
+  if (h >= 5) return 4 + ((h - 5) / 2) * 2.9;
+  return Math.max(0, (h / 5) * 3.9);
 }
 
 function renderResultado(parsed) {
@@ -1041,7 +1147,7 @@ function renderResultado(parsed) {
     document.getElementById('composicao-pct').textContent = `${parsed.pct_gordura}%`;
     const badge = document.getElementById('composicao-faixa-badge');
     badge.textContent = parsed.faixa_composicao || '—';
-    badge.className = 'composicao-faixa ' + ({Atlética:'faixa-atletica',Fitness:'faixa-fitness',Aceitável:'faixa-aceitavel',Aumentada:'faixa-aumentada'}[parsed.faixa_composicao]||'faixa-fitness');
+    badge.className = 'composicao-faixa ' + (MAPA_FAIXA_CLASSE[parsed.faixa_composicao]||'faixa-fitness');
     document.getElementById('composicao-desc').textContent = parsed.desc_composicao || '';
     const massaRow = document.getElementById('massa-magra-row');
     if (parsed.massa_magra_kg && parsed.massa_gorda_kg) {
@@ -1056,6 +1162,21 @@ function renderResultado(parsed) {
     }
   } else cd.classList.remove('show');
 }
+
+async function marcarRevisado(id, ev) {
+  if (ev) ev.stopPropagation();
+  const { error } = await db.from('avaliacoes').update({liberado:true}).eq('id', id);
+  if (error) { alert('Não consegui marcar como revisado: ' + error.message); return; }
+  await carregarHistorico();
+  await carregarPainel();
+}
+
+// PDF: escuro por padrão (igual ao app) ou claro, para imprimir em papel
+function exportarPDF(claro) {
+  document.documentElement.classList.toggle('print-light', !!claro);
+  setTimeout(function () { window.print(); }, 60);
+}
+window.addEventListener('afterprint', function () { document.documentElement.classList.remove('print-light'); });
 
 async function liberarParaPessoa() {
   if (!avaliacaoAtualId) { alert('Salve a avaliação primeiro.'); return; }
@@ -1114,7 +1235,7 @@ async function carregarHistorico() {
       <div style="display:flex;align-items:center;gap:10px">
         ${a.pct_gordura ? `<div style="font-size:12px;font-weight:700;color:var(--lime)">${a.pct_gordura}%</div>` : ''}
         <div style="font-size:11px;color:var(--gray)">${a.zona||'—'} · ${a.score||'—'} pts</div>
-        ${a.liberado ? '<span style="font-size:9px;color:#4caf50;font-weight:700">LIBERADO</span>' : '<span style="font-size:9px;color:var(--amber);font-weight:700">RASCUNHO</span>'}
+        ${a.liberado ? '<span style="font-size:10px;color:#4caf50;font-weight:700">REVISADO</span>' : '<span style="font-size:10px;color:var(--amber);font-weight:700">PENDENTE</span><button class="btn-mini" onclick="marcarRevisado(\'' + a.id + '\', event)">Marcar revisado</button>'}
         <span style="color:var(--gray);font-size:12px">›</span>
       </div>
     </div>`).join('');
@@ -1135,7 +1256,7 @@ function renderPiramide(zona, score, containerId) {
 // RELATÓRIO COMPLETO
 // ══════════════════════════════
 function getFaixaClasse(faixa) {
-  return {Atlética:'faixa-atletica',Fitness:'faixa-fitness',Aceitável:'faixa-aceitavel',Aumentada:'faixa-aumentada'}[faixa] || 'faixa-fitness';
+  return MAPA_FAIXA_CLASSE[faixa] || 'faixa-fitness';
 }
 
 // Meta de água: referência de 35 ml por kg de peso (2,5 L se o peso não foi informado)
@@ -1433,7 +1554,7 @@ async function abrirRelatorio(avaliacaoId) {
     const habitosNormalizados = [];
     const sonoNum = parseFloat(a.habitos_sono);
     if (a.habitos_sono) {
-      const score10 = isNaN(sonoNum) ? null : Math.max(0, Math.min(10, (sonoNum / 8) * 10));
+      const score10 = isNaN(sonoNum) ? null : notaSono(sonoNum);
       habitosNormalizados.push({icon:'😴', label:'Sono', cor:'#b46bff', display: isNaN(sonoNum) ? String(a.habitos_sono).slice(0,6) : sonoNum + 'h', score10, meta:'Meta: 7 a 9 h por noite'});
     }
     if (a.habitos_agua) {
@@ -1537,7 +1658,7 @@ async function abrirRelatorio(avaliacaoId) {
   let pctHabitos = null;
   const notasHabitos = [];
   const sonoNumRing = parseFloat(a.habitos_sono);
-  if (!isNaN(sonoNumRing)) notasHabitos.push(Math.max(0, Math.min(10, (sonoNumRing / 8) * 10)));
+  if (!isNaN(sonoNumRing)) notasHabitos.push(notaSono(sonoNumRing));
   const aguaNumRing = parseFloat(a.habitos_agua);
   if (!isNaN(aguaNumRing)) notasHabitos.push(Math.max(0, Math.min(10, (aguaNumRing / metaAguaL(a.peso)) * 10)));
   if (a.habitos_alimentacao) notasHabitos.push(a.habitos_alimentacao);
@@ -1640,10 +1761,13 @@ async function abrirRelatorio(avaliacaoId) {
     const gaugesEl = document.getElementById('rel-gauges');
     if (gaugesEl) {
       const g = [];
-      if (a.pct_gordura) g.push(gaugeHTML({nome:'% de gordura', valor:a.pct_gordura, texto:a.pct_gordura + '%', min: F ? 5 : 3, max: F ? 50 : 40,
-        zonas: F ? [{ate:20,cor:'#4da6ff',rot:'Atlética'},{ate:28,cor:'#2ee66b',rot:'Fitness'},{ate:36,cor:'#ffc107',rot:'Aceitável'},{ate:50,cor:'#ff4444',rot:'Aumentada'}]
-                 : [{ate:10,cor:'#4da6ff',rot:'Atlética'},{ate:18,cor:'#2ee66b',rot:'Fitness'},{ate:25,cor:'#ffc107',rot:'Aceitável'},{ate:40,cor:'#ff4444',rot:'Aumentada'}],
-        explica:'Quanto do seu peso é gordura. A faixa ideal muda conforme o sexo. Atlética e Fitness indicam uma composição muito boa.'}));
+      if (a.pct_gordura) {
+        const gmin = F ? 8 : 2, gmax = F ? 45 : 40;
+        const zs = FAIXAS_ACE[F ? 'F' : 'M'].map(z => ({ate: Math.min(z.ate, gmax), cor: z.cor, rot: z.rot}));
+        const idosa = (idadeG && idadeG >= 60) ? ' Acima dos 60 anos, faixas um pouco mais altas costumam ser aceitas: interprete junto com o profissional.' : '';
+        g.push(gaugeHTML({nome:'% de gordura', valor:a.pct_gordura, texto:a.pct_gordura + '%', min:gmin, max:gmax, zonas:zs,
+          explica:'Quanto do seu peso é gordura, comparado com a tabela ACE (American Council on Exercise) para ' + (F ? 'mulheres' : 'homens') + '.' + idosa}));
+      }
       if (imcG) g.push(gaugeHTML({nome:'IMC', valor:imcG, texto:imcG.toFixed(1), min:14, max:40,
         zonas:[{ate:18.5,cor:'#4da6ff',rot:'Abaixo'},{ate:25,cor:'#2ee66b',rot:'Adequado'},{ate:30,cor:'#ffc107',rot:'Sobrepeso'},{ate:40,cor:'#ff4444',rot:'Obesidade'}],
         explica:'Relaciona peso e altura. Não separa gordura de músculo, por isso é lido junto com o % de gordura.'}));
@@ -1678,13 +1802,16 @@ async function abrirRelatorio(avaliacaoId) {
           'Baseada no IMC adequado (18,5 a 24,9) para a sua altura. ' + (a.peso ? 'Seu peso atual é ' + a.peso + ' kg' + (dentro ? ', dentro da faixa.' : '.') : '') + ' Não considera massa muscular.'));
       }
       if (a.pct_gordura && a.massa_magra_kg && a.peso) {
-        const alvo = F ? 28 : 18;
-        if (a.pct_gordura > alvo) {
+        const zs = FAIXAS_ACE[F ? 'F' : 'M'];
+        const idx = zs.indexOf(zonaACE(a.pct_gordura, sexoG));
+        if (idx >= 3) {
+          const alvoZ = zs[idx - 1];
+          const alvo = Math.round(alvoZ.ate - 1);
           const pesoAlvo = a.massa_magra_kg / (1 - alvo / 100);
           const perder = a.peso - pesoAlvo;
-          info.push(infoCardHTML('Meta de composição', perder.toFixed(1) + ' kg', 'de gordura a menos para chegar a ' + alvo + '% (limite da faixa Fitness), mantendo a massa magra atual. Peso estimado nessa meta: ' + pesoAlvo.toFixed(1) + ' kg.'));
+          info.push(infoCardHTML('Meta de composição', perder.toFixed(1) + ' kg', 'de gordura a menos para chegar a ' + alvo + '% (faixa ' + alvoZ.rot + '), mantendo a massa magra atual. Peso estimado nessa meta: ' + pesoAlvo.toFixed(1) + ' kg.'));
         } else {
-          info.push(infoCardHTML('Meta de composição', 'Na faixa', 'Você já está em ' + a.pct_gordura + '%, dentro da faixa Fitness ou melhor. O foco passa a ser manter e ganhar massa magra.'));
+          info.push(infoCardHTML('Meta de composição', 'Na faixa', 'Você já está em ' + a.pct_gordura + '%, na faixa Fitness ou melhor. O foco passa a ser manter e ganhar massa magra.'));
         }
       }
       infoEl.innerHTML = info.length ? info.join('') : '<div style="font-size:12px;color:#b5b5b5">Preencha peso, altura e idade para ver estes números.</div>';
