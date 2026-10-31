@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Evolução — Avaliação Física</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap');
 :root{--bg:#080808;--surface:#111111;--surface2:#1a1a1a;--border:#222222;--lime:#c8f000;--lime-dim:rgba(200,240,0,0.12);--lime-glow:rgba(200,240,0,0.25);--white:#ffffff;--gray:#666666;--gray2:#444444;--red:#ff4444;--amber:#ffc107;}
@@ -164,8 +165,16 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 
 .field-hint{font-size:11px;color:#b5b5b5;margin-top:3px;line-height:1.4;}
 .btn-mini{background:transparent;border:1px solid var(--amber);color:var(--amber);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;}
+.print-only{display:none}
+.ant-hint{font-size:10px;color:#8a8a8a;margin-top:3px;min-height:12px}
+.ant-hint b{color:#c8f000;font-weight:700}
+#wa-stage{position:fixed;left:-20000px;top:0;width:1080px;z-index:-1}
 @media print {
-  @page { size: A4; margin: 10mm; }
+  @page { size: A4; margin: 10mm 10mm 16mm 10mm; }
+  .print-only{display:block !important}
+  #rel-capa{page-break-after:always;text-align:center;padding-top:60mm}
+  #rel-rodape-fixo{position:fixed;bottom:0;left:0;right:0;text-align:center;font-size:9px;color:#8a8a8a;padding-top:4px;border-top:1px solid #333}
+  html.print-light #rel-rodape-fixo{color:#555 !important;border-top:1px solid #ddd}
   html, body { background: #080808 !important; color: #ffffff !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   nav, .no-print, .page-tabs { display: none !important; }
@@ -283,7 +292,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     <div class="modal-title">Novo Avaliado</div>
     <div class="form-grid" style="margin-bottom:14px">
       <div class="field"><label>Nome completo</label><input type="text" id="cad-nome" placeholder="ex: Maria Silva"></div>
-      <div class="field"><label>Telefone / WhatsApp</label><input type="text" id="cad-tel" placeholder="ex: 85 99999-9999"></div>
+      <div class="field"><label>Telefone / WhatsApp</label><input type="text" id="cad-tel" placeholder="ex: 85 98917-6626"></div>
     </div>
     <div class="form-grid-3" style="margin-bottom:14px">
       <div class="field"><label>Idade</label><input type="number" id="cad-idade" placeholder="38"></div>
@@ -329,6 +338,10 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   </div>
   <div class="card-title">Alertas</div>
   <div id="painel-alertas"><div class="alert alert-lime">Carregando...</div></div>
+  <div class="card" id="painel-custo" style="display:none;margin-top:16px">
+    <div class="card-title">Custo da IA (uso interno)</div>
+    <div id="painel-custo-body" style="font-size:12px;color:var(--gray);line-height:1.7"></div>
+  </div>
 </div>
 
 <!-- AVALIAÇÃO -->
@@ -358,19 +371,19 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   <div class="card">
     <div class="card-title">Medidas</div>
     <div class="form-grid-4">
-      <div class="field"><label>Peso (kg)</label><input type="number" id="med-peso" placeholder="68" step="0.1"></div>
-      <div class="field"><label>Altura em cm (ex: 165)</label><input type="number" id="med-altura" placeholder="Ex: 165"></div>
+      <div class="field"><label>Peso (kg)</label><input type="number" id="med-peso" placeholder="68" step="0.1"><div class="ant-hint" id="ant-med-peso"></div></div>
+      <div class="field"><label>Altura em cm (ex: 165)</label><input type="number" id="med-altura" placeholder="Ex: 165"><div class="ant-hint" id="ant-med-altura"></div></div>
       <div class="field"><label>Idade</label><input type="number" id="med-idade" placeholder="38"></div>
       <div class="field"><label>Sexo</label><select id="med-sexo"><option value="F">Feminino</option><option value="M">Masculino</option></select></div>
     </div>
     <div class="form-grid-3" style="margin-top:12px">
-      <div class="field"><label>Cintura (cm)</label><input type="number" id="med-cintura" placeholder="82"></div>
-      <div class="field"><label>Quadril (cm)</label><input type="number" id="med-quadril" placeholder="100"></div>
-      <div class="field"><label>Abdômen (cm)</label><input type="number" id="med-abdomen" placeholder="89"></div>
+      <div class="field"><label>Cintura (cm)</label><input type="number" id="med-cintura" placeholder="82"><div class="ant-hint" id="ant-med-cintura"></div></div>
+      <div class="field"><label>Quadril (cm)</label><input type="number" id="med-quadril" placeholder="100"><div class="ant-hint" id="ant-med-quadril"></div></div>
+      <div class="field"><label>Abdômen (cm)</label><input type="number" id="med-abdomen" placeholder="89"><div class="ant-hint" id="ant-med-abdomen"></div></div>
     </div>
     <div class="form-grid-3" style="margin-top:12px">
-      <div class="field"><label>Braço direito relaxado (cm)</label><input type="number" id="med-braco" placeholder="32"><div class="field-hint">Braço solto, no ponto médio entre ombro e cotovelo</div></div>
-      <div class="field"><label>Coxa direita, ponto médio (cm)</label><input type="number" id="med-coxa" placeholder="58"><div class="field-hint">Em pé, entre a dobra da virilha e o topo do joelho</div></div>
+      <div class="field"><label>Braço direito relaxado (cm)</label><input type="number" id="med-braco" placeholder="32"><div class="ant-hint" id="ant-med-braco"></div><div class="field-hint">Braço solto, no ponto médio entre ombro e cotovelo</div></div>
+      <div class="field"><label>Coxa direita, ponto médio (cm)</label><input type="number" id="med-coxa" placeholder="58"><div class="ant-hint" id="ant-med-coxa"></div><div class="field-hint">Em pé, entre a dobra da virilha e o topo do joelho</div></div>
       <div class="field"><label>IMC</label><div class="imc-display" id="imc-display">—</div></div>
     </div>
   </div>
@@ -459,13 +472,15 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 <div id="page-relatorio" class="page">
   <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px">
     <button class="btn btn-ghost" onclick="showPage('historico')">← Voltar</button>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" onclick="exportarPDF(false)">🖨️ PDF escuro</button><button class="btn btn-ghost" onclick="exportarPDF(true)">PDF claro</button></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" onclick="exportarPDF(false)">🖨️ PDF escuro</button><button class="btn btn-ghost" onclick="exportarPDF(true)">PDF claro</button><button class="btn btn-ghost" onclick="gerarImagemWhatsApp()" id="btn-wa-img">🖼️ Imagem p/ WhatsApp</button></div>
   </div>
+
+  <div id="rel-capa" class="print-only"></div>
 
   <div id="rel-header" style="text-align:center;margin-bottom:20px">
     <div style="display:inline-block;background:var(--lime-dim);border:1px solid var(--lime);color:var(--lime);font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:10px" id="rel-tag">Carregando...</div>
     <div id="rel-headline" style="font-size:15px;color:var(--white);line-height:1.6;max-width:480px;margin:0 auto;font-weight:700"></div>
-    <div id="rel-assinatura" style="font-size:10px;color:var(--gray);margin-top:12px;letter-spacing:0.02em">Thiago Santos · CREF 6104-G/CE · Apoio técnico — não substitui avaliação clínica</div>
+    <div id="rel-assinatura" style="font-size:10px;color:var(--gray);margin-top:12px;letter-spacing:0.02em">Avaliação realizada por Thiago Santos · Personal Trainer · CREF 6104-G/CE</div>
   </div>
 
   <!-- Hero score -->
@@ -514,7 +529,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       <div class="ring-row"><span class="ring-bullet" style="background:#c8f000"></span><span class="ring-name">Composição</span><span class="ring-val" id="ring-comp-val" style="color:#c8f000">-</span><span class="ring-status" id="ring-comp-status"></span></div>
       <div class="ring-row"><span class="ring-bullet" style="background:#22d3ee"></span><span class="ring-name">Vitalidade</span><span class="ring-val" id="ring-treino-val" style="color:#22d3ee">-</span><span class="ring-status" id="ring-treino-status"></span></div>
       <div class="ring-row"><span class="ring-bullet" style="background:#b46bff"></span><span class="ring-name">Sono &amp; Hábitos</span><span class="ring-val" id="ring-sono-val" style="color:#b46bff">-</span><span class="ring-status" id="ring-sono-status"></span></div>
-      <div style="font-size:12px;color:#c4c4c4;margin-top:10px;line-height:1.6">A cor do anel identifica o indicador. O selo mostra o status: <span style="color:#2ee66b">●</span> Bom <span style="color:#ffc107">●</span> Atenção <span style="color:#ff4444">●</span> Crítico. Um indicador crítico limita a média geral.</div>
+      <div style="font-size:12px;color:#c4c4c4;margin-top:10px;line-height:1.6"><b style="color:#fff">O que cada anel mede.</b> <b>Composição:</b> quão perto seu % de gordura está da faixa ideal. <b>Vitalidade:</b> energia e estresse que você relatou. <b>Sono &amp; Hábitos:</b> sono, água e alimentação em relação à meta.<br>Selos: <span style="color:#2ee66b">●</span> Bom (70% ou mais) <span style="color:#ffc107">●</span> Atenção (40 a 69%) <span style="color:#ff4444">●</span> Crítico (abaixo de 40%). A média não passa de 55% quando algum indicador está crítico: ela mostra onde focar, não é uma nota de aprovação.</div>
     </div>
   </div>
 
@@ -532,6 +547,9 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       <div class="card-title" style="margin-bottom:6px">Resumo em 3 pontos</div>
       <div id="rel-resumo"></div>
     </div>
+    <div class="card" id="rel-score-explica" style="display:none;margin-bottom:14px"></div>
+    <div class="card" id="rel-metas" style="display:none;margin-bottom:14px"></div>
+    <div class="card" id="rel-habitos-como" style="display:none;margin-bottom:14px"></div>
     <div class="rel-grid-3">
 
       <!-- Coluna 1: Score + Zona (replica o hero, versão compacta p/ grid) -->
@@ -662,16 +680,26 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   <div class="card-title" style="margin-top:8px">Análise técnica completa</div>
   <div class="ai-output" id="rel-analise-completa">—</div>
 
+  <div id="rel-rodape-fixo" class="print-only"></div>
+
   <div style="font-size:9px;color:var(--gray2);text-align:center;margin-top:20px;line-height:1.6">
-    Estimativa feita por inteligência artificial a partir das fotos e medidas informadas. Tem margem de erro e não substitui avaliação médica, bioimpedância ou DXA.
+    Estimativas geradas por inteligência artificial a partir das fotos e das medidas informadas, com margem de erro. Este relatório orienta treino e hábitos e não é diagnóstico médico: não substitui bioimpedância, DXA nem a avaliação de médico ou nutricionista.
   </div>
 </div>
+
+<div id="wa-stage"></div>
 
 <script>
 // ══════════════════════════════
 // CONFIG
 // ══════════════════════════════
 const SENHA_ACESSO = 'oteupersonal2025';
+
+// ─── EDITE AQUI: seus contatos (aparecem no rodapé do PDF e na imagem de WhatsApp) ───
+const CONTATO = { instagram: '@oteupersonal_', whatsapp: '(85) 99999-9999', cref: 'CREF 6104-G/CE', nome: 'Thiago Santos' };
+// ─── EDITE AQUI se o preço da IA mudar (dólares por 1 milhão de tokens) e a cotação ───
+const PRECO_IA = { entrada: 3, saida: 15, dolar: 5.5 };
+function custoReais(tin, tout) { return ((tin||0)/1e6*PRECO_IA.entrada + (tout||0)/1e6*PRECO_IA.saida) * PRECO_IA.dolar; }
 const SUPABASE_URL = 'https://alngxjzcncaocegckdof.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_MKZizcLZSuHfKcXFrB1s9Q_uQUZyCL0';
 
@@ -767,6 +795,8 @@ async function carregarSelectPessoas() {
 async function salvarPessoa() {
   const nome = document.getElementById('cad-nome').value.trim();
   if (!nome) { document.getElementById('cad-erro').textContent = 'Nome é obrigatório.'; document.getElementById('cad-erro').style.display = 'block'; return; }
+  const { data: jaExiste } = await db.from('alunas').select('id, nome').ilike('nome', nome);
+  if (jaExiste && jaExiste.length && !confirm('Já existe um cadastro com o nome "' + jaExiste[0].nome + '".\n\nCadastrar mesmo assim? (clique em Cancelar para evitar duplicado)')) return;
   const { error } = await db.from('alunas').insert({
     nome, telefone: document.getElementById('cad-tel').value,
     idade: parseInt(document.getElementById('cad-idade').value) || null,
@@ -784,11 +814,12 @@ async function salvarPessoa() {
 }
 
 async function carregarPessoasLista() {
-  const { data } = await db.from('alunas').select('*, avaliacoes(score, zona, pct_gordura, liberado, created_at)').order('nome');
+  let { data, error: erroLista } = await db.from('alunas').select('*, avaliacoes(score, zona, pct_gordura, liberado, created_at, arquivada)').order('nome');
+  if (erroLista) ({ data } = await db.from('alunas').select('*, avaliacoes(score, zona, pct_gordura, liberado, created_at)').order('nome'));
   const container = document.getElementById('pessoas-list');
   if (!data || data.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">Nenhum avaliado cadastrado</div><div class="empty-sub">Clique em "+ Novo avaliado" para começar.</div></div>'; return; }
   container.innerHTML = data.map(a => {
-    const avals = a.avaliacoes || [];
+    const avals = (a.avaliacoes || []).filter(x => !x.arquivada);
     const ultima = avals.sort((x,y) => new Date(y.created_at) - new Date(x.created_at))[0];
     const pendentes = avals.filter(x => !x.liberado).length;
     const diasSemAval = ultima ? Math.floor((Date.now() - new Date(ultima.created_at)) / 86400000) : 999;
@@ -834,7 +865,59 @@ async function carregarPainel() {
   if (semAvalRecente > 0) html += `<div class="alert alert-warning">🔴 ${semAvalRecente} avaliado${semAvalRecente>1?'s':''} sem avaliação há mais de 14 dias.</div>`;
   if (!html) html = '<div class="alert alert-success">✅ Tudo em dia!</div>';
   alertas.innerHTML = html;
+  carregarCustoIA();
 }
+
+// Custo da IA: só aparece no Painel, nunca no relatório nem no PDF do cliente
+async function carregarCustoIA() {
+  const card = document.getElementById('painel-custo');
+  const body = document.getElementById('painel-custo-body');
+  if (!card || !body) return;
+  const { data, error } = await db.from('avaliacoes').select('created_at, tokens_entrada, tokens_saida').order('created_at');
+  if (error || !data || !data.length) { card.style.display = 'none'; return; }
+  const comTokens = data.filter(x => x.tokens_entrada || x.tokens_saida);
+  if (!comTokens.length) { card.style.display = 'none'; return; }
+  const brl = v => 'R$ ' + v.toFixed(2).replace('.', ',');
+  const agora = new Date();
+  const doMes = comTokens.filter(x => { const d = new Date(x.created_at); return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear(); });
+  const soma = arr => arr.reduce((t, x) => t + custoReais(x.tokens_entrada, x.tokens_saida), 0);
+  const ultima = comTokens[comTokens.length - 1];
+  const totalMes = soma(doMes), totalGeral = soma(comTokens);
+  const media = totalGeral / comTokens.length;
+  body.innerHTML =
+    'Última avaliação: <b style="color:var(--white)">' + brl(custoReais(ultima.tokens_entrada, ultima.tokens_saida)) + '</b><br>' +
+    'Este mês (' + doMes.length + ' avaliaç' + (doMes.length === 1 ? 'ão' : 'ões') + '): <b style="color:var(--white)">' + brl(totalMes) + '</b><br>' +
+    'Média por avaliação: <b style="color:var(--white)">' + brl(media) + '</b><br>' +
+    'Total acumulado (' + comTokens.length + '): <b style="color:var(--white)">' + brl(totalGeral) + '</b>' +
+    '<div style="font-size:10px;color:var(--gray2);margin-top:8px">Estimativa pela cotação e pelo preço configurados no código. Avaliações antigas, feitas antes deste controle, não entram na conta.</div>';
+  card.style.display = 'block';
+}
+
+// ── Arquivar, restaurar e apagar avaliações ──
+async function arquivarAvaliacao(id, ev, restaurar) {
+  if (ev) ev.stopPropagation();
+  const { error } = await db.from('avaliacoes').update({ arquivada: !restaurar }).eq('id', id);
+  if (error) {
+    alert(/column|coluna|schema cache|arquivada/i.test(error.message || '')
+      ? 'Falta criar a coluna "arquivada" no Supabase. Rode o SQL que o Claude te passou e tente de novo.'
+      : 'Não foi possível arquivar: ' + error.message);
+    return;
+  }
+  await carregarHistorico(); await carregarPessoasLista(); await carregarPainel();
+}
+
+async function apagarAvaliacao(id, ev) {
+  if (ev) ev.stopPropagation();
+  if (!confirm('Apagar esta avaliação em definitivo?\n\nNão tem como desfazer. Se é só para tirar da lista, use Arquivar.')) return;
+  if (!confirm('Tem certeza mesmo? Esta é a última confirmação.')) return;
+  const { error } = await db.from('avaliacoes').delete().eq('id', id);
+  if (error) { alert('Não foi possível apagar: ' + error.message); return; }
+  if (avaliacaoAtualId === id) avaliacaoAtualId = null;
+  await carregarHistorico(); await carregarPessoasLista(); await carregarPainel();
+}
+
+let mostrarArquivadas = false;
+function alternarArquivadas() { mostrarArquivadas = !mostrarArquivadas; carregarHistorico(); }
 
 // ══════════════════════════════
 // FORMULÁRIO
@@ -854,14 +937,39 @@ function calcIMC() {
 }
 ['med-peso','med-altura'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', calcIMC); });
 
-document.getElementById('sel-pessoa').addEventListener('change', function() {
+const CAMPOS_ANT = [['med-peso','peso','kg'],['med-altura','altura','cm'],['med-cintura','cintura','cm'],['med-quadril','quadril','cm'],['med-abdomen','abdomen','cm'],['med-braco','braco','cm'],['med-coxa','coxa','cm']];
+function limparDicasAnteriores() { CAMPOS_ANT.forEach(([id]) => { const el = document.getElementById('ant-' + id); if (el) el.innerHTML = ''; }); }
+
+document.getElementById('sel-pessoa').addEventListener('change', async function() {
   if (formularioUsado) { limparFotos(); formularioUsado = false; document.getElementById('resultado-section').style.display = 'none'; const er = document.getElementById('ai-erro'); if (er) er.style.display = 'none'; }
   const opt = this.options[this.selectedIndex];
   const row = document.getElementById('pessoa-info-row');
-  if (this.value && opt.text !== '— Escolha —') {
-    row.style.display = 'block';
-    row.innerHTML = `<strong style="color:var(--lime)">${opt.text}</strong>`;
-  } else { row.style.display = 'none'; }
+  limparDicasAnteriores();
+  if (!this.value || opt.text === '— Escolha —') { row.style.display = 'none'; return; }
+  row.style.display = 'block';
+  row.innerHTML = `<strong style="color:var(--lime)">${opt.text}</strong>`;
+
+  // Preenche idade e sexo do cadastro: não precisa digitar de novo
+  const { data: pessoa } = await db.from('alunas').select('idade, sexo').eq('id', this.value).single();
+  if (pessoa) {
+    if (pessoa.idade) document.getElementById('med-idade').value = pessoa.idade;
+    if (pessoa.sexo) document.getElementById('med-sexo').value = pessoa.sexo;
+  }
+
+  // Rótulo do ciclo automático e medidas da avaliação anterior como referência
+  const { data: antes } = await db.from('avaliacoes').select('*').eq('aluna_id', this.value).order('created_at');
+  const validas = (antes || []).filter(x => !x.arquivada);
+  document.getElementById('semana-treino').value = 'Avaliação ' + (validas.length + 1);
+  if (validas.length) {
+    const ult = validas[validas.length - 1];
+    const quando = new Date(ult.created_at).toLocaleDateString('pt-BR');
+    row.innerHTML += `<br>Última avaliação em ${quando} (${ult.semana || '—'}). Os valores em verde abaixo são os daquele dia.`;
+    if (ult.altura) document.getElementById('med-altura').value = ult.altura;
+    CAMPOS_ANT.forEach(([id, chave, un]) => {
+      const el = document.getElementById('ant-' + id);
+      if (el && ult[chave]) el.innerHTML = 'Anterior: <b>' + ult[chave] + ' ' + un + '</b>';
+    });
+  }
 });
 
 function triggerUpload(angle) { document.getElementById('file-' + angle).click(); }
@@ -978,6 +1086,20 @@ async function analisarComIA() {
   document.getElementById('composicao-display').classList.remove('show');
   document.getElementById('ai-output').innerHTML = `<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:8px">Processando${Object.keys(uploadedPhotos).length ? ' fotos e' : ''} dados...</span></div>`;
 
+  const LIMITES = [['med-peso','Peso',25,400,'kg'],['med-altura','Altura',100,250,'cm'],['med-idade','Idade',10,110,'anos'],['med-cintura','Cintura',40,250,'cm'],['med-quadril','Quadril',40,250,'cm'],['med-abdomen','Abdômen',40,250,'cm'],['med-braco','Braço',15,80,'cm'],['med-coxa','Coxa',20,120,'cm']];
+  const foraDoLimite = [];
+  LIMITES.forEach(([id, rot, mn, mx, un]) => {
+    const v = parseFloat(document.getElementById(id).value);
+    if (!isNaN(v) && (v < mn || v > mx)) foraDoLimite.push(rot + ': ' + v + ' ' + un + ' (esperado entre ' + mn + ' e ' + mx + ')');
+  });
+  if (foraDoLimite.length) {
+    btn.disabled = false; btn.textContent = '⚡ Gerar análise completa com IA';
+    document.getElementById('resultado-section').style.display = 'none';
+    const pe = document.getElementById('ai-erro');
+    if (pe) { pe.innerHTML = '<div class="alert alert-warning"><strong>Confira estas medidas antes de gerar:</strong><br>' + foraDoLimite.join('<br>') + '<br><span style="font-weight:400">Parece erro de digitação. Nada foi enviado para a IA.</span></div>'; pe.style.display = 'block'; }
+    return;
+  }
+
   const semana = document.getElementById('semana-treino').value || 'Semana 1';
   const peso = document.getElementById('med-peso').value;
   const altura = document.getElementById('med-altura').value;
@@ -1026,8 +1148,8 @@ INSTRUÇÕES:
 4. MASSA MAGRA: se peso foi informado e % de gordura foi calculado, calcule massa_gorda_kg = peso × (pct_gordura/100), e massa_magra_kg = peso − massa_gorda_kg. Ambos com 1 casa decimal. Se peso não foi informado ou pct_gordura é null, retorne ambos como null.
 5. ANÁLISE POSTURAL: resumo objetivo do que foi observado nas fotos.
 6. SUGESTÕES POSTURAIS: para cada região (ombros, quadril, coluna, joelhos) com achado fora do ideal, sugira UMA intervenção prática e específica (ex: alongamento, mobilidade, fortalecimento) em até 12 palavras. Regiões sem alteração não entram neste array — não force sugestão onde não há problema.
-7. ANÁLISE GERAL: 3–4 parágrafos, direto, técnico, sem clichês. Cite dados específicos.
-8. PONTOS DE ATENÇÃO: 2–3 itens concretos e acionáveis.
+7. ANÁLISE GERAL: 3–4 parágrafos, direto, técnico, sem clichês. Cite dados específicos. Linguagem simples: se usar um termo técnico, explique entre parênteses em poucas palavras.
+8. PONTOS DE ATENÇÃO: 2–3 itens. Cada item diz O QUE fazer e COMO fazer, com passos práticos e números (ex.: horário de dormir, minutos de caminhada, séries por semana). Nunca escreva só "controlar o cortisol" ou "melhorar o sono": diga as ações concretas. Não prescreva dieta, calorias ou suplementos: para alimentação, oriente o básico e indique nutricionista.
 
 RESPONDA SOMENTE em JSON válido, sem markdown:
 {"score":62,"zona":"Z3","nivel":"Em Equilíbrio","descricao_nivel":"texto curto","pct_gordura":26.8,"faixa_composicao":"Aceitável","desc_composicao":"observação das fotos","massa_magra_kg":51.2,"massa_gorda_kg":18.8,"analise_postural":"ombros nivelados, leve hiperlordose lombar, joelhos alinhados","sugestoes_posturais":[{"regiao":"Coluna","achado":"Hiperlordose lombar leve","intervencao":"Fortalecimento de core e alongamento de flexores de quadril"}],"analise":"texto","pontos_atencao":["item1","item2"]}`;
@@ -1039,7 +1161,7 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
   });
   contentBlocks.push({type:'text',text:promptText});
 
-  let parsed = null;
+  let parsed = null, usoIA = null;
   try {
     const resp = await fetch('/.netlify/functions/api', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -1051,6 +1173,7 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
       const e = new Error('HTTP ' + resp.status); e.status = resp.status; e.detalhe = String(det).slice(0, 200); throw e;
     }
     const data = await resp.json();
+    usoIA = data.usage || null;
     if (data.error) { const e = new Error('erro'); e.detalhe = String(data.error.message || '').slice(0, 200); throw e; }
     const raw = data.content.map(i => i.text||'').join('');
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
@@ -1075,7 +1198,7 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
   if (parsed.pct_gordura) parsed.faixa_composicao = getFaixa(parsed.pct_gordura, sexo);
 
   renderResultado(parsed);
-  const { data: saved, error: erroSalvar } = await db.from('avaliacoes').insert({
+  const payloadAval = {
     aluna_id: pessoaId, semana,
     peso: parseFloat(peso)||null, altura: parseFloat(altura)||null,
     idade: parseInt(idade)||null, sexo,
@@ -1091,8 +1214,17 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
     habitos_sono: habSono||null, habitos_agua: habAgua||null,
     habitos_estresse: parseInt(habEstresse), habitos_alimentacao: parseInt(habAlim),
     habitos_vitalidade: parseInt(habVital),
-    liberado: false
-  }).select().single();
+    liberado: false,
+    tokens_entrada: usoIA ? usoIA.input_tokens : null,
+    tokens_saida: usoIA ? usoIA.output_tokens : null
+  };
+  let { data: saved, error: erroSalvar } = await db.from('avaliacoes').insert(payloadAval).select().single();
+  // Se as colunas de tokens ainda não existirem no banco, salva sem elas em vez de perder a avaliação
+  if (erroSalvar && /column|coluna|schema cache|tokens_/i.test(erroSalvar.message || '')) {
+    const semTokens = Object.assign({}, payloadAval);
+    delete semTokens.tokens_entrada; delete semTokens.tokens_saida;
+    ({ data: saved, error: erroSalvar } = await db.from('avaliacoes').insert(semTokens).select().single());
+  }
   if (erroSalvar || !saved) {
     avaliacaoAtualId = null;
     const painel = document.getElementById('ai-erro');
@@ -1226,19 +1358,27 @@ async function carregarHistorico() {
       <div style="font-size:13px;font-weight:700;color:${diff<0?'var(--lime)':'var(--red)'}">${diff>0?'+':''}${diff} pontos percentuais</div>`;
   }
 
-  document.getElementById('hist-lista-avaliacoes').innerHTML = [...avals].reverse().map(a => `
+  const arquivadas = avals.filter(x => x.arquivada);
+  const visiveis = mostrarArquivadas ? arquivadas : avals.filter(x => !x.arquivada);
+  const topo = `<div class="no-print" style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;font-size:11px;color:var(--gray)">
+      <span>${mostrarArquivadas ? 'Mostrando as arquivadas' : visiveis.length + ' avaliação(ões) ativa(s)'}</span>
+      ${arquivadas.length || mostrarArquivadas ? `<button class="btn-mini" onclick="alternarArquivadas()">${mostrarArquivadas ? '← Voltar para as ativas' : 'Ver arquivadas (' + arquivadas.length + ')'}</button>` : ''}
+    </div>`;
+  const linhas = [...visiveis].reverse().map(a => `
     <div class="hist-avaliacao-item" style="cursor:pointer" onclick="abrirRelatorio('${a.id}')">
       <div>
         <div style="font-size:12px;font-weight:700">${a.semana||'Avaliação'}</div>
         <div style="font-size:10px;color:var(--gray)">${new Date(a.created_at).toLocaleDateString('pt-BR')}</div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
         ${a.pct_gordura ? `<div style="font-size:12px;font-weight:700;color:var(--lime)">${a.pct_gordura}%</div>` : ''}
         <div style="font-size:11px;color:var(--gray)">${a.zona||'—'} · ${a.score||'—'} pts</div>
         ${a.liberado ? '<span style="font-size:10px;color:#4caf50;font-weight:700">REVISADO</span>' : '<span style="font-size:10px;color:var(--amber);font-weight:700">PENDENTE</span><button class="btn-mini" onclick="marcarRevisado(\'' + a.id + '\', event)">Marcar revisado</button>'}
-        <span style="color:var(--gray);font-size:12px">›</span>
+        <button class="btn-mini" onclick="arquivarAvaliacao('${a.id}', event, ${a.arquivada ? 'true' : 'false'})">${a.arquivada ? 'Restaurar' : 'Arquivar'}</button>
+        <button class="btn-mini" style="color:var(--red)" onclick="apagarAvaliacao('${a.id}', event)">Apagar</button>
       </div>
     </div>`).join('');
+  document.getElementById('hist-lista-avaliacoes').innerHTML = topo + (linhas || '<div style="color:var(--gray);font-size:12px">Nenhuma avaliação nesta lista.</div>');
 }
 
 function renderPiramide(zona, score, containerId) {
@@ -1255,6 +1395,72 @@ function renderPiramide(zona, score, containerId) {
 // ══════════════════════════════
 // RELATÓRIO COMPLETO
 // ══════════════════════════════
+// ══════════════════════════════
+// IMAGEM PARA WHATSAPP (1080 x 1350)
+// ══════════════════════════════
+async function gerarImagemWhatsApp() {
+  const a = window.__avalAtual;
+  const btn = document.getElementById('btn-wa-img');
+  if (!a) { alert('Abra um relatório antes de gerar a imagem.'); return; }
+  if (typeof html2canvas !== 'function') { alert('A biblioteca de imagem não carregou. Confira a internet e recarregue a página.'); return; }
+  const textoOriginal = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Gerando...'; }
+  try {
+    const nome = (a.alunas && a.alunas.nome) || 'Avaliado(a)';
+    const primeiro = nome.split(' ')[0];
+    const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const score = a.score || 0;
+    const corZona = score <= 30 ? '#ff4444' : score <= 50 ? '#ff8a3d' : score <= 70 ? '#ffc107' : score <= 85 ? '#9be15d' : '#2ee66b';
+    const raio = 150, circ = 2 * Math.PI * raio;
+    const acoes = (a.pontos_atencao || []).slice(0, 3).map(t => { const txt = String(t).trim(); return txt.length > 115 ? txt.slice(0, 112).replace(/[\s,;.]+$/, '') + '...' : txt; });
+    const blocos = [];
+    if (a.pct_gordura) blocos.push(['% de gordura', a.pct_gordura + '%', a.faixa_composicao || '']);
+    if (a.massa_magra_kg) blocos.push(['Massa magra', a.massa_magra_kg + ' kg', 'preservar']);
+    if (a.peso) blocos.push(['Peso', a.peso + ' kg', a.imc ? 'IMC ' + a.imc : '']);
+    const stage = document.getElementById('wa-stage');
+    stage.innerHTML =
+      '<div id="wa-card" style="width:1080px;min-height:1080px;background:#080808;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:70px 70px 56px;box-sizing:border-box;display:flex;flex-direction:column">' +
+        '<div style="font-size:26px;font-weight:900;letter-spacing:0.16em;color:#c8f000;text-transform:uppercase">⚡ Protocolo Evolução</div>' +
+        '<div style="font-size:52px;font-weight:900;margin-top:26px;line-height:1.1">' + esc(primeiro) + '</div>' +
+        '<div style="font-size:24px;color:#8a8a8a;margin-top:8px">' + esc(a.semana || 'Avaliação') + ' · ' + new Date(a.created_at).toLocaleDateString('pt-BR') + '</div>' +
+        '<div style="display:flex;align-items:center;gap:48px;margin-top:40px">' +
+          '<svg width="340" height="340" viewBox="0 0 340 340" style="flex:none">' +
+            '<circle cx="170" cy="170" r="' + raio + '" fill="none" stroke="#1c1c1c" stroke-width="26"/>' +
+            '<circle cx="170" cy="170" r="' + raio + '" fill="none" stroke="' + corZona + '" stroke-width="26" stroke-linecap="round" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ - circ * score / 100) + '" transform="rotate(-90 170 170)"/>' +
+            '<text x="170" y="178" text-anchor="middle" font-size="96" font-weight="900" fill="#fff" font-family="system-ui,sans-serif">' + score + '</text>' +
+            '<text x="170" y="222" text-anchor="middle" font-size="26" fill="#8a8a8a" font-family="system-ui,sans-serif">de 100</text>' +
+          '</svg>' +
+          '<div style="flex:1">' +
+            blocos.map(b => '<div style="margin-bottom:24px"><div style="font-size:20px;color:#8a8a8a;letter-spacing:0.08em;text-transform:uppercase">' + esc(b[0]) + '</div><div style="font-size:46px;font-weight:900;color:#c8f000;line-height:1.1">' + esc(b[1]) + '</div>' + (b[2] ? '<div style="font-size:20px;color:#b5b5b5">' + esc(b[2]) + '</div>' : '') + '</div>').join('') +
+          '</div>' +
+        '</div>' +
+        (acoes.length ? '<div style="margin-top:20px;flex:1"><div style="font-size:24px;font-weight:900;color:#c8f000;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:18px">Prioridades deste ciclo</div>' +
+          acoes.map((t, i) => '<div style="display:flex;gap:18px;align-items:flex-start;margin-bottom:18px"><div style="flex:none;width:44px;height:44px;border-radius:22px;background:#c8f000;color:#080808;font-size:24px;font-weight:900;display:flex;align-items:center;justify-content:center">' + (i + 1) + '</div><div style="font-size:26px;line-height:1.45;color:#eaeaea">' + esc(t) + '</div></div>').join('') + '</div>' : '<div style="flex:1"></div>') +
+        '<div style="margin-top:auto;border-top:2px solid #222;padding-top:24px;font-size:22px;color:#8a8a8a;line-height:1.5">' + esc(CONTATO.nome) + ' · ' + esc(CONTATO.cref) + '<br>' + esc(CONTATO.instagram) + ' · ' + esc(CONTATO.whatsapp) + '</div>' +
+      '</div>';
+    const canvas = await html2canvas(document.getElementById('wa-card'), { backgroundColor: '#080808', scale: 1, logging: false, useCORS: true });
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    stage.innerHTML = '';
+    const arquivo = 'avaliacao-' + primeiro.toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '') + '-' + new Date(a.created_at).toLocaleDateString('pt-BR').replace(/\//g, '-') + '.png';
+    const file = new File([blob], arquivo, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Avaliação ' + primeiro });
+    } else {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url; link.download = arquivo;
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }
+  } catch (e) {
+    console.error(e);
+    alert('Não consegui gerar a imagem: ' + (e && e.message ? e.message : 'erro desconhecido'));
+  } finally {
+    document.getElementById('wa-stage').innerHTML = '';
+    if (btn) { btn.disabled = false; btn.textContent = textoOriginal || '🖼️ Imagem p/ WhatsApp'; }
+  }
+}
+
 function getFaixaClasse(faixa) {
   return MAPA_FAIXA_CLASSE[faixa] || 'faixa-fitness';
 }
@@ -1339,12 +1545,26 @@ async function abrirRelatorio(avaliacaoId) {
       headline = `${primeiroNome}, sua composição se manteve estável em ${a.zona || '—'}${a.faixa_composicao ? `, faixa ${a.faixa_composicao}` : ''} desde a última avaliação — sinal de consistência.`;
     }
   } else {
-    headline = `${primeiroNome}, esta é sua linha de base: ${a.zona || '—'}${a.faixa_composicao ? `, composição ${a.faixa_composicao}` : ''}. A partir daqui, cada avaliação mostra sua evolução real.`;
-  }
-  if (a.pontos_atencao?.[0]) {
-    headline += ` Ponto de maior alavancagem agora: ${a.pontos_atencao[0].replace(/^./, c => c.toLowerCase())}`;
+    headline = `${primeiroNome}, esta é a sua linha de base: score ${a.score ?? '—'} de 100. É a partir dela que sua evolução será medida. Abaixo você vê o que esse número significa, quais são suas metas e o passo a passo para chegar lá.`;
   }
   document.getElementById('rel-headline').textContent = headline;
+  window.__avalAtual = a;
+
+  // Capa e rodapé: só aparecem no PDF impresso
+  const capaEl = document.getElementById('rel-capa');
+  if (capaEl) {
+    const dataAval = new Date(a.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
+    capaEl.innerHTML =
+      '<div style="font-size:13px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase">⚡ Protocolo Evolução</div>' +
+      '<div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-top:6px;opacity:0.7">Avaliação física, postural e de composição corporal</div>' +
+      '<div style="height:1px;background:currentColor;opacity:0.25;margin:26px auto;width:120px"></div>' +
+      '<div style="font-size:30px;font-weight:900;line-height:1.2">' + nome + '</div>' +
+      '<div style="font-size:13px;margin-top:8px;opacity:0.8">' + (idade && idade !== '—' ? idade + ' anos · ' : '') + (a.semana || 'Avaliação') + '</div>' +
+      '<div style="font-size:13px;margin-top:4px;opacity:0.8">' + dataAval + '</div>' +
+      '<div style="margin-top:40px;font-size:12px;line-height:1.8">' + CONTATO.nome + '<br>Personal Trainer · ' + CONTATO.cref + '<br>' + CONTATO.instagram + ' · ' + CONTATO.whatsapp + '</div>';
+  }
+  const rodapeEl = document.getElementById('rel-rodape-fixo');
+  if (rodapeEl) rodapeEl.textContent = nome + ' · ' + CONTATO.nome + ' · ' + CONTATO.cref + ' · ' + CONTATO.instagram + ' · ' + CONTATO.whatsapp;
 
   // Score ring — popula hero E a versão mini do grid "Visão Geral" simultaneamente
   const score = a.score || 0;
@@ -1815,6 +2035,152 @@ async function abrirRelatorio(avaliacaoId) {
         }
       }
       infoEl.innerHTML = info.length ? info.join('') : '<div style="font-size:12px;color:#b5b5b5">Preencha peso, altura e idade para ver estes números.</div>';
+    }
+  })();
+
+  // ── Score explicado, metas de referência e passo a passo dos hábitos (tudo calculado dos dados reais) ──
+  (function renderCaminho() {
+    const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const sexoC = a.sexo || a.alunas?.sexo || 'F';
+    const F = sexoC === 'F';
+    const alturaCm = a.altura ? (a.altura < 3 ? a.altura * 100 : a.altura) : null;
+    const idadeC = a.idade || a.alunas?.idade;
+    const sc = a.score;
+    const chip = (txt, cor) => `<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;color:${cor};background:${cor}22;white-space:nowrap">${txt}</span>`;
+    const VERDE = '#2ee66b', AMBAR = '#ffc107', VERM = '#ff4444';
+
+    // 1) O que significa o score
+    const elS = document.getElementById('rel-score-explica');
+    if (elS && sc !== null && sc !== undefined) {
+      const ZONAS = [
+        {z:'Z1', rot:'Alerta', de:0, ate:30, cor:'#ff4444', txt:'Vários indicadores estão longe do ideal ao mesmo tempo. Isso não é um julgamento: é o ponto de partida mais comum de quem começa um processo, e é onde a evolução é mais rápida, porque cada ajuste pequeno já move o número.'},
+        {z:'Z2', rot:'Atenção', de:31, ate:50, cor:'#ff8a3d', txt:'Já existem bases boas, mas ainda há pontos que travam o resultado. Corrigir os dois ou três mais fracos costuma dar o maior salto.'},
+        {z:'Z3', rot:'Em equilíbrio', de:51, ate:70, cor:'#ffc107', txt:'A maioria dos indicadores está em faixa aceitável. O foco passa a ser consistência e refinar o que ainda está abaixo.'},
+        {z:'Z4', rot:'Alta performance', de:71, ate:85, cor:'#9be15d', txt:'Composição e hábitos estão bem encaminhados. O trabalho agora é manter e lapidar.'},
+        {z:'Z5', rot:'Excelência', de:86, ate:100, cor:'#2ee66b', txt:'Quase todos os indicadores estão no ideal. O foco é sustentar o resultado.'}
+      ];
+      const zi = Math.max(0, ZONAS.findIndex(z => sc >= z.de && sc <= z.ate));
+      const zA = ZONAS[zi];
+      const barra = ZONAS.map((z, i) => `<div style="flex:${z.ate - z.de + 1};background:${z.cor};opacity:${i === zi ? 1 : 0.28};height:10px"></div>`).join('');
+      const legenda = ZONAS.map(z => `<div style="flex:${z.ate - z.de + 1};font-size:9px;color:var(--gray);text-align:center;line-height:1.3">${z.z}<br>${z.de}-${z.ate}</div>`).join('');
+
+      const drivers = [];
+      if (pctComp !== null) drivers.push({nome:'Composição corporal', pct:pctComp, motivo: a.pct_gordura + '% de gordura. A faixa ideal para ' + (F ? 'mulheres' : 'homens') + ' fica abaixo de ' + (F ? '32' : '25') + '%.'});
+      if (pctVital !== null) drivers.push({nome:'Vitalidade', pct:pctVital, motivo: 'energia ' + (a.habitos_vitalidade ?? '-') + '/10 e estresse ' + (a.habitos_estresse ?? '-') + '/10 (quanto menor o estresse, melhor).'});
+      if (pctHabitos !== null) {
+        const pcs = [];
+        if (!isNaN(sonoNumRing)) pcs.push('sono ' + sonoNumRing + ' h (meta 7 a 9 h)');
+        if (!isNaN(aguaNumRing)) pcs.push('água ' + aguaNumRing + ' L (meta ' + metaAguaL(a.peso).toFixed(1) + ' L)');
+        if (a.habitos_alimentacao) pcs.push('alimentação ' + a.habitos_alimentacao + '/10');
+        drivers.push({nome:'Sono & hábitos', pct:pctHabitos, motivo: pcs.join(', ') + '.'});
+      }
+      drivers.sort((x, y) => x.pct - y.pct);
+      const fracos = drivers.filter(d => d.pct < 70).slice(0, 3);
+      const listaFracos = fracos.length
+        ? fracos.map(d => `<div style="padding:8px 0;border-top:1px solid var(--border);font-size:12px;line-height:1.5"><b style="color:var(--white)">${d.nome} (${d.pct}%)</b><br><span style="color:var(--gray)">${esc(d.motivo)}</span></div>`).join('')
+        : '<div style="font-size:12px;color:var(--gray)">Todos os indicadores estão em faixa boa.</div>';
+      const prox = ZONAS[zi + 1];
+      const subir = prox
+        ? `Faltam <b style="color:var(--white)">${prox.de - sc} ponto${prox.de - sc === 1 ? '' : 's'}</b> para a zona ${prox.z} (${prox.rot}). Os maiores ganhos costumam vir dos indicadores mais baixos da lista acima.`
+        : 'Você está na zona mais alta. O objetivo é manter.';
+
+      elS.innerHTML = `
+        <div class="card-title">O que significa o seu score</div>
+        <div style="font-size:13px;line-height:1.6;color:var(--white);margin-bottom:10px"><b>${sc} de 100</b> · zona ${zA.z} (${zA.rot}). ${zA.txt}</div>
+        <div style="position:relative;margin:14px 0 4px">
+          <div style="display:flex;gap:2px;border-radius:6px;overflow:hidden">${barra}</div>
+          <div style="position:absolute;top:-5px;left:${Math.min(98, Math.max(2, sc))}%;transform:translateX(-50%);width:4px;height:20px;background:#fff;border-radius:2px;box-shadow:0 0 0 2px #000"></div>
+        </div>
+        <div style="display:flex;gap:2px;margin-bottom:12px">${legenda}</div>
+        <div style="font-size:12px;line-height:1.6;color:var(--gray);margin-bottom:10px">O score é uma nota de 0 a 100 que resume composição corporal, medidas e hábitos (sono, estresse, alimentação, água e vitalidade). Ele serve para comparar você com você mesmo(a) ao longo do tempo, não com outras pessoas.</div>
+        <div class="card-title" style="margin-top:10px">O que mais puxou a nota para baixo</div>
+        ${listaFracos}
+        <div style="font-size:12px;line-height:1.6;color:var(--gray);margin-top:10px">${subir}</div>`;
+      elS.style.display = 'block';
+    }
+
+    // 2) Metas de referência personalizadas (peso, altura, sexo, medidas)
+    const elM = document.getElementById('rel-metas');
+    if (elM) {
+      const linhas = [];
+      const linha = (nome, hoje, ref, chipHtml, extra) => linhas.push(`<div style="padding:11px 0;border-top:1px solid var(--border)"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="font-size:13px;color:var(--white)">${nome}</b>${chipHtml}</div><div style="font-size:12px;color:var(--gray);line-height:1.6;margin-top:3px">Hoje: <b style="color:var(--white)">${hoje}</b> · Referência: ${ref}${extra ? '<br>' + extra : ''}</div></div>`);
+      let semanasTxt = '';
+      if (a.pct_gordura) {
+        const zs = FAIXAS_ACE[F ? 'F' : 'M'];
+        const idx = zs.indexOf(zonaACE(a.pct_gordura, sexoC));
+        const cor = idx <= 2 ? VERDE : (idx === 3 ? AMBAR : VERM);
+        let extra = '';
+        if (idx >= 3 && a.massa_magra_kg && a.peso) {
+          const alvo = Math.round(zs[idx - 1].ate - 1);
+          const pesoAlvo = a.massa_magra_kg / (1 - alvo / 100);
+          const perder = a.peso - pesoAlvo;
+          extra = '1ª meta: ' + alvo + '% (faixa ' + zs[idx - 1].rot + '), cerca de ' + perder.toFixed(1) + ' kg de gordura a menos, com peso estimado de ' + pesoAlvo.toFixed(1) + ' kg.';
+          if (perder > 0) {
+            const sMin = Math.round(perder / (a.peso * 0.01)), sMax = Math.round(perder / (a.peso * 0.005));
+            semanasTxt = 'Em um ritmo seguro de 0,5% a 1% do peso por semana, a 1ª meta leva cerca de ' + sMin + ' a ' + sMax + ' semanas (' + Math.round(sMin / 4.3) + ' a ' + Math.round(sMax / 4.3) + ' meses). É uma estimativa, não uma promessa: o ritmo real depende de constância.';
+          }
+        }
+        linha('% de gordura', a.pct_gordura + '%', 'faixa Fitness: ' + zs[1].ate + ' a ' + zs[2].ate + '% · faixa Aceitável: até ' + zs[3].ate + '%', chip(zs[idx] ? zs[idx].rot : '-', cor), extra);
+      }
+      if (a.cintura) {
+        const lim = F ? 80 : 94, alto = F ? 88 : 102;
+        const cor = a.cintura < lim ? VERDE : (a.cintura < alto ? AMBAR : VERM);
+        linha('Cintura', a.cintura + ' cm', 'abaixo de ' + lim + ' cm (limite de risco cardiovascular para ' + (F ? 'mulheres' : 'homens') + ')', chip(a.cintura < lim ? 'Dentro' : (a.cintura - lim + 1) + ' cm acima', cor));
+      }
+      if (a.cintura && alturaCm) {
+        const rce = a.cintura / alturaCm, maxC = Math.floor(alturaCm * 0.5);
+        const cor = rce < 0.5 ? VERDE : (rce < 0.6 ? AMBAR : VERM);
+        linha('Cintura / altura', rce.toFixed(2), 'abaixo de 0,50 (para a sua altura, cintura de até ' + maxC + ' cm)', chip(rce < 0.5 ? 'Dentro' : 'Acima', cor));
+      }
+      if (a.cintura && a.quadril) {
+        const rcq = a.cintura / a.quadril, lim = F ? 0.80 : 0.90;
+        linha('Cintura / quadril', rcq.toFixed(2), 'abaixo de ' + lim.toFixed(2).replace('.', ','), chip(rcq < lim ? 'Dentro' : 'Acima', rcq < lim ? VERDE : AMBAR));
+      }
+      if (alturaCm) {
+        const h = alturaCm / 100, mn = 18.5 * h * h, mx = 24.9 * h * h;
+        const dentro = a.peso && a.peso >= mn && a.peso <= mx;
+        linha('Peso saudável (referência de longo prazo)', a.peso ? a.peso + ' kg' : '-', mn.toFixed(0) + ' a ' + mx.toFixed(0) + ' kg (IMC de 18,5 a 24,9 para ' + alturaCm.toFixed(0) + ' cm)', a.peso ? chip(dentro ? 'Dentro' : 'Fora da faixa', dentro ? VERDE : AMBAR) : '', 'O IMC não separa gordura de músculo. Por isso a primeira meta é a de composição acima; esta faixa é o horizonte de longo prazo.');
+      }
+      if (a.massa_magra_kg) linha('Massa magra', a.massa_magra_kg + ' kg', 'manter ou aumentar durante todo o processo', chip('Preservar', '#22d3ee'), 'Perder gordura sem perder músculo é o que mantém o resultado.');
+      if (linhas.length) {
+        const notaIdade = idadeC ? 'Estas faixas valem para adultos de 18 a 59 anos' + (idadeC >= 60 ? '. Aos ' + idadeC + ' anos, faixas de gordura um pouco mais altas costumam ser aceitas: interprete com o profissional.' : ', então se aplicam aos seus ' + idadeC + ' anos sem ajuste.') : '';
+        elM.innerHTML = '<div class="card-title">Suas metas de referência</div>' + linhas.join('') +
+          (semanasTxt ? '<div style="font-size:12px;line-height:1.6;color:var(--white);margin-top:10px;padding:10px 12px;background:rgba(200,240,0,0.07);border:1px solid rgba(200,240,0,0.25);border-radius:8px">' + semanasTxt + '</div>' : '') +
+          (notaIdade ? '<div style="font-size:11px;line-height:1.5;color:var(--gray2);margin-top:10px">' + notaIdade + '</div>' : '');
+        elM.style.display = 'block';
+      }
+    }
+
+    // 3) Passo a passo dos hábitos que mais pedem atenção
+    const elH = document.getElementById('rel-habitos-como');
+    if (elH) {
+      const itens = [];
+      if (!isNaN(sonoNumRing) && sonoNumRing < 7) itens.push({sev:notaSono(sonoNumRing), ico:'😴', tit:'Sono: hoje ' + sonoNumRing + ' h, meta 7 a 9 h',
+        intro:'Dormir pouco aumenta a fome, reduz a saciedade e atrapalha a recuperação do treino. É o ajuste que mais destrava os outros.',
+        passos:['Escolha um horário fixo para deitar e para acordar, inclusive no fim de semana.','Vá deitando 15 minutos mais cedo a cada semana, até chegar a 7 horas. Não tente mudar tudo de uma vez.','Desligue telas 1 hora antes de dormir e deixe o quarto escuro e fresco.','Tome a última cafeína até as 14h.']});
+      if (a.habitos_estresse >= 6) itens.push({sev:10 - a.habitos_estresse, ico:'🧠', tit:'Estresse: hoje ' + a.habitos_estresse + '/10, meta 3 ou menos',
+        intro:'Estresse alto e constante mantém o corpo em modo de alerta. O hormônio do estresse (cortisol) fica elevado, o que aumenta a fome, piora o sono e favorece acúmulo de gordura na barriga. Você não zera o estresse: você baixa o volume.',
+        passos:['Respiração lenta: inspire por 4 segundos e solte por 6, durante 5 minutos, duas vezes ao dia (ao acordar e antes de dormir).','Caminhada leve de 20 a 30 minutos, de preferência ao ar livre, na maioria dos dias. Treino muito intenso todos os dias soma estresse em vez de aliviar.','Reserve 15 minutos por dia só para você, sem celular e sem trabalho.','Se o estresse continuar em 8 ou mais por várias semanas, procure um psicólogo ou médico. Isso é cuidado, não fraqueza.']});
+      if (a.habitos_alimentacao && a.habitos_alimentacao <= 6) itens.push({sev:a.habitos_alimentacao, ico:'🥗', tit:'Alimentação: hoje ' + a.habitos_alimentacao + '/10',
+        intro:'Sem ajustar a alimentação, o treino sozinho rende pouco. O objetivo aqui é o básico bem feito, sem dieta radical.',
+        passos:['Monte o prato com metade de vegetais e legumes, uma porção de proteína do tamanho da palma da mão e o restante de carboidrato.','Inclua uma fonte de proteína em todas as refeições principais.','Troque refrigerante e suco por água ou chá sem açúcar.','Coma sentada e sem tela, e evite pular refeições para não chegar com muita fome na seguinte.','Para um plano individual com quantidades, procure um(a) nutricionista.']});
+      if (!isNaN(aguaNumRing) && a.peso && aguaNumRing < metaAguaL(a.peso) * 0.8) {
+        const metaL = metaAguaL(a.peso);
+        itens.push({sev:Math.max(0, Math.min(10, aguaNumRing / metaL * 10)), ico:'💧', tit:'Água: hoje ' + aguaNumRing + ' L, meta ' + metaL.toFixed(1) + ' L',
+          intro:'A meta é calculada em 35 ml por kg de peso.',
+          passos:['Deixe uma garrafa de 500 ml sempre à vista e complete ' + Math.ceil(metaL / 0.5) + ' vezes ao longo do dia.','Beba um copo ao acordar e outro antes de cada refeição.','Use o alarme do celular de 2 em 2 horas nos primeiros dias, até virar hábito.']});
+      }
+      if (a.habitos_vitalidade && a.habitos_vitalidade <= 5) itens.push({sev:a.habitos_vitalidade + 5, ico:'⚡', tit:'Vitalidade: hoje ' + a.habitos_vitalidade + '/10',
+        intro:'Energia baixa quase sempre começa no sono e no estresse. O treino ajuda, desde que seja progressivo.',
+        passos:['Treino de força 2 a 3 vezes por semana: é o que mais melhora a disposição e preserva a massa magra.','Caminhe 15 a 20 minutos depois do almoço e do jantar.','Aumente o volume aos poucos, para não acumular cansaço.']});
+      itens.sort((x, y) => x.sev - y.sev);
+      const top = itens.slice(0, 3);
+      if (top.length) {
+        elH.innerHTML = '<div class="card-title">Como melhorar, passo a passo</div>' +
+          '<div style="font-size:12px;line-height:1.6;color:var(--gray);margin-bottom:6px">Comece por um hábito de cada vez, na ordem abaixo. Mudar tudo ao mesmo tempo é o que mais faz as pessoas desistirem.</div>' +
+          top.map((it, i) => `<div style="padding:12px 0;border-top:1px solid var(--border)"><div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px">${i + 1}. ${it.ico} ${esc(it.tit)}</div><div style="font-size:12px;line-height:1.6;color:var(--gray);margin-bottom:6px">${esc(it.intro)}</div>${it.passos.map(p => `<div style="font-size:12px;line-height:1.6;color:var(--white);padding-left:14px;text-indent:-14px;margin-top:3px">▸ ${esc(p)}</div>`).join('')}</div>`).join('');
+        elH.style.display = 'block';
+      }
     }
   })();
 
