@@ -167,6 +167,9 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .btn-mini{background:transparent;border:1px solid var(--amber);color:var(--amber);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;}
 .print-only{display:none}
 .ant-hint{font-size:10px;color:#8a8a8a;margin-top:3px;min-height:12px}
+.rascunho-aviso{display:none;align-items:center;justify-content:space-between;gap:10px;background:rgba(200,240,0,0.08);border:1px solid rgba(200,240,0,0.3);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--white)}
+.fotos-bloqueadas{opacity:0.35;pointer-events:none;filter:grayscale(1)}
+.consent-card{border:1px solid rgba(255,193,7,0.35);background:rgba(255,193,7,0.06)}
 .ant-hint b{color:#c8f000;font-weight:700}
 #wa-stage{position:fixed;left:-20000px;top:0;width:1080px;z-index:-1}
 @media print {
@@ -264,25 +267,53 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 </head>
 <body>
 
-<!-- SENHA -->
+<!-- LOGIN -->
 <div id="password-gate" style="position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;">
   <div style="width:100%;max-width:360px;text-align:center;padding-top:12vh;">
     <div style="font-size:28px;margin-bottom:16px">⚡</div>
     <div style="font-size:14px;font-weight:900;letter-spacing:0.15em;color:var(--lime);text-transform:uppercase;margin-bottom:6px">Protocolo Evolução</div>
     <div style="font-size:11px;color:var(--gray);margin-bottom:28px">Avaliação Física & Postural</div>
-    <div class="field" style="margin-bottom:14px;text-align:left">
-      <label>Senha de acesso</label>
-      <div style="position:relative;display:flex;align-items:center;">
-        <input type="password" id="senha-input" placeholder="Digite a senha"
-          autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false"
-          style="width:100%;padding-right:44px;"
-          onkeydown="if(event.key==='Enter')verificarSenha()">
-        <button type="button" onclick="toggleSenhaVisivel()" id="btn-toggle-senha"
-          style="position:absolute;right:6px;background:none;border:none;color:var(--gray);cursor:pointer;font-size:16px;padding:6px;">👁️</button>
+    <div id="login-carregando" style="font-size:12px;color:var(--gray)">Verificando sessão...</div>
+    <div id="login-form" style="display:none">
+      <div class="field" style="margin-bottom:14px;text-align:left">
+        <label>E-mail</label>
+        <input type="email" id="login-email" placeholder="seuemail@exemplo.com"
+          autocapitalize="off" autocorrect="off" autocomplete="username" spellcheck="false"
+          onkeydown="if(event.key==='Enter')document.getElementById('login-senha').focus()">
       </div>
+      <div class="field" style="margin-bottom:14px;text-align:left">
+        <label>Senha</label>
+        <div style="position:relative;display:flex;align-items:center;">
+          <input type="password" id="login-senha" placeholder="Digite a senha"
+            autocapitalize="off" autocorrect="off" autocomplete="current-password" spellcheck="false"
+            style="width:100%;padding-right:44px;"
+            onkeydown="if(event.key==='Enter')fazerLogin()">
+          <button type="button" onclick="toggleSenhaVisivel()" id="btn-toggle-senha"
+            style="position:absolute;right:6px;background:none;border:none;color:var(--gray);cursor:pointer;font-size:16px;padding:6px;">👁️</button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="fazerLogin()" id="btn-login">Entrar</button>
+      <div id="senha-erro" style="display:none;margin-top:12px;font-size:11px;color:var(--red)"></div>
     </div>
-    <button class="btn btn-primary btn-full" onclick="verificarSenha()">Entrar</button>
-    <div id="senha-erro" style="display:none;margin-top:12px;font-size:11px;color:var(--red)">Senha incorreta. Verifique maiúsculas/minúsculas e espaços.</div>
+  </div>
+</div>
+
+<!-- MODAL CONSENTIMENTO -->
+<div class="modal-overlay" id="modal-consentimento">
+  <div class="modal">
+    <div class="modal-title">Consentimento para uso das fotos</div>
+    <div style="font-size:12px;line-height:1.7;color:var(--gray);text-align:left;margin-bottom:16px;max-height:260px;overflow-y:auto;background:var(--surface2);border-radius:10px;padding:14px">
+      Eu, <strong id="consent-nome-avaliado" style="color:var(--white)">—</strong>, autorizo o envio das minhas fotos (frente, lateral direita, lateral esquerda e costas) para análise por inteligência artificial (Anthropic), com a finalidade exclusiva de estimar composição corporal e avaliar postura.<br><br>
+      Estou ciente de que: as fotos são reduzidas no aparelho do profissional e enviadas apenas para essa análise; o aplicativo não guarda cópia das fotos depois do processamento; a estimativa de % de gordura e a leitura postural têm margem de erro e não substituem exame clínico (bioimpedância, DXA ou avaliação médica); posso pedir, a qualquer momento, que minhas fotos não sejam mais usadas.
+    </div>
+    <label style="display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--white);text-align:left;margin-bottom:18px;cursor:pointer">
+      <input type="checkbox" id="consent-check" style="margin-top:2px;width:16px;height:16px;flex:none">
+      <span>Confirmo que expliquei este texto ao(à) avaliado(a) e que ele(a) autorizou o uso das fotos.</span>
+    </label>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1" onclick="confirmarConsentimento()">Confirmar</button>
+      <button class="btn btn-ghost" onclick="fecharModal('modal-consentimento')">Cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -292,7 +323,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     <div class="modal-title">Novo Avaliado</div>
     <div class="form-grid" style="margin-bottom:14px">
       <div class="field"><label>Nome completo</label><input type="text" id="cad-nome" placeholder="ex: Maria Silva"></div>
-      <div class="field"><label>Telefone / WhatsApp</label><input type="text" id="cad-tel" placeholder="ex: 85 98917-6626"></div>
+      <div class="field"><label>Telefone / WhatsApp</label><input type="text" id="cad-tel" placeholder="ex: 85 99999-9999"></div>
     </div>
     <div class="form-grid-3" style="margin-bottom:14px">
       <div class="field"><label>Idade</label><input type="number" id="cad-idade" placeholder="38"></div>
@@ -319,6 +350,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     <button class="nav-tab" data-page="historico">Evolução</button>
     <button class="nav-tab" data-page="avaliados">Avaliados</button>
   </div>
+  <button class="no-print" onclick="sairDoApp()" style="background:none;border:1px solid var(--border);color:var(--gray);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:7px 12px;border-radius:8px;cursor:pointer;margin-left:10px">Sair</button>
 </nav>
 
 <!-- PAINEL -->
@@ -349,6 +381,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   <div class="section-eyebrow">Avaliação física</div>
   <div class="section-title">Nova Avaliação</div>
   <div class="section-sub">Fotos + medidas + hábitos. A IA analisa postura e estima % de gordura.</div>
+  <div id="rascunho-aviso" class="rascunho-aviso no-print"><span>📝 Recuperamos o que você estava digitando antes de sair.</span><button class="btn-mini" onclick="descartarRascunho()">Começar do zero</button></div>
   <div class="card">
     <div class="card-title">Avaliado(a)</div>
     <div class="form-grid">
@@ -357,10 +390,18 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
     <div id="pessoa-info-row" style="display:none;margin-top:12px;padding:10px 12px;background:var(--surface2);border-radius:8px;font-size:11px;color:var(--gray)"></div>
   </div>
+  <div class="card consent-card" id="consentimento-pendente" style="display:none">
+    <div class="card-title">Consentimento das fotos</div>
+    <div class="card-note" style="margin-bottom:12px">Antes de enviar fotos deste avaliado, confirme que ele(a) autorizou o uso para a análise por IA. Isso só precisa ser feito uma vez por pessoa.</div>
+    <button class="btn btn-primary" onclick="abrirConsentimento()">📋 Registrar consentimento</button>
+  </div>
+  <div class="card" id="consentimento-ok" style="display:none;padding:10px 16px;background:rgba(46,230,107,0.08);border:1px solid rgba(46,230,107,0.3)">
+    <span style="font-size:12px;color:#2ee66b" id="consentimento-ok-texto">✅ Consentimento registrado.</span>
+  </div>
   <div class="card">
     <div class="card-title">Fotos (com grade postural)</div>
     <div class="card-note">Mesma roupa justa, mesma luz, mesma distância. A grade alinha ombro e quadril para comparação entre semanas. <strong style="color:var(--white)">As fotos são reduzidas no seu aparelho e enviadas à IA (Anthropic) só para a análise. O app não as guarda.</strong></div>
-    <div class="photo-grid">
+    <div class="photo-grid" id="fotos-grid">
       <div class="photo-slot" id="slot-frente" onclick="triggerUpload('frente')"><div class="posture-grid-overlay"><div class="h-line h-shoulders"></div><div class="h-line h-hips"></div><div class="v-line v-center"></div></div><div class="photo-slot-icon">📸</div><div class="photo-slot-label">Frente</div><input type="file" id="file-frente" accept="image/*" style="display:none" onchange="previewPhoto(this,'slot-frente','frente')"></div>
       <div class="photo-slot" id="slot-lado-d" onclick="triggerUpload('lado-d')"><div class="posture-grid-overlay"><div class="h-line h-shoulders"></div><div class="h-line h-hips"></div><div class="v-line v-center"></div></div><div class="photo-slot-icon">📸</div><div class="photo-slot-label">Lat. Direita</div><input type="file" id="file-lado-d" accept="image/*" style="display:none" onchange="previewPhoto(this,'slot-lado-d','lado-d')"></div>
       <div class="photo-slot" id="slot-lado-e" onclick="triggerUpload('lado-e')"><div class="posture-grid-overlay"><div class="h-line h-shoulders"></div><div class="h-line h-hips"></div><div class="v-line v-center"></div></div><div class="photo-slot-icon">📸</div><div class="photo-slot-label">Lat. Esquerda</div><input type="file" id="file-lado-e" accept="image/*" style="display:none" onchange="previewPhoto(this,'slot-lado-e','lado-e')"></div>
@@ -693,10 +734,8 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 // ══════════════════════════════
 // CONFIG
 // ══════════════════════════════
-const SENHA_ACESSO = 'oteupersonal2025';
-
 // ─── EDITE AQUI: seus contatos (aparecem no rodapé do PDF e na imagem de WhatsApp) ───
-const CONTATO = { instagram: '@oteupersonal_', whatsapp: '(85) 99999-9999', cref: 'CREF 6104-G/CE', nome: 'Thiago Santos' };
+const CONTATO = { instagram: '@oteupersonal_', whatsapp: '(85) 98917-6626', cref: 'CREF 6104-G/CE', nome: 'Thiago Santos' };
 // ─── EDITE AQUI se o preço da IA mudar (dólares por 1 milhão de tokens) e a cotação ───
 const PRECO_IA = { entrada: 3, saida: 15, dolar: 5.5 };
 function custoReais(tin, tout) { return ((tin||0)/1e6*PRECO_IA.entrada + (tout||0)/1e6*PRECO_IA.saida) * PRECO_IA.dolar; }
@@ -710,25 +749,54 @@ const uploadedPhotos = {};
 let avaliacaoAtualId = null;
 
 // ══════════════════════════════
-// SENHA
+// LOGIN (Supabase Auth) — protege de verdade quando a RLS está ativada no banco
 // ══════════════════════════════
 function toggleSenhaVisivel() {
-  const input = document.getElementById('senha-input');
+  const input = document.getElementById('login-senha');
   const btn = document.getElementById('btn-toggle-senha');
   if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
   else { input.type = 'password'; btn.textContent = '👁️'; }
 }
-function verificarSenha() {
-  const digitado = document.getElementById('senha-input').value.trim();
-  if (digitado === SENHA_ACESSO) {
+
+async function fazerLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  const erroEl = document.getElementById('senha-erro');
+  const btn = document.getElementById('btn-login');
+  erroEl.style.display = 'none';
+  if (!email || !senha) { erroEl.textContent = 'Preencha e-mail e senha.'; erroEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  const { error } = await db.auth.signInWithPassword({ email, password: senha });
+  btn.disabled = false; btn.textContent = 'Entrar';
+  if (error) {
+    erroEl.textContent = /invalid/i.test(error.message) ? 'E-mail ou senha incorretos.' : 'Não foi possível entrar: ' + error.message;
+    erroEl.style.display = 'block';
+    return;
+  }
+  document.getElementById('password-gate').style.display = 'none';
+  inicializar();
+}
+
+async function sairDoApp() {
+  if (!confirm('Sair do Protocolo Evolução?')) return;
+  await db.auth.signOut();
+  location.reload();
+}
+
+// Ao abrir o app, confere se já existe sessão salva (fica guardada no navegador).
+// Só mostra o formulário de login se não houver sessão válida.
+async function checarSessaoInicial() {
+  const { data } = await db.auth.getSession();
+  if (data && data.session) {
     document.getElementById('password-gate').style.display = 'none';
     inicializar();
   } else {
-    document.getElementById('senha-erro').style.display = 'block';
-    document.getElementById('senha-input').value = '';
-    document.getElementById('senha-input').focus();
+    document.getElementById('login-carregando').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('login-email').focus();
   }
 }
+checarSessaoInicial();
 
 // ══════════════════════════════
 // INIT
@@ -737,6 +805,53 @@ async function inicializar() {
   await carregarSelectPessoas();
   await carregarPainel();
   await carregarPessoasLista();
+  iniciarRascunhoAutomatico();
+}
+
+// ── Rascunho automático: salva o que foi digitado no formulário de avaliação no próprio celular,
+// e recupera se a página recarregar (Android costuma fechar a aba ao trocar de app). Não guarda fotos. ──
+const RASCUNHO_KEY = 'pe-rascunho-avaliacao';
+const CAMPOS_RASCUNHO = ['sel-pessoa','semana-treino','med-peso','med-altura','med-idade','med-sexo','med-cintura','med-quadril','med-abdomen','med-braco','med-coxa','hab-sono','hab-agua','sl-estresse','sl-alim','sl-vital'];
+
+function salvarRascunho() {
+  try {
+    const dados = {};
+    let temAlgo = false;
+    CAMPOS_RASCUNHO.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.value) { dados[id] = el.value; temAlgo = true; }
+    });
+    if (temAlgo) localStorage.setItem(RASCUNHO_KEY, JSON.stringify({ dados, quando: Date.now() }));
+    else localStorage.removeItem(RASCUNHO_KEY);
+  } catch (e) { /* localStorage indisponível: segue sem rascunho */ }
+}
+
+function descartarRascunho() {
+  try { localStorage.removeItem(RASCUNHO_KEY); } catch (e) {}
+  document.getElementById('rascunho-aviso').style.display = 'none';
+  CAMPOS_RASCUNHO.forEach(id => { const el = document.getElementById(id); if (el && el.tagName !== 'SELECT') el.value = ''; });
+  ['estresse','alim','vital'].forEach(syncSlider);
+}
+
+function iniciarRascunhoAutomatico() {
+  CAMPOS_RASCUNHO.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', salvarRascunho);
+  });
+  try {
+    const salvo = JSON.parse(localStorage.getItem(RASCUNHO_KEY) || 'null');
+    if (!salvo || !salvo.dados) return;
+    // Rascunho com mais de 48h: provavelmente de uma avaliação já feita de outro jeito. Não restaura sozinho.
+    if (Date.now() - salvo.quando > 48 * 3600 * 1000) { localStorage.removeItem(RASCUNHO_KEY); return; }
+    Object.keys(salvo.dados).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = salvo.dados[id];
+    });
+    ['estresse','alim','vital'].forEach(syncSlider);
+    const infoRow = document.getElementById('pessoa-info-row');
+    if (salvo.dados['sel-pessoa'] && infoRow) { infoRow.style.display = 'block'; const opt = document.getElementById('sel-pessoa').selectedOptions[0]; if (opt) infoRow.innerHTML = `<strong style="color:var(--lime)">${opt.text}</strong>`; }
+    document.getElementById('rascunho-aviso').style.display = 'flex';
+  } catch (e) { /* localStorage indisponível: segue sem rascunho */ }
 }
 
 // ══════════════════════════════
@@ -945,16 +1060,18 @@ document.getElementById('sel-pessoa').addEventListener('change', async function(
   const opt = this.options[this.selectedIndex];
   const row = document.getElementById('pessoa-info-row');
   limparDicasAnteriores();
-  if (!this.value || opt.text === '— Escolha —') { row.style.display = 'none'; return; }
+  if (!this.value || opt.text === '— Escolha —') { row.style.display = 'none'; aplicarEstadoConsentimento(null, ''); return; }
   row.style.display = 'block';
   row.innerHTML = `<strong style="color:var(--lime)">${opt.text}</strong>`;
 
   // Preenche idade e sexo do cadastro: não precisa digitar de novo
-  const { data: pessoa } = await db.from('alunas').select('idade, sexo').eq('id', this.value).single();
+  let { data: pessoa, error: erroPessoa } = await db.from('alunas').select('idade, sexo, consentimento_fotos, consentimento_data').eq('id', this.value).single();
+  if (erroPessoa) ({ data: pessoa } = await db.from('alunas').select('idade, sexo').eq('id', this.value).single());
   if (pessoa) {
     if (pessoa.idade) document.getElementById('med-idade').value = pessoa.idade;
     if (pessoa.sexo) document.getElementById('med-sexo').value = pessoa.sexo;
   }
+  aplicarEstadoConsentimento(pessoa, opt.text);
 
   // Rótulo do ciclo automático e medidas da avaliação anterior como referência
   const { data: antes } = await db.from('avaliacoes').select('*').eq('aluna_id', this.value).order('created_at');
@@ -971,6 +1088,49 @@ document.getElementById('sel-pessoa').addEventListener('change', async function(
     });
   }
 });
+
+
+// ── Consentimento das fotos: por avaliado, registrado uma vez e reaproveitado nas próximas avaliações ──
+let pessoaAtualConsentimento = { id: null, nome: '' };
+function aplicarEstadoConsentimento(pessoa, nomeOpt) {
+  const grid = document.getElementById('fotos-grid');
+  const pendente = document.getElementById('consentimento-pendente');
+  const ok = document.getElementById('consentimento-ok');
+  const selId = document.getElementById('sel-pessoa').value;
+  pessoaAtualConsentimento = { id: selId || null, nome: (nomeOpt || '').replace(/\s*·.*$/, '') };
+  if (!selId) { grid.classList.add('fotos-bloqueadas'); pendente.style.display = 'none'; ok.style.display = 'none'; return; }
+  if (pessoa && pessoa.consentimento_fotos) {
+    grid.classList.remove('fotos-bloqueadas');
+    pendente.style.display = 'none';
+    ok.style.display = 'block';
+    const quando = pessoa.consentimento_data ? new Date(pessoa.consentimento_data).toLocaleDateString('pt-BR') : '';
+    document.getElementById('consentimento-ok-texto').textContent = '✅ Consentimento registrado' + (quando ? ' em ' + quando : '') + '.';
+  } else {
+    grid.classList.add('fotos-bloqueadas');
+    pendente.style.display = 'block';
+    ok.style.display = 'none';
+  }
+}
+
+function abrirConsentimento() {
+  if (!pessoaAtualConsentimento.id) { alert('Selecione um(a) avaliado(a) primeiro.'); return; }
+  document.getElementById('consent-nome-avaliado').textContent = pessoaAtualConsentimento.nome || 'Avaliado(a)';
+  document.getElementById('consent-check').checked = false;
+  abrirModal('modal-consentimento');
+}
+
+async function confirmarConsentimento() {
+  if (!document.getElementById('consent-check').checked) { alert('Marque a confirmação antes de continuar.'); return; }
+  const { error } = await db.from('alunas').update({ consentimento_fotos: true, consentimento_data: new Date().toISOString() }).eq('id', pessoaAtualConsentimento.id);
+  if (error) {
+    alert(/column|coluna|schema cache|consentimento/i.test(error.message || '')
+      ? 'Falta criar as colunas de consentimento no Supabase. Rode o SQL que o Claude te passou e tente de novo.'
+      : 'Não foi possível salvar: ' + error.message);
+    return;
+  }
+  fecharModal('modal-consentimento');
+  aplicarEstadoConsentimento({ consentimento_fotos: true, consentimento_data: new Date().toISOString() }, pessoaAtualConsentimento.nome);
+}
 
 function triggerUpload(angle) { document.getElementById('file-' + angle).click(); }
 
@@ -1236,6 +1396,8 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
   } else {
     avaliacaoAtualId = saved.id;
     formularioUsado = true;
+    try { localStorage.removeItem(RASCUNHO_KEY); } catch (e) {}
+    const avisoR = document.getElementById('rascunho-aviso'); if (avisoR) avisoR.style.display = 'none';
     document.getElementById('btn-liberar').disabled = false;
   }
   btn.disabled = false; btn.textContent = '⚡ Gerar análise completa com IA';
@@ -1329,6 +1491,10 @@ async function carregarHistorico() {
   const { data: avals } = await db.from('avaliacoes').select('*').eq('aluna_id', pessoaId).order('created_at');
   if (!avals || avals.length === 0) {
     document.getElementById('hist-lista-avaliacoes').innerHTML = '<div style="color:var(--gray);font-size:12px">Nenhuma avaliação registrada.</div>';
+    const ph = document.getElementById('pyramid-container');
+    if (ph) ph.innerHTML = '<div style="color:var(--gray);font-size:12px">Este avaliado ainda não tem nenhuma avaliação. Gere a primeira em Avaliar.</div>';
+    const gch = document.getElementById('composicao-chart'), glb = document.getElementById('composicao-labels'), gcp = document.getElementById('composicao-comparativo');
+    if (gch) gch.innerHTML = ''; if (glb) glb.innerHTML = ''; if (gcp) gcp.innerHTML = '';
     return;
   }
   const ultima = avals[avals.length-1];
