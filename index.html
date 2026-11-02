@@ -387,6 +387,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     <div class="form-grid">
       <div class="field"><label>Selecionar avaliado(a)</label><select id="sel-pessoa"><option value="">— Escolha —</option></select></div>
       <div class="field"><label>Semana / ciclo</label><input type="text" id="semana-treino" placeholder="ex: Semana 1" value="Semana 1"></div>
+      <div class="field"><label>Data da avaliação</label><input type="date" id="data-avaliacao"></div>
     </div>
     <div id="pessoa-info-row" style="display:none;margin-top:12px;padding:10px 12px;background:var(--surface2);border-radius:8px;font-size:11px;color:var(--gray)"></div>
   </div>
@@ -744,6 +745,8 @@ const SUPABASE_KEY = 'sb_publishable_MKZizcLZSuHfKcXFrB1s9Q_uQUZyCL0';
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+// Escapa texto digitado antes de colocar em innerHTML, evita quebrar a tela com caracteres especiais
+function escHTML(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 const uploadedPhotos = {};
 let avaliacaoAtualId = null;
@@ -805,13 +808,15 @@ async function inicializar() {
   await carregarSelectPessoas();
   await carregarPainel();
   await carregarPessoasLista();
+  const campoData = document.getElementById('data-avaliacao');
+  if (campoData && !campoData.value) campoData.value = new Date().toISOString().slice(0, 10);
   iniciarRascunhoAutomatico();
 }
 
 // ── Rascunho automático: salva o que foi digitado no formulário de avaliação no próprio celular,
 // e recupera se a página recarregar (Android costuma fechar a aba ao trocar de app). Não guarda fotos. ──
 const RASCUNHO_KEY = 'pe-rascunho-avaliacao';
-const CAMPOS_RASCUNHO = ['sel-pessoa','semana-treino','med-peso','med-altura','med-idade','med-sexo','med-cintura','med-quadril','med-abdomen','med-braco','med-coxa','hab-sono','hab-agua','sl-estresse','sl-alim','sl-vital'];
+const CAMPOS_RASCUNHO = ['sel-pessoa','semana-treino','data-avaliacao','med-peso','med-altura','med-idade','med-sexo','med-cintura','med-quadril','med-abdomen','med-braco','med-coxa','hab-sono','hab-agua','sl-estresse','sl-alim','sl-vital'];
 
 function salvarRascunho() {
   try {
@@ -941,9 +946,9 @@ async function carregarPessoasLista() {
     const risco = diasSemAval > 21 ? 'red' : diasSemAval > 14 ? 'yellow' : 'green';
     return `<div class="pessoa-card" onclick="verPessoaHistorico('${a.id}')">
       <div class="pessoa-risk risk-${risco}"></div>
-      <div class="pessoa-avatar">${a.nome.charAt(0)}</div>
+      <div class="pessoa-avatar">${escHTML(a.nome.charAt(0))}</div>
       <div class="pessoa-info">
-        <div class="pessoa-name">${a.nome}</div>
+        <div class="pessoa-name">${escHTML(a.nome)}</div>
         <div class="pessoa-meta">${a.idade || '—'} anos · ${a.tipo} · ${avals.length} avaliações</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
@@ -1079,7 +1084,7 @@ document.getElementById('sel-pessoa').addEventListener('change', async function(
   document.getElementById('semana-treino').value = 'Avaliação ' + (validas.length + 1);
   if (validas.length) {
     const ult = validas[validas.length - 1];
-    const quando = new Date(ult.created_at).toLocaleDateString('pt-BR');
+    const quando = new Date(ult.data_avaliacao || ult.created_at).toLocaleDateString('pt-BR');
     row.innerHTML += `<br>Última avaliação em ${quando} (${ult.semana || '—'}). Os valores em verde abaixo são os daquele dia.`;
     if (ult.altura) document.getElementById('med-altura').value = ult.altura;
     CAMPOS_ANT.forEach(([id, chave, un]) => {
@@ -1261,6 +1266,7 @@ async function analisarComIA() {
   }
 
   const semana = document.getElementById('semana-treino').value || 'Semana 1';
+  const dataAvaliacaoInput = document.getElementById('data-avaliacao').value || null;
   const peso = document.getElementById('med-peso').value;
   const altura = document.getElementById('med-altura').value;
   const idade = document.getElementById('med-idade').value;
@@ -1323,10 +1329,16 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
 
   let parsed = null, usoIA = null;
   try {
-    const resp = await fetch('/.netlify/functions/api', {
+    const chamarAPI = () => fetch('/.netlify/functions/api', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2500,messages:[{role:'user',content:contentBlocks}]})
     });
+    let resp = await chamarAPI();
+    // Se deu timeout (504) ou erro de conexão, tenta mais uma vez automaticamente antes de mostrar erro
+    if (!resp.ok && (resp.status === 504 || resp.status === 502 || resp.status === 503)) {
+      btn.textContent = '⏳ Demorou um pouco, tentando de novo...';
+      resp = await chamarAPI();
+    }
     if (!resp.ok) {
       let det = '';
       try { const j = await resp.json(); det = (j && j.error && (j.error.message || j.error)) || ''; } catch (e2) {}
@@ -1343,6 +1355,32 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
     if (typeof obj.score !== 'number' || !obj.zona) { const e = new Error('formato'); e.tipo = 'formato'; throw e; }
     parsed = obj;
   } catch(err) {
+    if (!err.status && !err._retentouRede) {
+      try {
+        btn.textContent = '⏳ Conexão instável, tentando de novo...';
+        err._retentouRede = true;
+        const resp2 = await fetch('/.netlify/functions/api', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2500,messages:[{role:'user',content:contentBlocks}]})
+        });
+        if (resp2.ok) {
+          const data2 = await resp2.json();
+          usoIA = data2.usage || null;
+          if (!data2.error) {
+            const raw2 = data2.content.map(i => i.text||'').join('');
+            const jsonMatch2 = raw2.match(/\{[\s\S]*\}/);
+            if (jsonMatch2) {
+              const obj2 = JSON.parse(jsonMatch2[0]);
+              if (typeof obj2.score === 'number' && obj2.zona) {
+                if (obj2.pct_gordura) obj2.faixa_composicao = getFaixa(obj2.pct_gordura, sexo);
+                parsed = obj2;
+              }
+            }
+          }
+        }
+      } catch (err2) { /* segunda tentativa também falhou, segue pro erro normal abaixo */ }
+    }
+    if (!parsed) {
     console.error(err);
     const ex = explicarErroIA(err);
     document.getElementById('resultado-section').style.display = 'none';
@@ -1353,13 +1391,14 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
     }
     btn.disabled = false; btn.textContent = '⚡ Gerar análise completa com IA';
     return;
+    }
   }
   // classificação ACE calculada pelo app (igual à escala do relatório)
   if (parsed.pct_gordura) parsed.faixa_composicao = getFaixa(parsed.pct_gordura, sexo);
 
   renderResultado(parsed);
   const payloadAval = {
-    aluna_id: pessoaId, semana,
+    aluna_id: pessoaId, semana, data_avaliacao: dataAvaliacaoInput,
     peso: parseFloat(peso)||null, altura: parseFloat(altura)||null,
     idade: parseInt(idade)||null, sexo,
     cintura: parseFloat(cintura)||null, quadril: parseFloat(quadril)||null,
@@ -1384,6 +1423,11 @@ RESPONDA SOMENTE em JSON válido, sem markdown:
     const semTokens = Object.assign({}, payloadAval);
     delete semTokens.tokens_entrada; delete semTokens.tokens_saida;
     ({ data: saved, error: erroSalvar } = await db.from('avaliacoes').insert(semTokens).select().single());
+  }
+  if (erroSalvar && /column|coluna|schema cache|data_avaliacao/i.test(erroSalvar.message || '')) {
+    const semData = Object.assign({}, payloadAval);
+    delete semData.data_avaliacao;
+    ({ data: saved, error: erroSalvar } = await db.from('avaliacoes').insert(semData).select().single());
   }
   if (erroSalvar || !saved) {
     avaliacaoAtualId = null;
@@ -1534,7 +1578,7 @@ async function carregarHistorico() {
     <div class="hist-avaliacao-item" style="cursor:pointer" onclick="abrirRelatorio('${a.id}')">
       <div>
         <div style="font-size:12px;font-weight:700">${a.semana||'Avaliação'}</div>
-        <div style="font-size:10px;color:var(--gray)">${new Date(a.created_at).toLocaleDateString('pt-BR')}</div>
+        <div style="font-size:10px;color:var(--gray)">${new Date(a.data_avaliacao || a.created_at).toLocaleDateString('pt-BR')}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
         ${a.pct_gordura ? `<div style="font-size:12px;font-weight:700;color:var(--lime)">${a.pct_gordura}%</div>` : ''}
@@ -1588,7 +1632,7 @@ async function gerarImagemWhatsApp() {
       '<div id="wa-card" style="width:1080px;min-height:1080px;background:#080808;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:70px 70px 56px;box-sizing:border-box;display:flex;flex-direction:column">' +
         '<div style="font-size:26px;font-weight:900;letter-spacing:0.16em;color:#c8f000;text-transform:uppercase">⚡ Protocolo Evolução</div>' +
         '<div style="font-size:52px;font-weight:900;margin-top:26px;line-height:1.1">' + esc(primeiro) + '</div>' +
-        '<div style="font-size:24px;color:#8a8a8a;margin-top:8px">' + esc(a.semana || 'Avaliação') + ' · ' + new Date(a.created_at).toLocaleDateString('pt-BR') + '</div>' +
+        '<div style="font-size:24px;color:#8a8a8a;margin-top:8px">' + esc(a.semana || 'Avaliação') + ' · ' + new Date(a.data_avaliacao || a.created_at).toLocaleDateString('pt-BR') + '</div>' +
         '<div style="display:flex;align-items:center;gap:48px;margin-top:40px">' +
           '<svg width="340" height="340" viewBox="0 0 340 340" style="flex:none">' +
             '<circle cx="170" cy="170" r="' + raio + '" fill="none" stroke="#1c1c1c" stroke-width="26"/>' +
@@ -1607,7 +1651,7 @@ async function gerarImagemWhatsApp() {
     const canvas = await html2canvas(document.getElementById('wa-card'), { backgroundColor: '#080808', scale: 1, logging: false, useCORS: true });
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     stage.innerHTML = '';
-    const arquivo = 'avaliacao-' + primeiro.toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '') + '-' + new Date(a.created_at).toLocaleDateString('pt-BR').replace(/\//g, '-') + '.png';
+    const arquivo = 'avaliacao-' + primeiro.toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '') + '-' + new Date(a.data_avaliacao || a.created_at).toLocaleDateString('pt-BR').replace(/\//g, '-') + '.png';
     const file = new File([blob], arquivo, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], title: 'Avaliação ' + primeiro });
@@ -1719,7 +1763,7 @@ async function abrirRelatorio(avaliacaoId) {
   // Capa e rodapé: só aparecem no PDF impresso
   const capaEl = document.getElementById('rel-capa');
   if (capaEl) {
-    const dataAval = new Date(a.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
+    const dataAval = new Date(a.data_avaliacao || a.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
     capaEl.innerHTML =
       '<div style="font-size:13px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase">⚡ Protocolo Evolução</div>' +
       '<div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-top:6px;opacity:0.7">Avaliação física, postural e de composição corporal</div>' +
